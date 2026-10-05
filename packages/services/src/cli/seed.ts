@@ -4,10 +4,16 @@
  *   pnpm db:seed
  * Todas las cuentas usan la contraseña: pluma-dev-2026
  */
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { FakePayments, hashDevPassword } from '@pluma/adapters';
 import { eq, sql, t } from '@pluma/db';
 import * as S from '../index';
 import { createChallengeForSeed } from './seed-helpers';
+
+const rootEnv = resolve(import.meta.dirname, '../../../../.env');
+if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
+process.env.PLUMA_REPO_ROOT ??= resolve(import.meta.dirname, '../../../..');
 
 const PASSWORD = 'pluma-dev-2026';
 const ctx = { ip: '127.0.0.1', userAgent: 'seed' };
