@@ -6,15 +6,88 @@ Editora musical digital para compositores, productores y artistas latinos de Lat
 
 ## Estado
 
-**Plan para aprobación (entregable 1).** Todavía no hay código de la aplicación.
+| Fase | Alcance | Estado |
+|---|---|---|
+| 0 | Monorepo, sistema de diseño, i18n, base de datos, RLS, auditoría | ✅ |
+| a | Onboarding y membresía, obras y splits, firma de coautores, back-office de obras | ✅ |
+| b | Statements y dashboard | Siguiente |
+| c | Notificaciones (publicación de statements) | Pendiente |
+| d | Red Pluma | Pendiente |
+| e | Catálogo A&R y Sync | Pendiente |
 
-| Documento | Contenido |
+Plan, modelo de datos y pantallas en [`docs/`](docs/).
+
+## Estructura
+
+```
+apps/web       App del autor (PWA, es/en/pt-BR) + firma de coautores · Next.js 16
+apps/admin     Back-office (tema claro, 2FA en producción) · Next.js 16
+apps/worker    Outbox de eventos y tareas programadas (pg-boss)
+packages/domain    Reglas de negocio puras (splits, membresía, estados…)
+packages/db        Migraciones SQL, RLS, auditoría encadenada, cliente Drizzle
+packages/services  Casos de uso (onboarding, membresía, obras, firmas, back-office, notificaciones)
+packages/adapters  Stripe, Postmark, Supabase Auth/Storage, RFC 3161, KYC
+packages/emails    Correos transaccionales trilingües
+packages/ui        Sistema de diseño Pluma (tokens, logo, componentes)
+packages/i18n      Textos es / en / pt-BR
+```
+
+## Correr en local
+
+Requisitos: Node 22, pnpm 10 y PostgreSQL 16 (local o en Docker). No hace falta Supabase: el modo de desarrollo trae autenticación, pagos simulados, correo y almacenamiento locales.
+
+```bash
+pnpm install
+cp .env.example .env            # ajusta DATABASE_URL y pon un PLUMA_SIGNING_SECRET
+createdb pluma                  # o: docker run -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16
+pnpm db:migrate                 # migraciones + capa de compatibilidad con Supabase
+pnpm db:seed                    # datos de ejemplo en los tres idiomas
+pnpm dev                        # web :3000 · admin :3001 · worker
+```
+
+Cuentas de ejemplo (contraseña `pluma-dev-2026`):
+
+| Cuenta | Qué ves |
 |---|---|
-| [docs/01-arquitectura.md](docs/01-arquitectura.md) | Stack y ajustes propuestos, apps, seguridad, eventos, pipeline de statements, firma, audio, membresía, despliegue y fases |
-| [docs/02-modelo-de-datos.md](docs/02-modelo-de-datos.md) | Mapa de entidades, máquinas de estado, ejemplo de distribución y conciliación |
-| [docs/schema.sql](docs/schema.sql) | DDL completo (borrador), probado en PostgreSQL 16 |
-| [docs/03-pantallas.md](docs/03-pantallas.md) | Pantallas por superficie, con fase y prioridad |
-| [docs/04-decisiones-abiertas.md](docs/04-decisiones-abiertas.md) | Decisiones pendientes, cada una con propuesta por defecto |
-| [docs/05-sistema-de-diseno.md](docs/05-sistema-de-diseno.md) | Tokens, tipografía, logo, componentes y contraste, tomados del lienzo de marca |
+| `valentina@pluma.test` | Autora Pro (es), obra registrada con 4 coautores |
+| `diego@pluma.test` | Autor Socio (es), obra en disputa |
+| `sam@pluma.test` | Autora Pro (en), obra esperando firmas |
+| `camila@pluma.test` | Autora Socio (pt-BR), obra en borrador |
+| `admin@pluma.test` | Back-office, super admin |
+| `operaciones@pluma.test` / `aprobaciones@pluma.test` | Back-office, operador / aprobador |
 
-Las instrucciones para correr en local y desplegar se agregarán con la fase 0.
+- Los correos (códigos de verificación, invitaciones a firmar) quedan en `.dev-mail/`, como `.json` y `.html`.
+- El pago abre un checkout simulado en `/dev/checkout`.
+- `pnpm db:reset` borra todo y vuelve a migrar.
+
+## Pruebas
+
+```bash
+# Unitarias e integración (necesitan PostgreSQL en localhost:5432, usuario postgres/postgres)
+for p in domain db adapters emails services ui i18n; do (cd packages/$p && pnpm vitest run); done
+
+# Criterios de aceptación de punta a punta (levanta su propio servidor y base pluma_e2e)
+pnpm e2e
+```
+
+Qué cubren:
+
+- **Criterio 1:** onboarding completo en es, en y pt-BR en menos de 5 minutos. Un autor Socio no puede activar sync ni A&R hasta mejorar a Pro (validado en la interfaz, el servicio y la base de datos).
+- **Criterio 2:** una obra con 4 coautores no se envía con 99,99 %. No pasa a registro hasta la última firma.
+- **Criterio 7:** toda acción sobre dinero, splits y contratos queda en una auditoría de solo inserción, encadenada por hash. Hay una prueba que simula una manipulación y la detecta.
+- Contraste de todos los pares de color, paridad de textos entre idiomas y ausencia de nombres de proveedores en textos visibles.
+
+## Desplegar en producción
+
+1. **Supabase**: crea el proyecto y aplica las migraciones con `DATABASE_URL=<conexión directa> pnpm db:migrate`. En el entorno local la capa de compatibilidad solo se aplica si no existe el esquema `auth`; en Supabase no se aplica.
+   - Auth: activa correo con código (en la plantilla de confirmación usa `{{ .Token }}`), Google, Apple y MFA TOTP.
+   - Storage: crea los buckets privados `audio-originals`, `audio-previews`, `documents`, `statements-raw` y `kyc`.
+2. **Stripe**: crea dos precios anuales (Socio USD 20 y Pro USD 50). Pon sus IDs en `STRIPE_PRICE_SOCIO`, `STRIPE_PRICE_PRO` y en `plan_prices.stripe_price_id` (desde Configuración en el back-office). Crea un webhook hacia `https://app.<dominio>/api/webhooks/stripe` con los eventos `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` y `customer.subscription.deleted`.
+3. **Postmark**: verifica el dominio de envío y configura `POSTMARK_TOKEN` y `PLUMA_EMAIL_FROM`.
+4. **Vercel**: crea dos proyectos, `apps/web` (app.<dominio>) y `apps/admin` (admin.<dominio>), con las variables de `.env.example`:
+   - `NODE_ENV=production`, `PLUMA_AUTH_MODE=supabase`, `PLUMA_PAYMENTS=stripe`, `PLUMA_EMAIL=postmark`, `PLUMA_STORAGE=supabase`, `PLUMA_INLINE_DISPATCH=0`.
+   - `DATABASE_URL` debe apuntar al pooler de Supabase (puerto 6543).
+   - En producción la app se niega a arrancar con pagos simulados, correo local o autenticación de desarrollo.
+5. **Worker**: despliega `apps/worker` como proceso permanente (Fly.io o Railway; `pnpm --filter @pluma/worker start`) con las mismas variables. Despacha correos cada 5 s y corre las tareas diarias (recordatorios de firma, vencimientos, renovaciones, suspensiones, verificación de la auditoría).
+6. **Sello de tiempo**: define `PLUMA_TSA_URL` (por ejemplo, la de un proveedor RFC 3161 calificado) para sellar la prueba de autoría.
+7. **Personal interno**: crea la cuenta desde la app y asígnale el rol con SQL la primera vez (`insert into user_roles (user_id, role) values ('<id>', 'super_admin')`); después, desde Usuarios internos.

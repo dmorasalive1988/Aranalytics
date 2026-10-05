@@ -1,0 +1,17 @@
+{
+  "name": "@pluma/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@pluma/services": "workspace:*",
+    "pg-boss": "^12.36.0",
+    "tsx": "^4.20.0"
+  },
+  "devDependencies": { "@types/node": "^22.20.5", "typescript": "^5.9.3" }
+}

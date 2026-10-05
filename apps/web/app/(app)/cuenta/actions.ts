@@ -1,10 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { redirect } from 'next/navigation';
 import { scheduleDowngrade, upgradeToPro } from '@pluma/services';
 import { run, type ActionState } from '@/lib/actions';
-import { money } from '@/lib/format';
 import { deps, kickDispatch, requestCtx, requireMember } from '@/lib/server';
 
 export async function upgradeAction(_: ActionState): Promise<ActionState> {
@@ -13,8 +12,7 @@ export async function upgradeAction(_: ActionState): Promise<ActionState> {
     const { chargedCents } = await upgradeToPro(deps(), s.userId, await requestCtx());
     await kickDispatch();
     revalidatePath('/', 'layout');
-    const t = await getTranslations('account');
-    return { ok: `${t('upgraded')} (${money(chargedCents, await getLocale(), s.profile?.country)})` };
+    redirect(`/cuenta/plan?mejorado=${chargedCents}`);
   });
 }
 

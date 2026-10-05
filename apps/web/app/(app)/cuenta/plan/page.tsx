@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { Card, HighlightCard, Notice, ScreenTitle } from '@pluma/ui';
 import { loadPlans, membershipPayments } from '@pluma/services';
 import { upgradeProrationCents } from '@pluma/domain';
+import { CircleCheck } from 'lucide-react';
 import { ActionForm } from '@/components/action-form';
 import { BackLink } from '@/components/back-link';
 import { date, money, pct, planName } from '@/lib/format';
@@ -9,7 +10,8 @@ import { deps, requireMember } from '@/lib/server';
 import { downgradeAction, upgradeAction } from '../actions';
 
 /** A46 · Mi plan: mejora inmediata a Pro con prorrateo visible, bajada al final del período, pagos. */
-export default async function PlanPage() {
+export default async function PlanPage({ searchParams }: { searchParams: Promise<{ mejorado?: string }> }) {
+  const { mejorado } = await searchParams;
   const s = await requireMember();
   const t = await getTranslations('account');
   const tc = await getTranslations('common');
@@ -32,6 +34,11 @@ export default async function PlanPage() {
         <span className="text-sm">{t('commission', { pct: pct(plans[m.plan].commissionBps, locale, country) })} · {t('renews', { date: end })}</span>
       </HighlightCard>
 
+      {mejorado !== undefined && m.plan === 'pro' && (
+        <Notice tone="ok" icon={<CircleCheck size={20} strokeWidth={2} />} title={t('upgraded')}>
+          {money(Number(mejorado) || 0, locale, country)}
+        </Notice>
+      )}
       {m.plan === 'socio' && (
         <Card className="flex flex-col gap-3">
           <h2 className="font-display text-lg font-extrabold">{t('upgradeTitle')}</h2>
