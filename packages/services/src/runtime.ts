@@ -27,10 +27,10 @@ const isProd = () => process.env.NODE_ENV === 'production';
 const devSecret = (name: string) => (isProd() ? env(name) : (process.env[name] ?? `dev-only-${name.toLowerCase()}`));
 
 /** Raíz del monorepo (para carpetas de desarrollo compartidas entre apps). */
-const repoRoot = () => process.env.PLUMA_REPO_ROOT ?? resolve(process.cwd(), process.cwd().includes('/apps/') ? '../..' : '.');
+const repoRoot = () => process.env.PLUMA_REPO_ROOT ?? resolve(/*turbopackIgnore: true*/ process.cwd(), process.cwd().includes('/apps/') ? '../..' : '.');
 
 export function localStorageAdapter(): LocalStorage {
-  return new LocalStorage(process.env.PLUMA_LOCAL_STORAGE_DIR ?? resolve(repoRoot(), '.dev-storage'), `${env('PLUMA_APP_URL', 'http://localhost:3000')}/api/dev-storage`, devSecret('PLUMA_SIGNING_SECRET'));
+  return new LocalStorage(process.env.PLUMA_LOCAL_STORAGE_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-storage'), `${env('PLUMA_APP_URL', 'http://localhost:3000')}/api/dev-storage`, devSecret('PLUMA_SIGNING_SECRET'));
 }
 
 /**
@@ -55,7 +55,7 @@ export function depsFromEnv(): Deps {
   const emailKind = process.env.PLUMA_EMAIL ?? (isProd() ? 'postmark' : 'dev');
   if (isProd() && emailKind !== 'postmark') throw new Error('En producción PLUMA_EMAIL debe ser "postmark"');
   const mail: EmailSender =
-    emailKind === 'postmark' ? new PostmarkEmail(env('POSTMARK_TOKEN'), env('PLUMA_EMAIL_FROM')) : new DevMailbox(process.env.PLUMA_DEV_MAIL_DIR ?? resolve(repoRoot(), '.dev-mail'));
+    emailKind === 'postmark' ? new PostmarkEmail(env('POSTMARK_TOKEN'), env('PLUMA_EMAIL_FROM')) : new DevMailbox(process.env.PLUMA_DEV_MAIL_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-mail'));
 
   const storage: ObjectStorage =
     (process.env.PLUMA_STORAGE ?? (isProd() ? 'supabase' : 'local')) === 'supabase'

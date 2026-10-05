@@ -20,7 +20,11 @@
     "next": "^16.3.8",
     "next-intl": "^4.14.9",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "@pluma/i18n": "workspace:*",
+    "@pluma/emails": "workspace:*",
+    "server-only": "^0.0.1",
+    "@supabase/ssr": "^0.12.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

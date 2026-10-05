@@ -24,7 +24,7 @@
   "nav": { "home": "Inicio", "works": "Obras", "network": "Red", "sync": "Sync", "payments": "Pagos", "main": "Navegación principal" },
   "welcome": {
     "headline": "Donde nacen las canciones.",
-    "sub": "Registra tus obras, firma tus splits y cobra tus regalías en todo el mundo. Tus canciones siguen siendo 100 % tuyas.",
+    "sub": "Registra tus obras, firma tus splits y cobra tus regalías en todo el mundo. Tus canciones siguen siendo 100% tuyas.",
     "create": "Crear cuenta",
     "login": "Ya tengo cuenta",
     "chooseLanguage": "Idioma"
@@ -107,7 +107,7 @@
         "ar": "Catálogo A&R para obras sin grabar",
         "analytics": "Analítica avanzada y perfil destacado"
       },
-      "ownership": "En los dos planes conservas el 100 % de la propiedad de tus canciones."
+      "ownership": "En los dos planes conservas el 100% de la propiedad de tus canciones."
     },
     "contract": {
       "title": "Tu contrato, en claro",
@@ -228,9 +228,9 @@
       "translator": "Traducción"
     },
     "total": "Total",
-    "remaining": "Falta {pct} para llegar a 100 %",
+    "remaining": "Falta {pct} para llegar a 100%",
     "over": "Te pasaste por {pct}",
-    "complete": "100 % · listo para enviar",
+    "complete": "100% · listo para enviar",
     "save": "Guardar y revisar",
     "invalidPercent": "Escribe un porcentaje entre 0,01 y 100.",
     "administered": "Administrado por Pluma",
@@ -246,7 +246,7 @@
     "submit": "Firmar y enviar invitaciones",
     "editSplits": "Cambiar reparto",
     "editWork": "Cambiar datos",
-    "notReady": "El reparto debe sumar exactamente 100 % antes de enviarlo."
+    "notReady": "El reparto debe sumar exactamente 100% antes de enviarlo."
   },
   "workDetail": {
     "timeline": {
@@ -390,7 +390,7 @@
     "AUDIO_TYPE_UNSUPPORTED": "Ese formato de audio no es compatible.",
     "AUDIO_TOO_LARGE": "El archivo pesa más de 40 MB.",
     "NO_DRAFT_VERSION": "No hay una versión en borrador.",
-    "SPLIT_INVALID": "Revisa el reparto: debe sumar exactamente 100 % y cada coautor necesita nombre y correo.",
+    "SPLIT_INVALID": "Revisa el reparto: debe sumar exactamente 100% y cada coautor necesita nombre y correo.",
     "SPLIT_PARTIES_INVALID": "Agrega entre 1 y 20 coautores.",
     "SHARE_INVALID": "Revisa los porcentajes.",
     "ROLE_INVALID": "Elige un rol.",

@@ -40,7 +40,7 @@ export function StatusPill({ tone, children, icon }: { tone: PillTone; children:
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center gap-1 rounded-xl px-2.5 py-[5px] text-[11px] font-bold leading-none whitespace-nowrap',
+        'inline-flex w-fit shrink-0 items-center gap-1 rounded-xl px-2.5 py-[5px] text-[11px] font-bold leading-none whitespace-nowrap',
         tone === 'outline' && 'border border-niebla text-fg-2',
         tone === 'coral' && 'bg-coral text-tinta',
         tone === 'ambar' && 'bg-ambar text-tinta',
