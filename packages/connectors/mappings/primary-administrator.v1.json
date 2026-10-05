@@ -1,0 +1,26 @@
+{
+  "provider": "primary_administrator",
+  "mappingVersion": "primary_administrator/v1",
+  "note": "Formato provisional (archivo ficticio). Cuando llegue la muestra real, solo cambia este mapeo.",
+  "requiredHeaders": ["RECORD_TYPE", "WORK_CODE", "WORK_TITLE", "SOURCE", "INCOME_TYPE", "CURRENCY", "NET"],
+  "recordType": { "column": "RECORD_TYPE", "detail": "D", "trailer": "T" },
+  "columns": {
+    "providerWorkCode": "WORK_CODE",
+    "workTitle": "WORK_TITLE",
+    "iswc": "ISWC",
+    "writerIpi": "WRITER_IPI",
+    "isrc": "ISRC",
+    "source": "SOURCE",
+    "incomeType": "INCOME_TYPE",
+    "territory": "TERRITORY",
+    "exploitationStart": "EXPL_START",
+    "exploitationEnd": "EXPL_END",
+    "payPeriod": "PAY_PERIOD",
+    "currency": "CURRENCY",
+    "gross": "GROSS",
+    "providerFee": "FEE",
+    "net": "NET",
+    "adjustsPeriod": "ADJ_PERIOD"
+  },
+  "incomeTypes": { "PERF": "performance", "MECH": "mechanical", "UGC": "youtube_ugc", "YT": "youtube_ugc", "SYNC": "sync" }
+}

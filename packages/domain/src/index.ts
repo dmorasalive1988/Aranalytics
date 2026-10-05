@@ -7,3 +7,5 @@ export * from './people';
 export * from './identifiers';
 export * from './similarity';
 export * from './split-sheet';
+export * from './money';
+export * from './distribution';
