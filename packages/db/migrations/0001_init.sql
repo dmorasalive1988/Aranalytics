@@ -1,21 +1,12 @@
--- =============================================================================
--- Pluma: esquema de base de datos (BORRADOR v0.1 para aprobación)
--- PostgreSQL 16 / Supabase. Se convertirá en migraciones Drizzle + SQL en la fase 0.
---
--- Convenciones
---   * ids uuid (gen_random_uuid), timestamps timestamptz en UTC.
---   * Porcentajes en puntos básicos: 10000 = 100,00 %  (sin flotantes).
---   * Importes de líneas y distribuciones en numeric(20,6); saldos y statements en
---     centavos (bigint) en la moneda indicada al lado.
---   * Toda tabla tiene RLS activado (ver sección final); aquí solo se muestran
---     las políticas representativas.
--- =============================================================================
+-- Pluma · 0001 · esquema inicial
+-- Fuente de verdad del modelo; ver docs/02-modelo-de-datos.md.
 
-create extension if not exists pgcrypto;
-create extension if not exists vector;
-create extension if not exists pg_trgm;
-create extension if not exists citext;
-create extension if not exists btree_gist;
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+create extension if not exists pg_trgm with schema extensions;
+create extension if not exists citext with schema extensions;
+create extension if not exists btree_gist with schema extensions;
+set search_path = public, extensions;
 
 -- -----------------------------------------------------------------------------
 -- Enumeraciones
@@ -74,6 +65,7 @@ create table users (                    -- 1:1 con auth.users
   kyc_status    kyc_status not null default 'not_started',
   email_verified_at timestamptz,
   mfa_required  boolean not null default false,      -- true para personal interno
+  onboarding_completed_at timestamptz,
   deleted_at    timestamptz,                         -- anonimización (LGPD/CCPA)
   created_at    timestamptz not null default now()
 );
@@ -262,6 +254,7 @@ create table works (
   id              uuid primary key default gen_random_uuid(),
   publisher_id    uuid not null references publishers(id),
   title           text not null,
+  title_normalized text not null default '',          -- para detección de conflictos
   alt_titles      text[] not null default '{}',
   language        text not null,                     -- idioma de la letra (ISO 639-1)
   genre           text not null,
@@ -286,7 +279,6 @@ create table works (
   vocals          text,                               -- 'female' | 'male' | 'duet' | 'choir' | 'none'
   instrumental_available boolean not null default false,
   catalog_description text,
-  embedding       vector(1024),
   search_tsv      tsvector,
   origin_request_id uuid,                            -- si nació en la Red
   created_by      uuid not null references users(id),
@@ -294,9 +286,8 @@ create table works (
   updated_at      timestamptz not null default now()
   -- Reglas por trigger: opt-ins de sync/A&R solo con plan Pro activo; A&R solo si no hay grabaciones.
 );
-create index works_title_trgm on works using gin (title gin_trgm_ops);
+create index works_title_trgm on works using gin (title_normalized extensions.gin_trgm_ops);
 create index works_search_tsv on works using gin (search_tsv);
-create index works_embedding on works using hnsw (embedding vector_cosine_ops);
 
 create table work_files (
   id              uuid primary key default gen_random_uuid(),
@@ -349,6 +340,7 @@ create table split_shares (
   share_bps       int not null check (share_bps > 0 and share_bps <= 10000),
   administered    boolean not null,                  -- true solo si el titular es socio activo
   status          share_status not null default 'pending',
+  invited_at      timestamptz,
   signature_id    uuid references signatures(id),
   signed_at       timestamptz,
   sign_token_hash char(64),                          -- enlace seguro (hash, no el token)
@@ -356,19 +348,6 @@ create table split_shares (
   last_reminder_at timestamptz,
   check ((writer_user_id is not null) <> (external_email is not null))
 );
-
--- La suma de una versión debe ser exactamente 10000 para poder enviarla a firma.
-create function assert_split_total() returns trigger language plpgsql as $$
-begin
-  if new.status = 'pending_signatures' and old.status = 'draft' then
-    if (select coalesce(sum(share_bps), 0) from split_shares where split_version_id = new.id) <> 10000 then
-      raise exception 'SPLIT_TOTAL_NOT_100' using errcode = 'check_violation';
-    end if;
-  end if;
-  return new;
-end $$;
-create trigger split_total_check before update of status on split_versions
-  for each row execute function assert_split_total();
 
 create table work_status_history (
   id          bigserial primary key,
@@ -930,7 +909,8 @@ create table audit_log (
   id              bigserial primary key,
   actor_user_id   uuid,
   actor_role      text,
-  action          text not null,                     -- 'split.signed', 'run.approved', 'plan.price_changed' …
+  action          text not null,                     -- tabla.operación: 'split_shares.update'
+  command         text,                              -- comando de negocio: 'split.sign', 'run.approve' …
   entity_type     text not null,
   entity_id       text not null,
   before          jsonb,
@@ -942,13 +922,6 @@ create table audit_log (
   hash            char(64) not null
 );
 
-create function audit_log_immutable() returns trigger language plpgsql as $$
-begin
-  raise exception 'AUDIT_LOG_IS_APPEND_ONLY';
-end $$;
-create trigger audit_no_update before update or delete on audit_log
-  for each statement execute function audit_log_immutable();
-
 create table data_subject_requests (    -- Habeas Data / LGPD / CCPA
   id              uuid primary key default gen_random_uuid(),
   user_id         uuid not null references users(id),
@@ -958,54 +931,30 @@ create table data_subject_requests (    -- Habeas Data / LGPD / CCPA
   closed_at       timestamptz
 );
 
--- -----------------------------------------------------------------------------
--- Vistas de catálogo (lo único que ven A&R y compradores de sync)
--- -----------------------------------------------------------------------------
-create view ar_catalog_v with (security_barrier) as
-  select w.id, w.title, w.language, w.genre, w.bpm, w.moods, w.vocals,
-         left(w.lyrics, 280) as lyrics_excerpt, wp.artist_name
-  from works w
-  join split_versions sv on sv.work_id = w.id and sv.status = 'signed'
-  join split_shares ss on ss.split_version_id = sv.id and ss.writer_user_id = w.created_by
-  join writer_profiles wp on wp.user_id = w.created_by
-  where w.ar_opt_in and not w.opt_ins_suspended and w.status <> 'disputed'
-    and not exists (select 1 from recordings r where r.work_id = w.id);
 
-create view sync_catalog_v with (security_barrier) as
-  select w.id, w.title, w.language, w.genre, w.bpm, w.musical_key, w.moods, w.vocals,
-         w.instrumental_available, w.one_stop, w.catalog_description
-  from works w
-  where w.sync_opt_in and not w.opt_ins_suspended and w.status in ('splits_signed', 'sent_to_publisher', 'registered');
+-- Retos de verificación por código (firma de contratos y splits)
+create table signature_challenges (
+  id              uuid primary key default gen_random_uuid(),
+  email           citext not null,
+  purpose         text not null,                     -- 'split_share' | 'agreement' | 'guardian_agreement'
+  ref_id          uuid not null,
+  code_hash       char(64) not null,
+  attempts        int not null default 0,
+  expires_at      timestamptz not null,
+  consumed_at     timestamptz,
+  created_at      timestamptz not null default now()
+);
+create index signature_challenges_ref on signature_challenges(ref_id, purpose);
 
--- -----------------------------------------------------------------------------
--- RLS (muestra representativa; todas las tablas se activan en la migración)
--- -----------------------------------------------------------------------------
-alter table works enable row level security;
-alter table split_shares enable row level security;
-alter table writer_statements enable row level security;
-alter table distributions enable row level security;
-
-create function has_role(r app_role) returns boolean language sql stable security definer as $$
-  select exists (select 1 from user_roles where user_id = auth.uid() and role = r)
-$$;
-
-create function is_work_member(w uuid) returns boolean language sql stable security definer as $$
-  select exists (
-    select 1 from split_versions sv join split_shares ss on ss.split_version_id = sv.id
-    where sv.work_id = w and ss.writer_user_id = auth.uid())
-  or exists (select 1 from works where id = w and created_by = auth.uid())
-$$;
-
-create policy works_member_read on works for select
-  using (is_work_member(id) or has_role('operator') or has_role('approver'));
-create policy works_creator_write on works for update
-  using (created_by = auth.uid() and status in ('draft'));
-
-create policy statements_own on writer_statements for select
-  using ((writer_user_id = auth.uid() and published_at is not null) or has_role('operator') or has_role('approver'));
-
-create policy distributions_own on distributions for select
-  using (writer_user_id = auth.uid()
-         and exists (select 1 from writer_statements s
-                     where s.run_id = distributions.run_id and s.writer_user_id = auth.uid()
-                       and s.published_at is not null));
+-- Búsqueda semántica (pgvector). Si la extensión no está disponible, la columna no se crea.
+do $$
+begin
+  begin
+    create extension if not exists vector with schema extensions;
+  exception when others then
+    raise notice 'pgvector no disponible: búsqueda semántica desactivada';
+    return;
+  end;
+  alter table works add column embedding extensions.vector(1024);
+  create index works_embedding on works using hnsw (embedding extensions.vector_cosine_ops);
+end $$;

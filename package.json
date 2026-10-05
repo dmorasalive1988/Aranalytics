@@ -1,0 +1,31 @@
+{
+  "name": "pluma",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:migrate": "pnpm --filter @pluma/db migrate",
+    "db:seed": "pnpm --filter @pluma/services seed",
+    "db:reset": "pnpm --filter @pluma/db reset",
+    "e2e": "pnpm --filter @pluma/web e2e"
+  },
+  "devDependencies": {
+    "turbo": "^2.6.0",
+    "typescript": "^5.9.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "@tailwindcss/oxide",
+      "unrs-resolver"
+    ]
+  }
+}
