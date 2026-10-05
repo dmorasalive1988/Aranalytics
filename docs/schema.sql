@@ -267,7 +267,7 @@ create table works (
   genre           text not null,
   lyrics          text,
   iswc            text unique check (iswc ~ '^T-?\d{3}\.?\d{3}\.?\d{3}-?\d$'),
-  chappell_work_code text unique,                    -- código de obra del administrador
+  publisher_work_code text unique,                    -- código de obra del administrador asociado
   status          work_status not null default 'draft',
   ai_declaration  ai_declaration not null,           -- obligatoria al registrar
   ai_training_opt_in boolean not null default false, -- fase posterior; siempre false en MVP
@@ -405,7 +405,7 @@ create table disputes (
   resolved_at     timestamptz
 );
 
-create table publisher_submissions (    -- exportación de altas a Chappell
+create table publisher_submissions (    -- exportación de altas al administrador asociado
   id              uuid primary key default gen_random_uuid(),
   provider        text not null,
   file_path       text not null,
@@ -446,9 +446,9 @@ create table beneficiary_changes (
 create table statement_periods (
   id              uuid primary key default gen_random_uuid(),
   publisher_id    uuid not null references publishers(id),
-  provider        text not null,                     -- 'warner_chappell'
+  provider        text not null,                     -- 'primary_administrator'
   code            text not null,                     -- '2026-Q2'
-  pay_date        date not null,                     -- calendario oficial de Chappell
+  pay_date        date not null,                     -- calendario oficial de pagos
   unique (provider, code)
 );
 
@@ -495,7 +495,7 @@ create table statement_lines (          -- modelo normalizado único
   adjusts_period  text,                              -- corrección de período anterior
   match_status    match_status not null default 'unmatched',
   matched_work_id uuid references works(id),
-  match_method    text,                              -- 'chappell_code' | 'iswc' | 'ipi_title' | 'manual'
+  match_method    text,                              -- 'publisher_code' | 'iswc' | 'ipi_title' | 'manual'
   match_confidence numeric(4,3),
   matched_by      uuid references users(id),
   unique (file_id, line_no)

@@ -2,7 +2,7 @@
 
 > Donde nacen las canciones. **Escribe. Firma. Cobra.** · *Write it. Own it. Get paid.* · *Escreva. Assine. Receba.*
 
-Editora musical digital para compositores, productores y artistas latinos de LatAm y del mercado US Latin: administración editorial con Warner Chappell, red de colaboración con splits firmados, catálogo A&R y sync.
+Editora musical digital para compositores, productores y artistas latinos de LatAm y del mercado US Latin: administración editorial, red de colaboración con splits firmados, catálogo A&R y sync.
 
 ## Estado
 

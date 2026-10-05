@@ -145,7 +145,7 @@
     "hello": "Oi,",
     "balance": "Saldo disponível",
     "nextStatement": "Próximo statement oficial",
-    "nextStatementValue": "conforme o calendário da Warner Chappell",
+    "nextStatementValue": "conforme o calendário oficial de pagamentos",
     "noStatementYet": "Você ainda não tem statements. Seu saldo aparece aqui quando o primeiro for publicado.",
     "pendingTitle": "Assinaturas pendentes",
     "pendingOne": "Você tem 1 split esperando sua assinatura",
@@ -171,7 +171,7 @@
       "draft": "Rascunho",
       "awaiting_signatures": "Esperando assinaturas",
       "splits_signed": "Splits assinados",
-      "sent_to_publisher": "Enviada à Warner Chappell",
+      "sent_to_publisher": "Enviada para registro",
       "registered": "Registrada",
       "disputed": "Em disputa"
     }
@@ -252,7 +252,7 @@
     "timeline": {
       "draft": "Rascunho criado",
       "signed": "Splits assinados por todos",
-      "sent": "Enviada à Warner Chappell",
+      "sent": "Enviada para registro",
       "registered": "Registrada nas associações"
     },
     "signatures": "Assinaturas",
@@ -349,7 +349,7 @@
   "soon": {
     "network": { "title": "A Rede Pluma", "body": "Publique o que você procura (“tenho um beat, procuro refrão”) e encontre coautores com créditos verificados. Chega na próxima fase." },
     "sync": { "title": "Sync", "body": "Leve suas obras a supervisores musicais e agências. Ative o catálogo de sync em cada obra (plano Pro)." },
-    "payments": { "title": "Pagamentos", "body": "Aqui você vai ver seus statements oficiais, seu saldo e seus saques. O primeiro statement chega pelo calendário da Warner Chappell." }
+    "payments": { "title": "Pagamentos", "body": "Aqui você vai ver seus statements oficiais, seu saldo e seus saques. O primeiro statement chega pelo calendário oficial de pagamentos." }
   },
   "devCheckout": {
     "title": "Pagamento de teste",

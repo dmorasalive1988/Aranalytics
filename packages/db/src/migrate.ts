@@ -59,6 +59,9 @@ export async function resetDatabase(databaseUrl: string): Promise<void> {
   const sql = postgres(databaseUrl, { max: 1, onnotice: () => {} });
   try {
     await sql.unsafe(`drop schema if exists public cascade; create schema public; grant all on schema public to public;`);
+    // Cuentas de la capa local de autenticación (nunca toca Supabase Auth real, que tiene auth.identities).
+    const [row] = await sql<{ local: boolean }[]>`select to_regclass('auth.users') is not null and to_regclass('auth.identities') is null as local`;
+    if (row?.local) await sql`truncate auth.users`;
   } finally {
     await sql.end();
   }

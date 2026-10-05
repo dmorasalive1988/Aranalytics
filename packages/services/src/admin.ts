@@ -68,9 +68,9 @@ export async function listWorksAdmin(deps: Deps, staffId: string, filter: { stat
   await requireStaff(deps, staffId, ['operator', 'approver', 'super_admin']);
   const conds = [];
   if (filter.status) conds.push(eq(t.works.status, filter.status));
-  if (filter.q) conds.push(or(ilike(t.works.title, `%${filter.q}%`), eq(t.works.chappellWorkCode, filter.q), eq(t.works.iswc, filter.q)));
+  if (filter.q) conds.push(or(ilike(t.works.title, `%${filter.q}%`), eq(t.works.publisherWorkCode, filter.q), eq(t.works.iswc, filter.q)));
   return deps.db
-    .select({ id: t.works.id, title: t.works.title, status: t.works.status, iswc: t.works.iswc, chappellWorkCode: t.works.chappellWorkCode, createdAt: t.works.createdAt, updatedAt: t.works.updatedAt, owner: t.writerProfiles.legalName, ownerId: t.works.createdBy })
+    .select({ id: t.works.id, title: t.works.title, status: t.works.status, iswc: t.works.iswc, publisherWorkCode: t.works.publisherWorkCode, createdAt: t.works.createdAt, updatedAt: t.works.updatedAt, owner: t.writerProfiles.legalName, ownerId: t.works.createdBy })
     .from(t.works)
     .innerJoin(t.writerProfiles, eq(t.writerProfiles.userId, t.works.createdBy))
     .where(conds.length ? and(...conds) : undefined)
@@ -86,15 +86,15 @@ async function setWorkStatus(tx: Tx, workId: string, to: WorkStatus, actorId: st
   await emit(tx, 'work.status_changed', 'work', workId, { from: w.status, to });
 }
 
-const CHAPPELL_ROLE: Record<string, string> = { composer: 'C', lyricist: 'A', composer_lyricist: 'CA', arranger: 'AR', translator: 'TR' };
+const CWR_ROLE: Record<string, string> = { composer: 'C', lyricist: 'A', composer_lyricist: 'CA', arranger: 'AR', translator: 'TR' };
 const csvCell = (v: unknown) => {
   const s = String(v ?? '');
   return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
 
 /**
- * Exportación de obras nuevas para alta en Warner Chappell (E13). El formato definitivo lo define
- * Chappell; este CSV de una fila por autor es el formato provisional acordado en el plan.
+ * Exportación de obras nuevas para alta ante el administrador asociado o las sociedades (E13).
+ * CSV provisional de una fila por autor con roles CWR; el formato definitivo lo fija cada destino.
  */
 export async function exportNewWorks(deps: Deps, staffId: string, ctx: RequestCtx) {
   const roles = await requireStaff(deps, staffId, ['operator', 'super_admin']);
@@ -109,36 +109,36 @@ export async function exportNewWorks(deps: Deps, staffId: string, ctx: RequestCt
     const parties = await deps.db.transaction((tx) => partiesFor(tx, shares));
     const isrcs = (await deps.db.select({ isrc: t.recordings.isrc }).from(t.recordings).where(eq(t.recordings.workId, w.id))).map((r) => r.isrc).join('|');
     for (const p of parties) {
-      lines.push([w.id, w.title, w.altTitles.join('|'), w.language, w.iswc ?? '', isrcs, p.name, p.ipi ?? '', p.society ?? '', CHAPPELL_ROLE[p.share.role] ?? p.share.role, (p.share.shareBps / 100).toFixed(2), p.share.administered ? 'Y' : 'N', v.version, v.splitSheetSha256 ?? ''].map(csvCell).join(','));
+      lines.push([w.id, w.title, w.altTitles.join('|'), w.language, w.iswc ?? '', isrcs, p.name, p.ipi ?? '', p.society ?? '', CWR_ROLE[p.share.role] ?? p.share.role, (p.share.shareBps / 100).toFixed(2), p.share.administered ? 'Y' : 'N', v.version, v.splitSheetSha256 ?? ''].map(csvCell).join(','));
     }
   }
   const csv = lines.join('\n') + '\n';
   const hash = sha256(csv);
-  const path = `chappell-exports/${deps.now().toISOString().slice(0, 10)}-${hash.slice(0, 12)}.csv`;
+  const path = `registration-exports/${deps.now().toISOString().slice(0, 10)}-${hash.slice(0, 12)}.csv`;
   await deps.storage.putOnce('documents', path, Buffer.from(csv), 'text/csv').catch((e: Error) => {
     if (e.message !== 'OBJECT_EXISTS') throw e;
   });
   const ids = works.map((w) => w.id);
   const submissionId = await withSystem(deps.db, staffCtx(staffId, roles[0]!, 'publisher.export_new_works', ctx), async (tx) => {
-    const [s] = await tx.insert(t.publisherSubmissions).values({ provider: 'warner_chappell', filePath: `documents/${path}`, sha256: hash, workIds: ids, createdBy: staffId, sentAt: deps.now().toISOString() }).returning({ id: t.publisherSubmissions.id });
+    const [s] = await tx.insert(t.publisherSubmissions).values({ provider: 'primary_administrator', filePath: `documents/${path}`, sha256: hash, workIds: ids, createdBy: staffId, sentAt: deps.now().toISOString() }).returning({ id: t.publisherSubmissions.id });
     for (const id of ids) await setWorkStatus(tx, id, 'sent_to_publisher', staffId, `exportación ${path}`);
     return s!.id;
   });
   return { submissionId, csv, fileName: path.split('/').pop()!, count: ids.length };
 }
 
-/** Marca la obra como registrada con el código de Chappell (clave del matching de statements). */
-export async function registerWork(deps: Deps, staffId: string, workId: string, input: { chappellWorkCode: string; iswc: string | null }, ctx: RequestCtx) {
+/** Marca la obra como registrada con el código de obra del administrador (clave del matching de statements). */
+export async function registerWork(deps: Deps, staffId: string, workId: string, input: { publisherWorkCode: string; iswc: string | null }, ctx: RequestCtx) {
   const roles = await requireStaff(deps, staffId, ['operator', 'super_admin']);
-  const code = input.chappellWorkCode.trim();
-  if (!code) throw new DomainError('CHAPPELL_CODE_REQUIRED');
+  const code = input.publisherWorkCode.trim();
+  if (!code) throw new DomainError('PUBLISHER_CODE_REQUIRED');
   if (input.iswc && !isValidIswc(input.iswc)) throw new DomainError('ISWC_INVALID');
   await withSystem(deps.db, staffCtx(staffId, roles[0]!, 'work.register', ctx), async (tx) => {
     const [w] = await tx.select().from(t.works).where(eq(t.works.id, workId));
     if (!w) throw new DomainError('WORK_NOT_FOUND');
     if (w.status !== 'sent_to_publisher' && w.status !== 'registered') throw new DomainError('WORK_NOT_SENT');
-    await tx.update(t.works).set({ chappellWorkCode: code, iswc: input.iswc ? normalizeIswc(input.iswc) : w.iswc }).where(eq(t.works.id, workId));
-    await setWorkStatus(tx, workId, 'registered', staffId, `código Chappell ${code}`);
+    await tx.update(t.works).set({ publisherWorkCode: code, iswc: input.iswc ? normalizeIswc(input.iswc) : w.iswc }).where(eq(t.works.id, workId));
+    await setWorkStatus(tx, workId, 'registered', staffId, `código de obra ${code}`);
   });
 }
 
@@ -177,7 +177,7 @@ export async function resolveDispute(deps: Deps, staffId: string, disputeId: str
         const [v] = await tx.insert(t.splitVersions).values({ workId: d.workId, version: last.version + 1, createdBy: w!.createdBy, changeReason: `Disputa resuelta: ${input.resolution.trim()}` }).returning({ id: t.splitVersions.id });
         for (const s of shares) await tx.insert(t.splitShares).values({ splitVersionId: v!.id, writerUserId: s.writerUserId, externalName: s.externalName, externalEmail: s.externalEmail, externalIpi: s.externalIpi, externalSociety: s.externalSociety, role: s.role, shareBps: s.shareBps, administered: s.administered });
       }
-      const to: WorkStatus = signed ? (w!.chappellWorkCode ? 'registered' : 'splits_signed') : 'draft';
+      const to: WorkStatus = signed ? (w!.publisherWorkCode ? 'registered' : 'splits_signed') : 'draft';
       await setWorkStatus(tx, d.workId, to, staffId, 'disputa resuelta: nueva versión');
     } else {
       if (!last || last.status !== 'pending_signatures') throw new DomainError('NOTHING_TO_REINVITE');
@@ -190,7 +190,7 @@ export async function resolveDispute(deps: Deps, staffId: string, disputeId: str
         await tx.update(t.splitShares).set({ invitedAt, lastReminderAt: null, signTokenExpiresAt: expires, signTokenHash: s.writerUserId ? null : sha256(guestSignToken(deps.signingSecret, s.id, invitedAt)) }).where(eq(t.splitShares.id, s.id));
         await emit(tx, 'split.invitation', 'split_share', s.id, { workId: d.workId, versionId: last.id });
       }
-      await setWorkStatus(tx, d.workId, signed ? (w!.chappellWorkCode ? 'registered' : 'splits_signed') : 'awaiting_signatures', staffId, 'disputa resuelta: reinvitación');
+      await setWorkStatus(tx, d.workId, signed ? (w!.publisherWorkCode ? 'registered' : 'splits_signed') : 'awaiting_signatures', staffId, 'disputa resuelta: reinvitación');
     }
   });
 }

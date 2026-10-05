@@ -83,7 +83,7 @@ async function signAll(workId: string) {
 }
 await signAll(w1);
 await S.admin.exportNewWorks(deps, ops, ctx);
-await S.admin.registerWork(deps, ops, w1, { chappellWorkCode: 'WCM-CO-000101', iswc: 'T-034.524.680-1' }, ctx);
+await S.admin.registerWork(deps, ops, w1, { publisherWorkCode: 'PLM-CO-000101', iswc: 'T-034.524.680-1' }, ctx);
 
 // 2. Esperando firmas (en inglés)
 const w2 = await S.createWork(deps, sam, { title: 'Midnight in Wynwood', altTitles: [], language: 'en', genre: 'Latin pop', lyrics: 'Midnight in Wynwood, painted walls and you\nSpanglish on the radio, nothing feels brand new', aiDeclaration: 'ai_assisted', isrcs: [] }, ctx);

@@ -271,7 +271,7 @@ export const works = pgTable("works", {
 	genre: text().notNull(),
 	lyrics: text(),
 	iswc: text(),
-	chappellWorkCode: text("chappell_work_code"),
+	publisherWorkCode: text("publisher_work_code"),
 	status: workStatus().default('draft').notNull(),
 	aiDeclaration: aiDeclaration("ai_declaration").notNull(),
 	aiTrainingOptIn: boolean("ai_training_opt_in").default(false).notNull(),
@@ -308,7 +308,7 @@ export const works = pgTable("works", {
 			name: "works_publisher_id_fkey"
 		}),
 	unique("works_iswc_key").on(table.iswc),
-	unique("works_chappell_work_code_key").on(table.chappellWorkCode),
+	unique("works_publisher_work_code_key").on(table.publisherWorkCode),
 	check("works_bpm_check", sql`(bpm >= 30) AND (bpm <= 300)`),
 	check("works_iswc_check", sql`iswc ~ '^T-?\d{3}\.?\d{3}\.?\d{3}-?\d$'::text`),
 ]);

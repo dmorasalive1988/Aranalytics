@@ -4,7 +4,7 @@ import type { AppLocale } from './format';
 import { sha256 } from './crypto';
 import { ADMIN_AGREEMENT_TEXTS } from './legal-texts';
 
-export const ADMIN_AGREEMENT_VERSION = 'v0.1';
+export const ADMIN_AGREEMENT_VERSION = 'v0.2';
 
 export async function readAdminAgreement(locale: AppLocale) {
   const body: string = ADMIN_AGREEMENT_TEXTS[locale];

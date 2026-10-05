@@ -89,13 +89,13 @@ describe('obra con 4 coautores (criterio 2)', () => {
     await S.dispatchPending(deps);
     expect(h.mails().filter((m) => m.tag === 'split_completed')).toHaveLength(4);
 
-    // Back-office: exportación a Chappell y registro
+    // Back-office: exportación para registro y alta con código de obra
     const ops = await h.onboardWriter({ name: 'Operadora' });
     await deps.db.insert(t.userRoles).values({ userId: ops.id, role: 'operator' });
     const exp = (await S.admin.exportNewWorks(deps, ops.id, ctx))!;
     expect(exp.csv.split('\n').filter((l) => l.includes(workId))).toHaveLength(4);
     expect(exp.csv).toContain('Carla Gómez');
-    await S.admin.registerWork(deps, ops.id, workId, { chappellWorkCode: 'WCM-000123', iswc: 'T-034.524.680-1' }, ctx);
+    await S.admin.registerWork(deps, ops.id, workId, { publisherWorkCode: 'PLM-000123', iswc: 'T-034.524.680-1' }, ctx);
     detail = (await S.getWorkDetail(deps, bruno.id, workId))!;
     expect(detail.work.status).toBe('registered');
     expect(detail.history.map((x) => x.toStatus)).toEqual(['draft', 'awaiting_signatures', 'splits_signed', 'sent_to_publisher', 'registered']);

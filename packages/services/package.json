@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "seed": "tsx src/cli/seed.ts",
     "test": "vitest run",
@@ -13,7 +15,8 @@
     "@pluma/adapters": "workspace:*",
     "@pluma/db": "workspace:*",
     "@pluma/domain": "workspace:*",
-    "@pluma/emails": "workspace:*"
+    "@pluma/emails": "workspace:*",
+    "@pluma/i18n": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

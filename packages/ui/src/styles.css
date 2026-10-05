@@ -43,6 +43,20 @@
   color-scheme: dark;
 }
 
+/* Subárbol oscuro dentro del tema claro (barra lateral del back-office). */
+[data-theme="dark"] {
+  --pl-bg: var(--pl-tinta);
+  --pl-surface: var(--pl-noche);
+  --pl-surface-2: var(--pl-elevado);
+  --pl-text: var(--pl-papel);
+  --pl-text-2: var(--pl-niebla);
+  --pl-text-3: var(--pl-papel-2);
+  --pl-line: var(--pl-linea);
+  --pl-stroke: var(--pl-borde);
+  --pl-accent-text: var(--pl-ambar);
+  color-scheme: dark;
+}
+
 [data-theme="light"] {
   --pl-bg: #F4EFE6;
   --pl-surface: #FFFFFF;

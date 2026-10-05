@@ -145,7 +145,7 @@
     "hello": "Hi,",
     "balance": "Available balance",
     "nextStatement": "Next official statement",
-    "nextStatementValue": "on Warner Chappell’s payment calendar",
+    "nextStatementValue": "on the official payment calendar",
     "noStatementYet": "No statements yet. Your balance shows up here once the first one is published.",
     "pendingTitle": "Pending signatures",
     "pendingOne": "You have 1 split waiting for your signature",
@@ -171,7 +171,7 @@
       "draft": "Draft",
       "awaiting_signatures": "Awaiting signatures",
       "splits_signed": "Split signed",
-      "sent_to_publisher": "Sent to Warner Chappell",
+      "sent_to_publisher": "Sent for registration",
       "registered": "Registered",
       "disputed": "In dispute"
     }
@@ -252,7 +252,7 @@
     "timeline": {
       "draft": "Draft created",
       "signed": "Split signed by everyone",
-      "sent": "Sent to Warner Chappell",
+      "sent": "Sent for registration",
       "registered": "Registered with societies"
     },
     "signatures": "Signatures",
@@ -349,7 +349,7 @@
   "soon": {
     "network": { "title": "The Pluma Network", "body": "Post what you’re looking for (“I’ve got a beat, need a hook”) and find co-writers with verified credits. Coming in the next phase." },
     "sync": { "title": "Sync", "body": "Get your songs in front of music supervisors and agencies. Turn on the sync catalog for each song (Pro plan)." },
-    "payments": { "title": "Payments", "body": "Your official statements, balance and withdrawals will live here. The first statement arrives on Warner Chappell’s calendar." }
+    "payments": { "title": "Payments", "body": "Your official statements, balance and withdrawals will live here. The first statement arrives on the official payment calendar." }
   },
   "devCheckout": {
     "title": "Test payment",

@@ -6,6 +6,8 @@ Este documento es el entregable 1: arquitectura, decisiones técnicas y plan por
 
 ---
 
+> **Regla de confidencialidad.** Los acuerdos de Pluma con administradores (hoy, Warner Chappell) o con sociedades son privados. Ningún texto visible para autores, coautores, A&R, compradores de sync ni el personal interno nombra a un proveedor: se habla de "registro", "calendario oficial de pagos" y "administrador asociado". El código tampoco depende del nombre (`publisher_work_code`, `primary_administrator`), y una prueba automática falla si el nombre aparece en mensajes, correos, contrato o back-office.
+
 ## 1. Stack: qué se mantiene y qué propongo cambiar
 
 Mantengo el stack sugerido y lo concreto. Propongo cinco ajustes, todos justificados abajo.

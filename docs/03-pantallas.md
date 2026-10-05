@@ -32,7 +32,7 @@ Meta del criterio 1: A1 → A10 en menos de 5 minutos. A11 y A12 se piden antes 
 
 | # | Pantalla | Contenido clave | Fase | P |
 |---|---|---|---|---|
-| A13 | Inicio ◆ | Tarjeta Ámbar de saldo, próximo statement oficial (fecha de Chappell), alertas, pendientes de firma, actividad de la red | b | P0 |
+| A13 | Inicio ◆ | Tarjeta Ámbar de saldo, próximo statement oficial (calendario oficial de pagos), alertas, pendientes de firma, actividad de la red | b | P0 |
 | A14 | Pagos: resumen | Saldo, histórico por período (barras, actual en Ámbar), botón Retirar | b | P0 |
 | A15 | Statement del período ◆ | Totales, desglose por obra, fuente, territorio y tipo de ingreso; PDF y CSV | b | P0 |
 | A16 | Detalle de obra en statement | Líneas y cálculo transparente: bruto, comisión, retención, FX, neto | b | P1 |
@@ -129,7 +129,7 @@ Barra lateral en Tinta: Inicio · Statements · Matching · Autores · Obras · 
 | # | Pantalla | Rol | Fase | P |
 |---|---|---|---|---|
 | E1 | Inicio operativo: colas pendientes (matching, firmas, disputas, payouts, licencias) | Op | b | P1 |
-| E2 | Períodos de statements: calendario Chappell y estado ◆ | Op | b | P0 |
+| E2 | Períodos de statements: calendario oficial de pagos y estado ◆ | Op | b | P0 |
 | E3 | Cargar archivo: proveedor, período, total recibido; versión y sha256 ◆ | Op | b | P0 |
 | E4 | Archivo: resultado del parseo, errores por línea, totales de control | Op | b | P0 |
 | E5 | Cola de matching: línea, sugerencias por similitud, asignar o mandar a suspenso ◆ | Op | b | P0 |
@@ -139,8 +139,8 @@ Barra lateral en Tinta: Inicio · Statements · Matching · Autores · Obras · 
 | E9 | Publicación: vista previa (autores, saldo cero), envío de prueba, programar, Publicar ◆ | Op/Ap | c | P0 |
 | E10 | Seguimiento de envío: entregas, rebotes, aperturas | Op | c | P1 |
 | E11 | Autores: lista y ficha (perfil, KYC, plan, obras, saldo, ledger, contratos) | Op | a | P0 |
-| E12 | Obras: lista, ficha, cambio de estado, códigos Chappell/ISWC | Op | a | P0 |
-| E13 | Exportar altas a Chappell | Op | a | P0 |
+| E12 | Obras: lista, ficha, cambio de estado, código de obra del administrador e ISWC | Op | a | P0 |
+| E13 | Exportar altas para registro | Op | a | P0 |
 | E14 | Conflictos y disputas | Op | a | P1 |
 | E15 | Payouts: armar lote, aprobar (doble aprobación), enviar, conciliar | Op/Ap | b | P0 |
 | E16 | Red: moderación de solicitudes y verificación de créditos | Op | d | P1 |

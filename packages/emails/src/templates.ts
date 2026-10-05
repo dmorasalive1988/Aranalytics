@@ -9,9 +9,9 @@ const ROLE: L<Record<string, string>> = {
 };
 
 const STATUS: L<Record<string, string>> = {
-  es: { sent_to_publisher: 'Enviada a Warner Chappell', registered: 'Registrada', disputed: 'En disputa' },
-  en: { sent_to_publisher: 'Sent to Warner Chappell', registered: 'Registered', disputed: 'In dispute' },
-  'pt-BR': { sent_to_publisher: 'Enviada à Warner Chappell', registered: 'Registrada', disputed: 'Em disputa' },
+  es: { sent_to_publisher: 'Enviada a registro', registered: 'Registrada', disputed: 'En disputa' },
+  en: { sent_to_publisher: 'Sent for registration', registered: 'Registered', disputed: 'In dispute' },
+  'pt-BR': { sent_to_publisher: 'Enviada para registro', registered: 'Registrada', disputed: 'Em disputa' },
 };
 
 export interface TemplateData {
@@ -93,11 +93,11 @@ const T: { [K in TemplateName]: L<Builder<K>> } = {
   },
   split_completed: {
     es: (d) => ({ subject: `Splits firmados: “${d.workTitle}”`, title: 'Todos firmaron', blocks: [
-      { kind: 'p', text: `El reparto de “${d.workTitle}” quedó firmado por todos. Ahora la enviamos a registro con Warner Chappell.` }, { kind: 'button', text: 'Ver la obra', href: d.workUrl }] }),
+      { kind: 'p', text: `El reparto de “${d.workTitle}” quedó firmado por todos. Ahora la enviamos a registro ante las sociedades de gestión.` }, { kind: 'button', text: 'Ver la obra', href: d.workUrl }] }),
     en: (d) => ({ subject: `Split signed: “${d.workTitle}”`, title: 'Everyone signed', blocks: [
-      { kind: 'p', text: `Everyone has signed the split for “${d.workTitle}”. Next, we send it to Warner Chappell for registration.` }, { kind: 'button', text: 'View song', href: d.workUrl }] }),
+      { kind: 'p', text: `Everyone has signed the split for “${d.workTitle}”. Next, we send it for registration with the collecting societies.` }, { kind: 'button', text: 'View song', href: d.workUrl }] }),
     'pt-BR': (d) => ({ subject: `Split assinado: “${d.workTitle}”`, title: 'Todos assinaram', blocks: [
-      { kind: 'p', text: `A divisão de “${d.workTitle}” foi assinada por todos. Agora enviamos para registro com a Warner Chappell.` }, { kind: 'button', text: 'Ver a obra', href: d.workUrl }] }),
+      { kind: 'p', text: `A divisão de “${d.workTitle}” foi assinada por todos. Agora enviamos para registro nas associações de gestão.` }, { kind: 'button', text: 'Ver a obra', href: d.workUrl }] }),
   },
   split_rejected: {
     es: (d) => ({ subject: `Reclamo en “${d.workTitle}”`, title: `${d.signerName} no está de acuerdo con el split`, blocks: [

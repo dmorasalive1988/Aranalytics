@@ -253,7 +253,7 @@ export async function signatureFor(tx: Tx, args: { sha: string; versionId: strin
 }
 
 async function resolveSignedStatus(tx: Tx, work: typeof t.works.$inferSelect): Promise<WorkStatus> {
-  if (work.chappellWorkCode) return 'registered';
+  if (work.publisherWorkCode) return 'registered';
   const [sub] = await tx.select({ id: t.publisherSubmissions.id }).from(t.publisherSubmissions).where(sql`${work.id}::uuid = any(${t.publisherSubmissions.workIds})`).limit(1);
   return sub ? 'sent_to_publisher' : 'splits_signed';
 }
