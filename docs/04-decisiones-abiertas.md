@@ -42,5 +42,9 @@ Para avanzar necesito tu respuesta o tu visto bueno en estos puntos. Al lado de 
 
 | # | Pregunta | Propuesta por defecto |
 |---|---|---|
-| 22 | Capturas del lienzo de marca y del prototipo navegable | No llegaron con el brief; las necesito para la fase 0. Mientras tanto aplico los tokens y componentes del documento |
+| 22 | ~~Capturas del lienzo de marca y del prototipo~~ | **Resuelto**: lienzo recibido y traducido a [05-sistema-de-diseno.md](./05-sistema-de-diseno.md) |
 | 23 | Modo claro en la app del autor | Solo oscuro en el MVP; el back-office, claro |
+| 24 | Borde de campos de formulario (contraste 1.4.11) | Opción B: `#6B6E8C` solo en campos; el resto conserva `#3A3D57` |
+| 25 | Texto Ámbar en el back-office | `#9A5B00` en lugar de `#B86E00` del prototipo |
+| 26 | Copia de Pluma Sync tras solicitar licencia | "Un especialista de Pluma te contacta para cerrar la licencia" (el MVP no emite licencia automática) |
+| 27 | Pluma Sync en tema oscuro, como el prototipo | Sí |
