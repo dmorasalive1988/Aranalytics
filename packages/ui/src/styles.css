@@ -1,0 +1,103 @@
+/*
+ * Pluma · sistema de diseño. Tema oscuro por defecto (app del autor, firma, Sync, A&R);
+ * tema claro con data-theme="light" (back-office). Ver docs/05-sistema-de-diseno.md.
+ */
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/dm-sans";
+
+@source "./components";
+
+:root {
+  --pl-tinta: #0E1020;
+  --pl-noche: #1B1E33;
+  --pl-papel: #F4EFE6;
+  --pl-ambar: #F2A541;
+  --pl-coral: #FF6B57;
+  --pl-verde: #7BD389;
+  --pl-niebla: #A8A6B8;
+  --pl-nav: #14172A;
+  --pl-linea: #23263D;
+  --pl-elevado: #2A2D45;
+  --pl-borde: #3A3D57;
+  --pl-borde-campo: #6B6E8C;
+  --pl-papel-2: #C9C6D6;
+  --pl-ambar-hover: #FFD08A;
+  --pl-alerta-fondo: #2A1A22;
+  --pl-ok-fondo: #17301F;
+
+  /* Roles semánticos (tema oscuro) */
+  --pl-bg: var(--pl-tinta);
+  --pl-surface: var(--pl-noche);
+  --pl-surface-2: var(--pl-elevado);
+  --pl-text: var(--pl-papel);
+  --pl-text-2: var(--pl-niebla);
+  --pl-text-3: var(--pl-papel-2);
+  --pl-line: var(--pl-linea);
+  --pl-stroke: var(--pl-borde);
+  --pl-field: var(--pl-noche);
+  --pl-field-stroke: var(--pl-borde-campo);
+  --pl-accent-text: var(--pl-ambar);
+  --pl-danger-text: var(--pl-coral);
+  --pl-ok-text: var(--pl-verde);
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --pl-bg: #F4EFE6;
+  --pl-surface: #FFFFFF;
+  --pl-surface-2: #F4EFE6;
+  --pl-text: #0E1020;
+  --pl-text-2: #55536A;
+  --pl-text-3: #55536A;
+  --pl-line: #F0EBE1;
+  --pl-stroke: #D9D3C7;
+  --pl-field: #FFFFFF;
+  --pl-field-stroke: #8A8478;
+  --pl-accent-text: #9A5B00;
+  --pl-danger-text: #C23A28;
+  --pl-ok-text: #1F6B33;
+  --pl-alerta-fondo: #FFF1EE;
+  --pl-ok-fondo: #EAF7EC;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-tinta: var(--pl-tinta);
+  --color-noche: var(--pl-noche);
+  --color-papel: var(--pl-papel);
+  --color-ambar: var(--pl-ambar);
+  --color-ambar-hover: var(--pl-ambar-hover);
+  --color-coral: var(--pl-coral);
+  --color-verde: var(--pl-verde);
+  --color-niebla: var(--pl-niebla);
+  --color-nav: var(--pl-nav);
+  --color-alerta: var(--pl-alerta-fondo);
+  --color-ok: var(--pl-ok-fondo);
+
+  --color-bg: var(--pl-bg);
+  --color-surface: var(--pl-surface);
+  --color-surface-2: var(--pl-surface-2);
+  --color-fg: var(--pl-text);
+  --color-fg-2: var(--pl-text-2);
+  --color-fg-3: var(--pl-text-3);
+  --color-line: var(--pl-line);
+  --color-stroke: var(--pl-stroke);
+  --color-field: var(--pl-field);
+  --color-field-stroke: var(--pl-field-stroke);
+  --color-accent-fg: var(--pl-accent-text);
+  --color-danger-fg: var(--pl-danger-text);
+  --color-ok-fg: var(--pl-ok-text);
+
+  --font-display: "Bricolage Grotesque Variable", "DM Sans Variable", system-ui, sans-serif;
+  --font-sans: "DM Sans Variable", "Helvetica Neue", system-ui, sans-serif;
+}
+
+@layer base {
+  html { background: var(--pl-bg); color: var(--pl-text); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 2px solid var(--pl-ambar); outline-offset: 2px; }
+  [data-theme="light"] :focus-visible { outline-color: #9A5B00; }
+  a { color: var(--pl-accent-text); }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
