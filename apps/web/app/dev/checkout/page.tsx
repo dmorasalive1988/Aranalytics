@@ -4,7 +4,7 @@ import { FakePayments } from '@pluma/adapters';
 import { applyPaymentEvent, loadPlans } from '@pluma/services';
 import { Card, ScreenTitle, buttonClass } from '@pluma/ui';
 import { money } from '@/lib/format';
-import { deps } from '@/lib/server';
+import { deps, kickDispatch } from '@/lib/server';
 
 /** Checkout simulado (solo desarrollo y pruebas automáticas): aplica los mismos eventos que Stripe. */
 export default async function DevCheckout({ searchParams }: { searchParams: Promise<{ token?: string; next?: string }> }) {
@@ -24,6 +24,7 @@ export default async function DevCheckout({ searchParams }: { searchParams: Prom
     const p = (dd.payments as FakePayments).readCheckoutToken(token);
     if (!p) return;
     for (const ev of (dd.payments as FakePayments).completeCheckout(p.userId, p.plan, amount)) await applyPaymentEvent(dd, ev);
+    await kickDispatch();
     const target = next.startsWith((process.env.PLUMA_APP_URL ?? 'http://localhost:3000')) || next.startsWith('/') ? next : '/';
     redirect(target);
   }

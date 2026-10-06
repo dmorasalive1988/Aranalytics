@@ -444,7 +444,13 @@
     "PAYOUT_DETAILS_INVALID": "Confira os dados da conta.",
     "PAYOUT_PROVIDER_INVALID": "Escolha um provedor.",
     "TAX_ID_INVALID": "Confira o número de identificação fiscal.",
-    "CURRENCY_INVALID": "Escolha uma moeda."
+    "CURRENCY_INVALID": "Escolha uma moeda.",
+    "EMAIL_MANDATORY": "Este aviso sempre chega por e-mail.",
+    "INVALID_PREFERENCE": "Essa preferência não existe.",
+    "PUSH_INVALID": "Não conseguimos ativar o push neste dispositivo.",
+    "PHONE_INVALID": "Confira o número com o código do país, por exemplo +55 11 98765-4321.",
+    "CONSENT_REQUIRED": "Precisamos da sua autorização para mandar mensagens pelo WhatsApp.",
+    "WHATSAPP_UNAVAILABLE": "O WhatsApp ainda não está disponível."
   },
   "payments": {
     "title": "Pagamentos",
@@ -544,5 +550,58 @@
     "projectionNote": "É uma estimativa com a média dos seus últimos períodos. Não é um valor oficial.",
     "noData": "Você precisa de pelo menos um statement publicado.",
     "change": "{pct} vs. período anterior"
+  },
+  "inbox": {
+    "title": "Notificações",
+    "bellUnread": "Notificações: {count} não lidas",
+    "markAll": "Marcar tudo como lido",
+    "settings": "Preferências",
+    "empty": "Tudo em dia",
+    "emptyBody": "Aqui aparecem assinaturas, statements, pagamentos e novidades das suas obras.",
+    "unread": "Não lida",
+    "older": "Ver anteriores"
+  },
+  "prefs": {
+    "back": "Conta",
+    "title": "Notificações",
+    "summary": "E-mail, push e WhatsApp",
+    "intro": "Escolha por onde a gente te avisa. O que envolve seu dinheiro, suas assinaturas e seu plano sempre chega por e-mail.",
+    "mandatory": "Sempre por e-mail: é importante para o seu dinheiro ou seus direitos.",
+    "pushOff": "Ative o push neste dispositivo para usar.",
+    "whatsappOff": "Adicione seu número de WhatsApp para usar.",
+    "inAppAlways": "Todas as notificações também ficam na sua central de notificações, dentro do app.",
+    "cat": {
+      "money": "Dinheiro",
+      "splits": "Splits e assinaturas",
+      "membership": "Seu plano",
+      "works": "Suas obras"
+    },
+    "catHint": {
+      "money": "Statements, pagamentos e royalties não reclamados.",
+      "splits": "Convites, assinaturas, lembretes e contestações.",
+      "membership": "Pagamentos, renovação e status do plano.",
+      "works": "Mudanças de status e possíveis conflitos de registro."
+    },
+    "ch": {
+      "email": "E-mail",
+      "push": "Push",
+      "whatsapp": "WhatsApp"
+    },
+    "pushTitle": "Push neste dispositivo",
+    "pushBody": "Receba avisos na hora, mesmo com a Pluma fechada.",
+    "pushEnable": "Ativar push",
+    "pushDisable": "Desativar neste dispositivo",
+    "pushOn": "Push ativado neste dispositivo.",
+    "pushUnsupported": "Este navegador não suporta push. No iPhone, primeiro adicione a Pluma à tela de início.",
+    "pushDenied": "Você bloqueou as notificações da Pluma. Dá para liberar nas configurações do navegador.",
+    "pushUnavailable": "Push não está disponível neste ambiente.",
+    "whatsappBody": "Opcional. Só mandamos mensagem sobre o que importa: statements, pagamentos e assinaturas.",
+    "whatsappEnable": "Ativar WhatsApp",
+    "whatsappDisable": "Desativar WhatsApp",
+    "whatsappOn": "Vamos mandar mensagem para {phone}.",
+    "phone": "Número de WhatsApp",
+    "phoneHint": "Com o código do país, por exemplo +55.",
+    "consent": "Aceito receber avisos da Pluma pelo WhatsApp. Posso desativar quando quiser.",
+    "phonePlaceholder": "+55 11 98765-4321"
   }
 }

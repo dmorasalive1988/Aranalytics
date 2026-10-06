@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { statements } from '@pluma/services';
+import { notifications, statements } from '@pluma/services';
 import { Card, Field, Input, Notice, StatusPill, cn } from '@pluma/ui';
 import { ActionForm } from '@/components/action-form';
+import { DeliveryStats } from '@/components/delivery-stats';
 import { PageTitle, Table } from '@/components/table';
 import { RUN_LABEL, fmtDate, fmtMoney } from '@/components/status';
 import { deps, requireStaff } from '@/lib/server';
@@ -20,6 +21,7 @@ export default async function PeriodPage({ params }: { params: Promise<{ id: str
   const rec = run?.reconciliation;
   const published = d.run?.status === 'published';
   const preview = d.run && ['approved', 'scheduled'].includes(d.run.status) ? await statements.publicationPreview(deps(), d.run.id) : null;
+  const delivery = published ? await notifications.deliveryStats(deps(), staff.id, { periodId: id }) : null;
   const unresolved = d.lineStats.filter((s) => ['suggested', 'unmatched'].includes(s.match_status)).reduce((a, s) => a + s.n, 0);
   const declaredUsd = d.files.filter((f) => f.status !== 'superseded').reduce((a, f) => a + Math.round(Number((f.controlTotals as Record<string, string>).USD ?? 0) * 100), 0);
 
@@ -146,7 +148,13 @@ export default async function PeriodPage({ params }: { params: Promise<{ id: str
               </ActionForm>
             </Card>
           )}
-          {published && <Notice tone="ok" title={`Publicado: ${fmtDate(d.run.publishedAt)}. Los autores ya ven su statement oficial.`} />}
+          {published && <Notice tone="ok" title={`Publicado el ${fmtDate(d.run.publishedAt)}: los autores ya ven su statement oficial.`} />}
+          {delivery && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between"><h3 className="font-bold">Envío de los avisos</h3><Link href="/notificaciones" className="text-sm font-bold">Ver registro de envíos</Link></div>
+              <DeliveryStats stats={delivery} />
+            </div>
+          )}
         </section>
       )}
     </>

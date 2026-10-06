@@ -11,8 +11,8 @@ Editora musical digital para compositores, productores y artistas latinos de Lat
 | 0 | Monorepo, sistema de diseño, i18n, base de datos, RLS, auditoría | ✅ |
 | a | Onboarding y membresía, obras y splits, firma de coautores, back-office de obras | ✅ |
 | b | Statements, dashboard y retiros (con archivo ficticio) | ✅ |
-| c | Notificaciones (resto de canales y eventos) | Siguiente |
-| d | Red Pluma | Pendiente |
+| c | Notificaciones: correo, push, WhatsApp opcional y centro in-app, con preferencias y seguimiento de envíos | ✅ |
+| d | Red Pluma | Siguiente |
 | e | Catálogo A&R y Sync | Pendiente |
 
 Plan, modelo de datos y pantallas en [`docs/`](docs/).
@@ -89,12 +89,14 @@ Qué cubren:
    - Auth: activa correo con código (en la plantilla de confirmación usa `{{ .Token }}`), Google, Apple y MFA TOTP.
    - Storage: crea los buckets privados `audio-originals`, `audio-previews`, `documents`, `statements-raw` y `kyc`.
 2. **Stripe**: crea dos precios anuales (Socio USD 20 y Pro USD 50). Pon sus IDs en `STRIPE_PRICE_SOCIO`, `STRIPE_PRICE_PRO` y en `plan_prices.stripe_price_id` (desde Configuración en el back-office). Crea un webhook hacia `https://app.<dominio>/api/webhooks/stripe` con los eventos `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` y `customer.subscription.deleted`.
-3. **Postmark**: verifica el dominio de envío y configura `POSTMARK_TOKEN` y `PLUMA_EMAIL_FROM`.
+3. **Postmark**: verifica el dominio de envío y configura `POSTMARK_TOKEN` y `PLUMA_EMAIL_FROM`. Crea un webhook hacia `https://pluma:<POSTMARK_WEBHOOK_SECRET>@app.<dominio>/api/webhooks/postmark` con los eventos Delivery, Open, Bounce y Spam Complaint: actualizan el seguimiento de envíos y suprimen las direcciones con rebote permanente.
+   - **Push**: genera las claves VAPID una vez (`npx web-push generate-vapid-keys`) y configura `PLUMA_VAPID_PUBLIC`, `PLUMA_VAPID_PRIVATE` y `PLUMA_VAPID_SUBJECT`. Son obligatorias en producción.
+   - **WhatsApp** (opcional, apagado por defecto): con `PLUMA_WHATSAPP=meta`, `WHATSAPP_PHONE_NUMBER_ID` y `WHATSAPP_TOKEN` de la WhatsApp Cloud API. Antes, aprueba en Meta las plantillas `pluma_statement_published`, `pluma_payout_sent`, `pluma_payment_failed` y `pluma_split_invitation` en es, en_US y pt_BR.
 4. **Vercel**: crea dos proyectos, `apps/web` (app.<dominio>) y `apps/admin` (admin.<dominio>), con las variables de `.env.example`:
    - `NODE_ENV=production`, `PLUMA_AUTH_MODE=supabase`, `PLUMA_PAYMENTS=stripe`, `PLUMA_EMAIL=postmark`, `PLUMA_STORAGE=supabase`, `PLUMA_INLINE_DISPATCH=0`.
    - `DATABASE_URL` debe apuntar al pooler de Supabase (puerto 6543).
    - En producción la app se niega a arrancar con pagos simulados, correo local o autenticación de desarrollo.
 5. **Clave de datos**: `PLUMA_DATA_KEY` (32 bytes en base64, `openssl rand -base64 32`) cifra el ID fiscal y los datos bancarios. Guárdala en el gestor de secretos: sin ella esos datos no se pueden leer.
-6. **Worker**: despliega `apps/worker` como proceso permanente (Fly.io o Railway; `pnpm --filter @pluma/worker start`) con las mismas variables. Despacha correos cada 5 s corre las tareas diarias (recordatorios de firma, vencimientos, renovaciones, suspensiones, verificación de la auditoría), publica los statements programados y genera los PDF. Necesita acceso a `packages/pdf/fonts` (o `PLUMA_PDF_FONTS_DIR`).
+6. **Worker**: despliega `apps/worker` como proceso permanente (Fly.io o Railway; `pnpm --filter @pluma/worker start`) con las mismas variables. Despacha las notificaciones cada 5 s, reintenta cada hora los envíos fallidos (hasta 5 intentos), corre las tareas diarias (recordatorios de firma, vencimientos, renovaciones, suspensiones, verificación de la auditoría), publica los statements programados y genera los PDF. Necesita acceso a `packages/pdf/fonts` (o `PLUMA_PDF_FONTS_DIR`).
 7. **Sello de tiempo**: define `PLUMA_TSA_URL` (por ejemplo, la de un proveedor RFC 3161 calificado) para sellar la prueba de autoría.
 8. **Personal interno**: crea la cuenta desde la app y asígnale el rol con SQL la primera vez (`insert into user_roles (user_id, role) values ('<id>', 'super_admin')`); después, desde Usuarios internos.

@@ -444,7 +444,13 @@
     "PAYOUT_DETAILS_INVALID": "Check the account details.",
     "PAYOUT_PROVIDER_INVALID": "Choose a provider.",
     "TAX_ID_INVALID": "Check the tax ID number.",
-    "CURRENCY_INVALID": "Choose a currency."
+    "CURRENCY_INVALID": "Choose a currency.",
+    "EMAIL_MANDATORY": "This alert always goes out by email.",
+    "INVALID_PREFERENCE": "That setting doesn’t exist.",
+    "PUSH_INVALID": "We couldn’t turn on push on this device.",
+    "PHONE_INVALID": "Check the number and include your country code, e.g. +1 305 555 0123.",
+    "CONSENT_REQUIRED": "We need your permission to message you on WhatsApp.",
+    "WHATSAPP_UNAVAILABLE": "WhatsApp isn’t available yet."
   },
   "payments": {
     "title": "Payments",
@@ -544,5 +550,58 @@
     "projectionNote": "This is an estimate based on the average of your recent periods. It’s not an official amount.",
     "noData": "You need at least one published statement.",
     "change": "{pct} vs. previous period"
+  },
+  "inbox": {
+    "title": "Notifications",
+    "bellUnread": "Notifications: {count} unread",
+    "markAll": "Mark all as read",
+    "settings": "Settings",
+    "empty": "You’re all caught up",
+    "emptyBody": "Signatures, statements, payments and updates on your songs show up here.",
+    "unread": "Unread",
+    "older": "See older"
+  },
+  "prefs": {
+    "back": "Account",
+    "title": "Notifications",
+    "summary": "Email, push and WhatsApp",
+    "intro": "Choose how we reach you. Anything about your money, your signatures or your plan always comes by email too.",
+    "mandatory": "Always by email: it matters for your money or your rights.",
+    "pushOff": "Turn on push on this device to use it.",
+    "whatsappOff": "Add your WhatsApp number to use it.",
+    "inAppAlways": "Every notification is also saved in your notification center inside the app.",
+    "cat": {
+      "money": "Money",
+      "splits": "Splits & signatures",
+      "membership": "Your plan",
+      "works": "Your songs"
+    },
+    "catHint": {
+      "money": "Statements, payouts and unclaimed royalties.",
+      "splits": "Invites, signatures, reminders and disputes.",
+      "membership": "Payments, renewal and plan status.",
+      "works": "Status changes and possible registration conflicts."
+    },
+    "ch": {
+      "email": "Email",
+      "push": "Push",
+      "whatsapp": "WhatsApp"
+    },
+    "pushTitle": "Push on this device",
+    "pushBody": "Get alerts instantly, even when Pluma isn’t open.",
+    "pushEnable": "Turn on push",
+    "pushDisable": "Turn off on this device",
+    "pushOn": "Push is on for this device.",
+    "pushUnsupported": "This browser doesn’t support push. On iPhone, add Pluma to your Home Screen first.",
+    "pushDenied": "You blocked notifications from Pluma. You can allow them in your browser settings.",
+    "pushUnavailable": "Push isn’t available in this environment.",
+    "whatsappBody": "Optional. We only message you about what matters: statements, payouts and signatures.",
+    "whatsappEnable": "Turn on WhatsApp",
+    "whatsappDisable": "Turn off WhatsApp",
+    "whatsappOn": "We’ll message {phone}.",
+    "phone": "WhatsApp number",
+    "phoneHint": "Include your country code, e.g. +1.",
+    "consent": "I agree to receive Pluma alerts on WhatsApp. I can turn them off anytime.",
+    "phonePlaceholder": "+1 305 555 0123"
   }
 }

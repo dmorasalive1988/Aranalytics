@@ -129,6 +129,15 @@ export async function unreadCount(deps: Deps, userId: string) {
   return r?.n ?? 0;
 }
 
+/** Marca como leída una notificación propia y devuelve su destino dentro de la app. */
+export async function openNotification(deps: Deps, userId: string, id: string): Promise<string | null> {
+  const [n] = await deps.db.select().from(t.notifications).where(and(eq(t.notifications.id, id), eq(t.notifications.recipientUserId, userId)));
+  if (!n) return null;
+  if (!n.readAt) await deps.db.update(t.notifications).set({ readAt: deps.now().toISOString() }).where(eq(t.notifications.id, id));
+  const url = renderPush(n.template as TemplateName, n.locale as AppLocale, n.data as never).url;
+  return url.startsWith(deps.appUrl) ? url.slice(deps.appUrl.length) || '/' : null;
+}
+
 /** Marca como leídas las indicadas (o todas). */
 export async function markRead(deps: Deps, userId: string, ids: string[] | 'all') {
   const now = deps.now().toISOString();

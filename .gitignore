@@ -8,6 +8,8 @@ coverage
 .env.local
 .dev-storage
 .dev-mail
+.dev-push
+.dev-whatsapp
 test-results
 playwright-report
 next-env.d.ts

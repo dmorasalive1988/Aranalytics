@@ -31,6 +31,7 @@ export default defineConfig({
       PLUMA_EMAIL: 'dev',
       PLUMA_DEV_MAIL_DIR: MAIL_DIR,
       PLUMA_INLINE_DISPATCH: '1',
+      PLUMA_WHATSAPP: 'dev',
       PLUMA_SIGNING_SECRET: 'e2e-secret',
       NEXT_DIST_DIR: '.next-e2e',
     },

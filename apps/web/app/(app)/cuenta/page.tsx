@@ -39,6 +39,13 @@ export default async function Account() {
         </span>
         <ChevronRight size={20} strokeWidth={2} aria-hidden />
       </Link>
+      <Link href="/cuenta/notificaciones" className="flex min-h-16 items-center justify-between rounded-[20px] bg-surface px-5 text-fg no-underline">
+        <span className="flex flex-col">
+          <span className="text-[15px] font-bold">{t('common.notifications')}</span>
+          <span className="text-sm text-fg-2">{t('prefs.summary')}</span>
+        </span>
+        <ChevronRight size={20} strokeWidth={2} aria-hidden />
+      </Link>
       <Card className="flex flex-col gap-2">
         <h2 className="text-[15px] font-bold">{t('account.privacy')}</h2>
         <p className="text-sm text-fg-3">{t('account.privacyBody')}</p>

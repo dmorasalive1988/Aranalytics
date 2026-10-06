@@ -13,6 +13,8 @@ const es = MESSAGES.es.errors as Record<string, string>;
 const extra: Record<string, string> = {
   PUBLISHER_CODE_REQUIRED: 'Escribe el código de obra asignado en el registro.',
   ISWC_INVALID: 'El ISWC no es válido (revisa el dígito verificador).',
+  DELIVERY_NOT_FOUND: 'No encontramos ese envío.',
+  DELIVERY_NOT_FAILED: 'Ese envío no falló: no hace falta reenviarlo.',
   WORK_CODE_TAKEN: 'Ese código de obra o ISWC ya está asignado a otra obra.',
   WORK_NOT_SENT: 'La obra todavía no se envió a registro.',
   DISPUTE_NOT_OPEN: 'La disputa ya está resuelta.',
