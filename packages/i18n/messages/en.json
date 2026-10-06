@@ -212,7 +212,13 @@
       "sent_to_publisher": "Sent for registration",
       "registered": "Registered",
       "disputed": "In dispute"
-    }
+    },
+    "search": "Search by title",
+    "apply": "Filter",
+    "noMatch": "No songs match the filter.",
+    "colCatalogs": "Catalogs",
+    "colUpdated": "Updated",
+    "syncOn": "Sync"
   },
   "workForm": {
     "newTitle": "New song",

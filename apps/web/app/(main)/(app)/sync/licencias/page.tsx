@@ -25,13 +25,14 @@ export default async function Licenses() {
   const pending = rows.filter((r) => r.status === 'awaiting_writers' && !r.my_decision).length;
   const m = (c: string | number) => money(Number(c), locale, s.profile?.country);
   return (
-    <>
+    // Escritorio: tarjetas en dos columnas; título, pestañas y avisos ocupan todo el ancho.
+    <div data-wide className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:*:[&:not(.card-cell)]:col-span-2">
       <ScreenTitle title={t('title')}>{t('sub')}</ScreenTitle>
       <SyncTabs current="licenses" counts={{ licenses: pending, holds: holds.filter((h) => h.status === 'requested').length }} />
       <p className="text-sm text-fg-3">{t('explain')}</p>
       {rows.length === 0 && <p className="py-6 text-center text-sm text-fg-2">{t('licensesEmpty')}</p>}
       {rows.map((r) => (
-        <Card key={r.id} className="flex flex-col gap-3">
+        <Card key={r.id} className="card-cell flex flex-col gap-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-0.5">
               <Link href={`/obras/${r.work_id}`} className="font-display text-lg font-extrabold text-fg no-underline">{r.title}</Link>
@@ -55,6 +56,6 @@ export default async function Licenses() {
           {r.my_decision && <p className="text-sm text-fg-2">{r.my_decision === 'approved' ? t('approved') : t('rejected')}{r.status === 'awaiting_writers' ? ` · ${t('awaitingOthers')}` : ''}</p>}
         </Card>
       ))}
-    </>
+    </div>
   );
 }

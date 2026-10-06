@@ -22,12 +22,13 @@ export default async function Holds() {
   const locale = await getLocale();
   const [rows, lic] = await Promise.all([catalog.holdsForOwner(deps(), s.userId), catalog.licensesForWriter(deps(), s.userId)]);
   return (
-    <>
+    // Escritorio: tarjetas en dos columnas; título, pestañas y avisos ocupan todo el ancho.
+    <div data-wide className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:*:[&:not(.card-cell)]:col-span-2">
       <ScreenTitle title={t('title')}>{t('sub')}</ScreenTitle>
       <SyncTabs current="holds" counts={{ licenses: lic.filter((r) => r.status === 'awaiting_writers' && !r.my_decision).length, holds: rows.filter((h) => h.status === 'requested').length }} />
       {rows.length === 0 && <p className="py-6 text-center text-sm text-fg-2">{t('holdsEmpty')}</p>}
       {rows.map((h) => (
-        <Card key={h.id} className="flex flex-col gap-3">
+        <Card key={h.id} className="card-cell flex flex-col gap-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-0.5">
               <Link href={`/obras/${h.work_id}`} className="font-display text-lg font-extrabold text-fg no-underline">{h.title}</Link>
@@ -50,6 +51,6 @@ export default async function Holds() {
           )}
         </Card>
       ))}
-    </>
+    </div>
   );
 }

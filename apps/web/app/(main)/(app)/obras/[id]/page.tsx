@@ -46,9 +46,10 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
   const steps = (['draft', 'signed', 'sent', 'registered'] as const).map((k) => ({ k, done: reached[k] }));
 
   return (
-    <>
-      <BackLink href="/obras" label={tc('back')} />
-      <header className="flex flex-col gap-3">
+    // Escritorio: dos columnas de tarjetas (en orden de lectura); el encabezado ocupa todo el ancho.
+    <div data-wide className="flex flex-col gap-6 lg:block lg:columns-2 lg:gap-8 lg:*:mb-6 lg:*:break-inside-avoid">
+      <header className="flex flex-col gap-3 lg:[column-span:all]">
+        <BackLink href="/obras" label={tc('back')} />
         <StatusBadge status={w.status} />
         <h1 className="font-display text-[28px] leading-tight font-extrabold tracking-[-0.02em]">{w.title}</h1>
         {w.altTitles.length > 0 && <p className="text-sm text-fg-2">{w.altTitles.join(' · ')}</p>}
@@ -184,6 +185,6 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
           )}
         </div>
       </Card>
-    </>
+    </div>
   );
 }

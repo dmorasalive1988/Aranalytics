@@ -212,7 +212,13 @@
       "sent_to_publisher": "Enviada para registro",
       "registered": "Registrada",
       "disputed": "Em disputa"
-    }
+    },
+    "search": "Buscar por título",
+    "apply": "Filtrar",
+    "noMatch": "Nenhuma obra corresponde ao filtro.",
+    "colCatalogs": "Catálogos",
+    "colUpdated": "Atualizada",
+    "syncOn": "Sync"
   },
   "workForm": {
     "newTitle": "Nova obra",

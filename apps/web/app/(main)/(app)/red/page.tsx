@@ -32,15 +32,15 @@ export default async function Board({ searchParams }: { searchParams: Promise<Se
   };
   const filtered = !!(sp.genero || sp.idioma || sp.ciudad || sp.modalidad || sp.tipo);
   return (
-    <>
+    <div data-wide className="flex flex-col gap-6">
       <ScreenTitle title={t('title')}>{t('sub')}</ScreenTitle>
       <NetworkTabs current="board" />
       {gate.notice ?? (
         <>
-          <Link href="/red/nueva" className={buttonClass({ block: true })}>
+          <Link href="/red/nueva" className={`${buttonClass({ block: true })} lg:w-fit`}>
             <Plus size={20} strokeWidth={2} aria-hidden /> {t('publish')}
           </Link>
-          <nav aria-label={t('type')} className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
+          <nav aria-label={t('type')} className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0">
             <Link href={href({ tipo: undefined })} aria-current={!filters.type ? 'page' : undefined} className={`${chipClass(!filters.type)} no-underline`}>{t('types.all')}</Link>
             {REQUEST_TYPES.map((k) => (
               <Link key={k} href={href({ tipo: k })} aria-current={filters.type === k ? 'page' : undefined} className={`${chipClass(filters.type === k)} no-underline`}>{t(`types.${k}`)}</Link>
@@ -48,7 +48,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<Se
           </nav>
           <details className="rounded-[20px] bg-surface px-4 py-3" open={!!(sp.genero || sp.idioma || sp.ciudad || sp.modalidad)}>
             <summary className="min-h-8 cursor-pointer text-[15px] font-bold">{t('filters')}</summary>
-            <form className="mt-3 grid grid-cols-2 gap-3" role="search">
+            <form className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-6 lg:items-end" role="search">
               {filters.type && <input type="hidden" name="tipo" value={filters.type} />}
               <label className="flex flex-col gap-1 text-xs font-medium text-fg-2">
                 {t('genre')}
@@ -79,7 +79,7 @@ export default async function Board({ searchParams }: { searchParams: Promise<Se
           {items.length === 0 ? (
             <p className="py-6 text-center text-sm text-fg-2">{filtered ? t('empty') : t('emptyAll')}</p>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-3 lg:grid lg:grid-cols-2 xl:grid-cols-3">
               {items.map((r) => (
                 <li key={r.id}>
                   <Link href={`/red/${r.id}`} className={`flex flex-col gap-2 rounded-[20px] p-4 text-fg no-underline ${r.featured ? 'bg-surface ring-1 ring-ambar/60' : 'bg-surface'}`}>
@@ -108,6 +108,6 @@ export default async function Board({ searchParams }: { searchParams: Promise<Se
           )}
         </>
       )}
-    </>
+    </div>
   );
 }

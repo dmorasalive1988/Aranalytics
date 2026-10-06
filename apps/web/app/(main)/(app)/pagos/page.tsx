@@ -27,8 +27,10 @@ export default async function Payments() {
   const m = (c: number) => money(c, locale, country);
   const chart = [...list].reverse().slice(-6).map((x) => ({ key: x.code.replace(/^20(\d\d)-/, '$1·'), cents: Number(x.netCents) }));
   return (
-    <>
-      <ScreenTitle title={t('title')} />
+    <div data-wide className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:items-start lg:gap-8">
+      <div className="lg:col-span-2"><ScreenTitle title={t('title')} /></div>
+      {/* Columna izquierda en escritorio: saldo, alertas e historial. */}
+      <div className="flex flex-col gap-6">
       <HighlightCard className="flex flex-col gap-1.5">
         <span className="text-[13px] font-medium">{t('balance')}</span>
         <span className="tabular text-[38px] font-bold tracking-[-0.02em]">{m(balance)}</span>
@@ -60,6 +62,9 @@ export default async function Payments() {
         </Card>
       )}
 
+      </div>
+      {/* Columna derecha en escritorio: statements y retiros. */}
+      <div className="flex flex-col gap-6 lg:rounded-[20px] lg:bg-surface lg:p-6">
       <section className="flex flex-col gap-2" aria-labelledby="st">
         <h2 id="st" className="text-[15px] font-bold">{t('statements')}</h2>
         {list.length === 0 ? <p className="text-sm text-fg-2">{t('noStatements')}</p> : (
@@ -98,6 +103,7 @@ export default async function Payments() {
           </ul>
         </section>
       )}
-    </>
+      </div>
+    </div>
   );
 }

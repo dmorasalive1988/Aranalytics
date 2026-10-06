@@ -24,7 +24,8 @@ export default async function Briefs() {
   const syncWorks = works.filter((w) => w.syncOptIn && ['splits_signed', 'sent_to_publisher', 'registered'].includes(w.status));
   const m = (c: string | null) => (c ? money(Number(c), locale, s.profile?.country) : '');
   return (
-    <>
+    // Escritorio: tarjetas en dos columnas; título, pestañas y avisos ocupan todo el ancho.
+    <div data-wide className="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-5 lg:*:[&:not(.card-cell)]:col-span-2">
       <ScreenTitle title={t('title')}>{t('sub')}</ScreenTitle>
       <SyncTabs current="briefs" counts={{ licenses: lic.filter((r) => r.status === 'awaiting_writers' && !r.my_decision).length, holds: holds.filter((h) => h.status === 'requested').length }} />
       {!pro && (
@@ -38,7 +39,7 @@ export default async function Briefs() {
       {briefs.map((b) => {
         const pending = syncWorks.filter((w) => !b.my_works.includes(w.id));
         return (
-          <Card key={b.id} className="flex flex-col gap-3">
+          <Card key={b.id} className="card-cell flex flex-col gap-3">
             <div className="flex flex-col gap-0.5">
               <span className="text-xs font-bold tracking-[0.08em] text-fg-2 uppercase">{b.company}</span>
               <h2 className="font-display text-lg font-extrabold">{b.title}</h2>
@@ -63,6 +64,6 @@ export default async function Briefs() {
           </Card>
         );
       })}
-    </>
+    </div>
   );
 }

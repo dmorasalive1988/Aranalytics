@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test';
 
-const PORT = 3100;
+export const PORT = 3100;
 export const E2E_DB = process.env.E2E_DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/pluma_e2e';
 export const MAIL_DIR = '/tmp/pluma-e2e-mail';
 

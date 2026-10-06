@@ -4,8 +4,9 @@ import { Card, HighlightCard, Notice, StatusPill, buttonClass } from '@pluma/ui'
 import { BarChart3, CircleAlert, CircleCheck, PenLine, TrendingUp, Users } from 'lucide-react';
 import { listMyWorks, network, statements } from '@pluma/services';
 import { PeriodBars } from '@/components/period-bars';
-import { StatusBadge, WorkRow } from '@/components/work-row';
-import { date, money, pct, planName } from '@/lib/format';
+import { WorkRow } from '@/components/work-row';
+import { WorksTable } from '@/components/works-table';
+import { date, money, planName } from '@/lib/format';
 import { hasAnalytics } from '@/lib/plan-features';
 import { deps, requireMember } from '@/lib/server';
 import { pendingForMe } from '@/lib/queries';
@@ -23,7 +24,6 @@ export default async function Home() {
   const t = await getTranslations('home');
   const tp = await getTranslations('payments');
   const tn = await getTranslations('network');
-  const tw = await getTranslations('works');
   const locale = await getLocale();
   const country = s.profile?.country;
   const [works, pending, balanceCents, next, myReqs, myStatements, alerts] = await Promise.all([
@@ -143,31 +143,7 @@ export default async function Home() {
         ) : (
           <>
             <ul className="lg:hidden">{works.slice(0, 4).map((w) => <WorkRow key={w.id} w={w} />)}</ul>
-            <div className="hidden overflow-hidden rounded-[20px] bg-surface lg:block">
-              <table className="w-full text-left text-sm">
-                <thead className="text-xs text-fg-2">
-                  <tr className="border-b border-line">
-                    <th scope="col" className="px-5 py-3 font-medium">{t('colTitle')}</th>
-                    <th scope="col" className="px-5 py-3 font-medium">{t('colShare')}</th>
-                    <th scope="col" className="px-5 py-3 font-medium">{t('colAuthors')}</th>
-                    <th scope="col" className="px-5 py-3 font-medium">{t('colStatus')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {works.slice(0, 8).map((w) => (
-                    <tr key={w.id} className="border-b border-line last:border-0 hover:bg-surface-2">
-                      <td className="px-5 py-3.5"><Link href={`/obras/${w.id}`} className="font-medium text-fg no-underline hover:text-ambar">{w.title}</Link></td>
-                      <td className="tabular px-5 py-3.5 text-fg-3">{w.myBps !== null ? pct(w.myBps, locale) : '—'}</td>
-                      <td className="tabular px-5 py-3.5 text-fg-3">
-                        {w.authors}
-                        {w.pendingSignatures > 0 && w.status === 'awaiting_signatures' && <span className="ml-2 text-xs text-danger-fg">{tw('pending', { count: w.pendingSignatures })}</span>}
-                      </td>
-                      <td className="px-5 py-3.5"><StatusBadge status={w.status} /></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <div className="hidden lg:block"><WorksTable works={works.slice(0, 8)} /></div>
           </>
         )}
         <Link href="/obras/nueva" className={`${buttonClass({ block: true })} lg:hidden`}>{t('registerWork')}</Link>
