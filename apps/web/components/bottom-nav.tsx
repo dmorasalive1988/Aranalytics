@@ -17,7 +17,7 @@ const ITEMS = [
 export function BottomNav({ labels }: { labels: Record<(typeof ITEMS)[number]['key'] | 'main', string> }) {
   const path = usePathname();
   return (
-    <nav aria-label={labels.main} className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-nav pb-[max(env(safe-area-inset-bottom),12px)] pt-2.5">
+    <nav aria-label={labels.main} className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-nav lg:hidden pb-[max(env(safe-area-inset-bottom),12px)] pt-2.5">
       <ul className="mx-auto flex max-w-[520px] justify-around px-2">
         {ITEMS.map(({ href, key, Icon }) => {
           const active = path === href || path.startsWith(`${href}/`);

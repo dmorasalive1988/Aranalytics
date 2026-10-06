@@ -31,7 +31,9 @@
     "network": "Red",
     "sync": "Sync",
     "payments": "Pagos",
-    "main": "Navegación principal"
+    "main": "Navegación principal",
+    "analytics": "Analítica",
+    "more": "Más"
   },
   "welcome": {
     "headline": "Donde nacen las canciones.",
@@ -130,7 +132,8 @@
         "allSocio": "Todo lo del plan Socio",
         "sync": "Catálogo de sync y briefs",
         "ar": "Catálogo A&R para obras sin grabar",
-        "analytics": "Analítica avanzada y perfil destacado"
+        "analytics": "Perfil destacado en la Red",
+        "insights": "Analítica de tus regalías"
       },
       "ownership": "En los dos planes conservas el 100% de la propiedad de tus canciones."
     },
@@ -182,7 +185,18 @@
     "emptyWorks": "Todavía no registras obras. Empieza por la canción que más quieras proteger.",
     "planPill": "Plan {plan}",
     "graceNotice": "Tu membresía venció. Renueva antes del {date} para no pausar la Red ni tus catálogos.",
-    "suspendedNotice": "Tu membresía está en pausa. Seguimos administrando tus obras registradas."
+    "suspendedNotice": "Tu membresía está en pausa. Seguimos administrando tus obras registradas.",
+    "kpiLast": "Último statement",
+    "kpiLastNone": "Aún sin statements",
+    "kpiWorks": "Obras registradas",
+    "kpiWorksSub": "{count} en total",
+    "todo": "Pendientes",
+    "allClear": "Todo al día. No tienes firmas ni avisos pendientes.",
+    "colTitle": "Obra",
+    "colShare": "Tu parte",
+    "colAuthors": "Autores",
+    "colStatus": "Estado",
+    "seeAnalytics": "Ver analítica"
   },
   "works": {
     "title": "Obras",
@@ -596,7 +610,6 @@
   },
   "analytics": {
     "title": "Analítica",
-    "locked": "La analítica avanzada es del plan Pro: tendencias por obra, comparación entre períodos y proyección.",
     "byWork": "Tendencia por obra",
     "compare": "Comparación con el período anterior",
     "projection": "Proyección del próximo período",
@@ -1038,5 +1051,16 @@
     "license": "Pedir licencia",
     "closed": "Cerrado",
     "listen": "Escuchar"
+  },
+  "install": {
+    "cta": "Instala la app",
+    "title": "Instala Pluma",
+    "body": "Tenla en tu pantalla de inicio, con notificaciones, sin pasar por la tienda de apps.",
+    "iosTitle": "En iPhone o iPad",
+    "ios1": "Toca el botón Compartir en Safari.",
+    "ios2": "Elige “Agregar a inicio”.",
+    "ios3": "Confirma con “Agregar”.",
+    "other": "En tu navegador, abre el menú y elige “Instalar app” o “Agregar a la pantalla de inicio”.",
+    "close": "Entendido"
   }
 }

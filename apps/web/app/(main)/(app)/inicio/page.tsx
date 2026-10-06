@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { HighlightCard, Notice, StatusPill, buttonClass } from '@pluma/ui';
-import { CircleAlert, PenLine, Users } from 'lucide-react';
+import { Card, HighlightCard, Notice, StatusPill, buttonClass } from '@pluma/ui';
+import { BarChart3, CircleAlert, CircleCheck, PenLine, TrendingUp, Users } from 'lucide-react';
 import { listMyWorks, network, statements } from '@pluma/services';
-import { WorkRow } from '@/components/work-row';
-import { date, money, planName } from '@/lib/format';
+import { PeriodBars } from '@/components/period-bars';
+import { StatusBadge, WorkRow } from '@/components/work-row';
+import { date, money, pct, planName } from '@/lib/format';
 import { deps, requireMember } from '@/lib/server';
 import { pendingForMe } from '@/lib/queries';
 
@@ -12,63 +13,165 @@ export async function generateMetadata() {
   return { title: (await getTranslations('nav'))('home') };
 }
 
-/** A13 · Inicio: saldo (desde el ledger), próximo statement oficial, firmas pendientes y obras. */
+/**
+ * A13 · Inicio: saldo (desde el ledger), próximo statement oficial, firmas pendientes y obras.
+ * En escritorio es un panel: cifras clave, ingresos por período, pendientes y tabla de obras.
+ */
 export default async function Home() {
   const s = await requireMember();
   const t = await getTranslations('home');
-  const locale = await getLocale();
-  const [works, pending, balanceCents, next, myReqs] = await Promise.all([listMyWorks(deps(), s.userId), pendingForMe(s.userId), balanceFor(s.userId), statements.nextOfficialStatement(deps()), network.myRequests(deps(), s.userId)]);
-  const awaiting = myReqs.reduce((a, r) => a + r.pending, 0);
+  const tp = await getTranslations('payments');
   const tn = await getTranslations('network');
+  const tw = await getTranslations('works');
+  const locale = await getLocale();
+  const country = s.profile?.country;
+  const [works, pending, balanceCents, next, myReqs, myStatements, alerts] = await Promise.all([
+    listMyWorks(deps(), s.userId),
+    pendingForMe(s.userId),
+    balanceFor(s.userId),
+    statements.nextOfficialStatement(deps()),
+    network.myRequests(deps(), s.userId),
+    statements.listMyStatements(deps(), s.userId),
+    statements.writerAlerts(deps(), s.userId),
+  ]);
+  const m = (c: number) => money(c, locale, country);
+  const awaiting = myReqs.reduce((a, r) => a + r.pending, 0);
   const name = s.profile?.artistName || s.profile?.legalName.split(' ')[0] || '';
-  const m = s.membership!;
-  return (
+  const ms = s.membership!;
+  const last = myStatements[0];
+  const chart = [...myStatements].reverse().slice(-8).map((x) => ({ key: x.code.replace(/^20(\d\d)-/, '$1·'), cents: Number(x.netCents) }));
+  const registered = works.filter((w) => w.status === 'registered').length;
+  const regionName = (code: string) => new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
+  const hasTodo = pending.length > 0 || awaiting > 0 || alerts.length > 0;
+
+  const todo = (
     <>
-      <div className="flex items-end justify-between gap-3">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[13px] text-fg-2">{t('hello')}</span>
-          <h1 className="font-display text-2xl font-extrabold">{name}</h1>
-        </div>
-        <StatusPill tone={m.plan === 'pro' ? 'ambar' : 'niebla'}>{t('planPill', { plan: planName(m.plan, locale) })}</StatusPill>
-      </div>
-
-      {m.effectiveStatus === 'past_due' && m.currentPeriodEnd && (
-        <Notice tone="alert" icon={<CircleAlert size={20} strokeWidth={2} />} title={t('graceNotice', { date: date(new Date(new Date(m.currentPeriodEnd).getTime() + 15 * 86_400_000), locale, s.profile?.country) })} />
-      )}
-
-      <HighlightCard className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-medium">{t('balance')}</span>
-        <span className="tabular text-[38px] font-bold tracking-[-0.02em]">{money(balanceCents, locale, s.profile?.country)}</span>
-        <span className="text-[13px]">{t('nextStatement')}: {next ? date(next.payDate, locale, s.profile?.country) : t('nextStatementValue')}</span>
-        <Link href="/pagos" className="mt-1 text-[13px] font-bold text-tinta">{(await getTranslations('payments'))('statements')}</Link>
-        {balanceCents === 0 && <span className="mt-1 text-[13px] leading-snug">{t('noStatementYet')}</span>}
-      </HighlightCard>
-
       {pending.length > 0 && (
         <Notice tone="alert" icon={<PenLine size={20} strokeWidth={2} />} title={pending.length === 1 ? t('pendingOne') : t('pendingMany', { count: pending.length })}>
           <Link href={`/obras/${pending[0]!.workId}`} className="font-bold">{t('review')}</Link>
         </Notice>
       )}
-
       {awaiting > 0 && (
         <Notice tone="info" icon={<Users size={20} strokeWidth={2} />} title={tn('activity')}>
           <Link href="/red/mis-solicitudes" className="font-bold">{tn('activityBody', { count: awaiting })}</Link>
         </Notice>
       )}
+    </>
+  );
 
-      <section className="flex flex-col gap-2" aria-labelledby="works-title">
+  return (
+    <div data-wide className="flex flex-col gap-6 lg:gap-8">
+      <div className="flex items-end justify-between gap-3">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[13px] text-fg-2 lg:text-sm">{t('hello')}</span>
+          <h1 className="font-display text-2xl font-extrabold lg:text-[40px] lg:leading-tight">{name}</h1>
+        </div>
+        <span className="lg:hidden">
+          <StatusPill tone={ms.plan === 'pro' ? 'ambar' : 'niebla'}>{t('planPill', { plan: planName(ms.plan, locale) })}</StatusPill>
+        </span>
+        <span className="hidden lg:block"><Link href="/obras/nueva" className={buttonClass({ size: 'md' })}>{t('registerWork')}</Link></span>
+      </div>
+
+      {ms.effectiveStatus === 'past_due' && ms.currentPeriodEnd && (
+        <Notice tone="alert" icon={<CircleAlert size={20} strokeWidth={2} />} title={t('graceNotice', { date: date(new Date(new Date(ms.currentPeriodEnd).getTime() + 15 * 86_400_000), locale, country) })} />
+      )}
+
+      {/* Cifras clave: en el celular solo el saldo; en escritorio, cuatro tarjetas. */}
+      <div className="grid gap-4 lg:grid-cols-4">
+        <HighlightCard className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-medium">{t('balance')}</span>
+          <span className="tabular text-[38px] font-bold tracking-[-0.02em] lg:text-[34px]">{m(balanceCents)}</span>
+          <span className="text-[13px] lg:hidden">{t('nextStatement')}: {next ? date(next.payDate, locale, country) : t('nextStatementValue')}</span>
+          <Link href="/pagos" className="mt-1 text-[13px] font-bold text-tinta">{tp('statements')}</Link>
+          {balanceCents === 0 && <span className="mt-1 text-[13px] leading-snug lg:hidden">{t('noStatementYet')}</span>}
+        </HighlightCard>
+        <Card className="hidden flex-col gap-1.5 lg:flex">
+          <span className="text-[13px] text-fg-2">{t('kpiLast')}</span>
+          {last ? (
+            <>
+              <span className="tabular text-[28px] font-bold">{m(Number(last.netCents))}</span>
+              <span className="text-[13px] text-fg-3">{last.code} · {date(last.payDate, locale, country)}</span>
+            </>
+          ) : (
+            <span className="text-[15px] text-fg-3">{t('kpiLastNone')}</span>
+          )}
+        </Card>
+        <Card className="hidden flex-col gap-1.5 lg:flex">
+          <span className="text-[13px] text-fg-2">{t('nextStatement')}</span>
+          <span className="text-xl font-bold">{next ? date(next.payDate, locale, country) : '—'}</span>
+          <span className="text-[13px] text-fg-3">{next ? next.code : t('nextStatementValue')}</span>
+        </Card>
+        <Card className="hidden flex-col gap-1.5 lg:flex">
+          <span className="text-[13px] text-fg-2">{t('kpiWorks')}</span>
+          <span className="tabular text-[28px] font-bold">{registered}</span>
+          <span className="text-[13px] text-fg-3">{t('kpiWorksSub', { count: works.length })}</span>
+        </Card>
+      </div>
+
+      {/* Celular: los pendientes van aquí, como siempre. */}
+      <div className="flex flex-col gap-3 lg:hidden">{todo}</div>
+
+      {/* Escritorio: ingresos por período y pendientes lado a lado. */}
+      <div className="hidden gap-4 lg:grid lg:grid-cols-[1.6fr_1fr]">
+        <Card className="flex flex-col gap-4 p-6">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-[17px] font-bold">{tp('history')}</h2>
+            <span className="text-xs text-fg-2">USD</span>
+          </div>
+          {chart.length ? <PeriodBars data={chart} label={tp('chartLabel')} format={m} /> : <p className="text-sm text-fg-2">{t('noStatementYet')}</p>}
+          <Link href="/analitica" className="inline-flex items-center gap-1.5 self-start text-sm font-bold"><BarChart3 size={16} strokeWidth={2} aria-hidden />{t('seeAnalytics')}</Link>
+        </Card>
+        <section aria-labelledby="todo-title" className="flex flex-col gap-3">
+          <h2 id="todo-title" className="text-[17px] font-bold">{t('todo')}</h2>
+          {todo}
+          {alerts.map((a, i) => (
+            <Notice key={i} tone={a.kind === 'no_income' ? 'alert' : 'ok'} icon={a.kind === 'no_income' ? <CircleAlert size={20} strokeWidth={2} /> : <TrendingUp size={20} strokeWidth={2} />}
+              title={a.kind === 'no_income' ? tp('alertNoIncome', { title: a.title! }) : tp('alertNewTerritory', { territory: regionName(a.territory!) })} />
+          ))}
+          {!hasTodo && <Notice tone="ok" icon={<CircleCheck size={20} strokeWidth={2} />} title={t('allClear')} />}
+        </section>
+      </div>
+
+      <section className="flex flex-col gap-2 lg:gap-3" aria-labelledby="works-title">
         <div className="flex items-center justify-between">
-          <h2 id="works-title" className="text-[15px] font-bold">{t('worksTitle')}</h2>
+          <h2 id="works-title" className="text-[15px] font-bold lg:text-[17px]">{t('worksTitle')}</h2>
           {works.length > 0 && <Link href="/obras" className="text-sm font-bold">{t('seeAll')}</Link>}
         </div>
         {works.length === 0 ? (
           <p className="text-sm leading-relaxed text-fg-2">{t('emptyWorks')}</p>
         ) : (
-          <ul>{works.slice(0, 4).map((w) => <WorkRow key={w.id} w={w} />)}</ul>
+          <>
+            <ul className="lg:hidden">{works.slice(0, 4).map((w) => <WorkRow key={w.id} w={w} />)}</ul>
+            <div className="hidden overflow-hidden rounded-[20px] bg-surface lg:block">
+              <table className="w-full text-left text-sm">
+                <thead className="text-xs text-fg-2">
+                  <tr className="border-b border-line">
+                    <th scope="col" className="px-5 py-3 font-medium">{t('colTitle')}</th>
+                    <th scope="col" className="px-5 py-3 font-medium">{t('colShare')}</th>
+                    <th scope="col" className="px-5 py-3 font-medium">{t('colAuthors')}</th>
+                    <th scope="col" className="px-5 py-3 font-medium">{t('colStatus')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {works.slice(0, 8).map((w) => (
+                    <tr key={w.id} className="border-b border-line last:border-0 hover:bg-surface-2">
+                      <td className="px-5 py-3.5"><Link href={`/obras/${w.id}`} className="font-medium text-fg no-underline hover:text-ambar">{w.title}</Link></td>
+                      <td className="tabular px-5 py-3.5 text-fg-3">{w.myBps !== null ? pct(w.myBps, locale) : '—'}</td>
+                      <td className="tabular px-5 py-3.5 text-fg-3">
+                        {w.authors}
+                        {w.pendingSignatures > 0 && w.status === 'awaiting_signatures' && <span className="ml-2 text-xs text-danger-fg">{tw('pending', { count: w.pendingSignatures })}</span>}
+                      </td>
+                      <td className="px-5 py-3.5"><StatusBadge status={w.status} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
-        <Link href="/obras/nueva" className={buttonClass({ block: true })}>{t('registerWork')}</Link>
+        <Link href="/obras/nueva" className={`${buttonClass({ block: true })} lg:hidden`}>{t('registerWork')}</Link>
       </section>
-    </>
+    </div>
   );
 }
 

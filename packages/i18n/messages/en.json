@@ -31,7 +31,9 @@
     "network": "Network",
     "sync": "Sync",
     "payments": "Payments",
-    "main": "Main navigation"
+    "main": "Main navigation",
+    "analytics": "Analytics",
+    "more": "More"
   },
   "welcome": {
     "headline": "Where songs are born.",
@@ -130,7 +132,8 @@
         "allSocio": "Everything in Socio",
         "sync": "Sync catalog and briefs",
         "ar": "A&R catalog for unreleased songs",
-        "analytics": "Advanced analytics and featured profile"
+        "analytics": "Featured profile on the Network",
+        "insights": "Royalty analytics"
       },
       "ownership": "On both plans you keep 100% ownership of your songs."
     },
@@ -182,7 +185,18 @@
     "emptyWorks": "You haven’t registered any songs yet. Start with the one you most want to protect.",
     "planPill": "{plan} plan",
     "graceNotice": "Your membership expired. Renew before {date} to keep the Network and your catalogs on.",
-    "suspendedNotice": "Your membership is paused. We keep administering your registered songs."
+    "suspendedNotice": "Your membership is paused. We keep administering your registered songs.",
+    "kpiLast": "Latest statement",
+    "kpiLastNone": "No statements yet",
+    "kpiWorks": "Registered works",
+    "kpiWorksSub": "{count} in total",
+    "todo": "To do",
+    "allClear": "All caught up. No signatures or alerts pending.",
+    "colTitle": "Work",
+    "colShare": "Your share",
+    "colAuthors": "Writers",
+    "colStatus": "Status",
+    "seeAnalytics": "See analytics"
   },
   "works": {
     "title": "Songs",
@@ -596,7 +610,6 @@
   },
   "analytics": {
     "title": "Analytics",
-    "locked": "Advanced analytics is a Pro feature: trends by song, period comparison and projection.",
     "byWork": "Trend by song",
     "compare": "Compared with the previous period",
     "projection": "Next-period projection",
@@ -1038,5 +1051,16 @@
     "license": "Request license",
     "closed": "Closed",
     "listen": "Listen"
+  },
+  "install": {
+    "cta": "Install the app",
+    "title": "Install Pluma",
+    "body": "Keep it on your home screen, with notifications, no app store needed.",
+    "iosTitle": "On iPhone or iPad",
+    "ios1": "Tap the Share button in Safari.",
+    "ios2": "Choose “Add to Home Screen”.",
+    "ios3": "Confirm with “Add”.",
+    "other": "In your browser, open the menu and choose “Install app” or “Add to Home screen”.",
+    "close": "Got it"
   }
 }

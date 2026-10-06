@@ -11,7 +11,7 @@ export function PeriodBars({ data, label, format }: { data: { key: string; cents
         {data.map((d, i) => {
           const last = i === data.length - 1;
           return (
-            <div key={d.key} className="flex flex-1 flex-col items-center gap-1.5" title={`${d.key}: ${format(d.cents)}`}>
+            <div key={d.key} className="flex max-w-[72px] flex-1 flex-col items-center gap-1.5" title={`${d.key}: ${format(d.cents)}`}>
               <div className="w-full rounded-md" style={{ height: `${Math.max((Math.max(d.cents, 0) / max) * 96, 4)}px`, background: last ? 'var(--pl-ambar)' : '#3A3D57' }} />
               <span className={`text-[11px] ${last ? 'text-fg' : 'text-fg-2'}`}>{d.key}</span>
             </div>

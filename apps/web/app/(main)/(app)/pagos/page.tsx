@@ -56,7 +56,7 @@ export default async function Payments() {
             <span className="text-xs text-fg-2">USD</span>
           </div>
           <PeriodBars data={chart} label={t('chartLabel')} format={m} />
-          <Link href="/pagos/analitica" className="inline-flex items-center gap-1.5 self-start text-sm font-bold"><BarChart3 size={16} strokeWidth={2} aria-hidden />{t('analytics')}</Link>
+          <Link href="/analitica" className="inline-flex items-center gap-1.5 self-start text-sm font-bold"><BarChart3 size={16} strokeWidth={2} aria-hidden />{t('analytics')}</Link>
         </Card>
       )}
 
