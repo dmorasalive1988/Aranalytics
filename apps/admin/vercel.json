@@ -1,0 +1,5 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "PLUMA_APP_KIND=admin pnpm --filter @pluma/services demo:setup && pnpm run build"
+}

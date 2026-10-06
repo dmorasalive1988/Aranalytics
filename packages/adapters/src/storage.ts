@@ -3,7 +3,8 @@ import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
 import { dirname, join, normalize } from 'node:path';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-export type Bucket = 'audio-originals' | 'audio-previews' | 'documents' | 'statements-raw' | 'kyc';
+export const ALL_BUCKETS = ['audio-originals', 'audio-previews', 'documents', 'statements-raw', 'kyc'] as const;
+export type Bucket = (typeof ALL_BUCKETS)[number];
 
 export interface ObjectStorage {
   /** Escribe una sola vez: si la ruta existe, falla (los archivos de evidencia no se sobrescriben). */
@@ -36,6 +37,16 @@ export class SupabaseStorage implements ObjectStorage {
     const { data, error } = await this.client.storage.from(bucket).createSignedUrl(safe(path), ttlSeconds);
     if (error) throw error;
     return data.signedUrl;
+  }
+  /** Crea los buckets privados que falten (idempotente). */
+  async ensureBuckets(buckets: readonly Bucket[] = ALL_BUCKETS) {
+    const { data, error } = await this.client.storage.listBuckets();
+    if (error) throw error;
+    for (const b of buckets) {
+      if (data.some((x) => x.id === b)) continue;
+      const r = await this.client.storage.createBucket(b, { public: false });
+      if (r.error && !/already exists/i.test(r.error.message)) throw r.error;
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import { mkdir, rename, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { sql, type Db } from '@pluma/db';
 
 export interface EmailMessage {
   to: string;
@@ -61,4 +62,34 @@ export class DevMailbox implements EmailSender {
     if (process.env.NODE_ENV !== 'test') console.log(`[correo] ${msg.to} · ${msg.subject}`);
     return { providerMessageId: `dev-${id}` };
   }
+}
+
+/**
+ * Demo: guarda los correos en la base (pluma_demo.mail) para mostrarlos dentro de la app,
+ * con sus códigos y enlaces. No sale ningún correo real.
+ */
+export class DemoMailbox implements EmailSender {
+  constructor(private readonly db: Db) {}
+  async send(msg: EmailMessage) {
+    const [r] = await this.db.execute<{ id: string }>(sql`
+      insert into pluma_demo.mail (recipient, subject, html, body_text, tag) values (${msg.to.toLowerCase()}, ${msg.subject}, ${msg.html}, ${msg.text}, ${msg.tag}) returning id::text`);
+    return { providerMessageId: `demo-${r!.id}` };
+  }
+}
+
+export type DemoMail = {
+  id: string;
+  recipient: string;
+  subject: string;
+  html: string;
+  body_text: string;
+  tag: string;
+  created_at: string;
+};
+
+export async function listDemoMail(db: Db, opts: { recipient?: string; tag?: string; limit?: number } = {}): Promise<DemoMail[]> {
+  return db.execute<DemoMail>(sql`
+    select id::text, recipient, subject, html, body_text, tag, created_at::text from pluma_demo.mail
+    where true ${opts.recipient ? sql`and recipient = ${opts.recipient.toLowerCase()}` : sql``} ${opts.tag ? sql`and tag = ${opts.tag}` : sql``}
+    order by created_at desc, id desc limit ${Math.min(opts.limit ?? 50, 200)}`);
 }

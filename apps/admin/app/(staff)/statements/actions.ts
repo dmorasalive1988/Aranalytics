@@ -1,5 +1,6 @@
 'use server';
 
+import { inlineDispatch } from '@pluma/db/env';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { after } from 'next/server';
@@ -8,7 +9,7 @@ import { run, str, type ActionState } from '@/lib/actions';
 import { deps, requestCtx, requireStaff } from '@/lib/server';
 
 const dispatch = () => {
-  if ((process.env.PLUMA_INLINE_DISPATCH ?? (process.env.NODE_ENV === 'production' ? '0' : '1')) === '1') after(() => dispatchPending(deps(), { limit: 500 }).catch((e) => console.error(e)));
+  if (inlineDispatch()) after(() => dispatchPending(deps(), { limit: 500 }).catch((e) => console.error(e)));
 };
 const money = (c: number) => `USD ${new Intl.NumberFormat('es-CO', { minimumFractionDigits: 2 }).format(c / 100)}`;
 

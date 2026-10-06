@@ -1,6 +1,6 @@
 import 'server-only';
 import { unstable_rethrow } from 'next/navigation';
-import { AuthError } from '@pluma/adapters';
+import { isAuthError } from '@pluma/adapters';
 import { isDomainError } from '@pluma/domain';
 import { MESSAGES } from '@pluma/i18n';
 
@@ -55,7 +55,7 @@ export async function run(fn: () => Promise<ActionState | void>): Promise<Action
     return (await fn()) ?? {};
   } catch (e) {
     unstable_rethrow(e);
-    if (e instanceof AuthError) return { error: (MESSAGES.es.auth.errors as Record<string, string>)[e.code] };
+    if (isAuthError(e)) return { error: (MESSAGES.es.auth.errors as Record<string, string>)[e.code] };
     if (isDomainError(e)) return { error: extra[e.code] ?? es[e.code] ?? e.code };
     console.error(e);
     return { error: es.generic };

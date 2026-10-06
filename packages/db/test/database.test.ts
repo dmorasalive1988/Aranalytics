@@ -91,6 +91,18 @@ describe('RLS', () => {
   });
 });
 
+describe('API pública de Supabase (anon)', () => {
+  it('no puede ejecutar funciones internas ni escribir; solo lee los catálogos públicos', async () => {
+    const asAnon = <T>(q: (tx: postgres.TransactionSql) => Promise<T>) => sql.begin(async (tx) => { await tx`set local role anon`; return q(tx); });
+    await expect(asAnon((tx) => tx`select audit_append('x', 'y', 'z', null, null)`)).rejects.toThrow(/permission denied/);
+    await expect(asAnon((tx) => tx`insert into email_suppressions (email, reason) values ('x@y.co', 'manual')`)).rejects.toThrow(/permission denied/);
+    const plans = await asAnon((tx) => tx`select code from plans`);
+    expect(plans.length).toBeGreaterThan(0);
+    const users = await asAnon((tx) => tx`select id from users`).catch(() => []);
+    expect(users).toHaveLength(0);
+  });
+});
+
 describe('auditoría inmutable (criterio 7)', () => {
   it('registra actor y comando, y la cadena detecta manipulación', async () => {
     const a = await makeWriter(sql, { plan: 'socio' });

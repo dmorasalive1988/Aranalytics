@@ -2,10 +2,11 @@ import 'server-only';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { DevAuth, SupabaseAuth, type AuthProvider, type CookieStore } from '@pluma/adapters';
-import { admin, depsFromEnv, type Deps, type RequestCtx } from '@pluma/services';
+import { authMode, devAccountsTable } from '@pluma/db/env';
+import { admin, depsFromEnv, ensureDemoAppUrl, type Deps, type RequestCtx } from '@pluma/services';
 
 export const deps = (): Deps => depsFromEnv();
-const authMode = () => (process.env.PLUMA_AUTH_MODE ?? (process.env.NODE_ENV === 'production' ? 'supabase' : 'dev')) as 'dev' | 'supabase';
+
 
 export async function getAuth(): Promise<AuthProvider> {
   const jar = await cookies();
@@ -21,7 +22,7 @@ export async function getAuth(): Promise<AuthProvider> {
   };
   if (authMode() === 'supabase') return new SupabaseAuth(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, store);
   const d = deps();
-  return new DevAuth(d.db, store, d.signingSecret, d.mail);
+  return new DevAuth(d.db, store, d.signingSecret, d.mail, devAccountsTable());
 }
 
 export async function requestCtx(): Promise<RequestCtx> {
@@ -42,6 +43,7 @@ export async function requireStaff(): Promise<Staff> {
   if (!user) redirect('/entrar');
   const roles = await admin.staffRoles(deps(), user.id);
   if (!roles.length) redirect('/entrar?e=forbidden');
+  await ensureDemoAppUrl(deps());
   if (authMode() === 'supabase' && user.aal !== 'aal2') redirect('/entrar?e=mfa');
   return { id: user.id, email: user.email, roles };
 }

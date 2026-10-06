@@ -2,12 +2,13 @@ import 'server-only';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { DevAuth, SupabaseAuth, type AuthProvider, type CookieStore } from '@pluma/adapters';
+import { authMode as sharedAuthMode, devAccountsTable, inlineDispatch } from '@pluma/db/env';
 import { isLocale, LOCALE_COOKIE, type Locale } from '@pluma/i18n';
 import { depsFromEnv, ensureAppUser, getSession, type Deps, type OnboardingStep, type RequestCtx, type SessionInfo } from '@pluma/services';
 
 export const deps = (): Deps => depsFromEnv();
 
-export const authMode = () => (process.env.PLUMA_AUTH_MODE ?? (process.env.NODE_ENV === 'production' ? 'supabase' : 'dev')) as 'dev' | 'supabase';
+export const authMode = sharedAuthMode;
 
 async function cookieStore(): Promise<CookieStore> {
   const jar = await cookies();
@@ -27,7 +28,7 @@ export async function getAuth(): Promise<AuthProvider> {
   const store = await cookieStore();
   if (authMode() === 'supabase') return new SupabaseAuth(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, store);
   const d = deps();
-  return new DevAuth(d.db, store, d.signingSecret, d.mail);
+  return new DevAuth(d.db, store, d.signingSecret, d.mail, devAccountsTable());
 }
 
 export async function requestCtx(): Promise<RequestCtx> {
@@ -88,7 +89,7 @@ export async function requireStep(...allowed: OnboardingStep[]): Promise<Session
  * En producción lo hace el worker.
  */
 export async function kickDispatch() {
-  if ((process.env.PLUMA_INLINE_DISPATCH ?? (process.env.NODE_ENV === 'production' ? '0' : '1')) !== '1') return;
+  if (!inlineDispatch()) return;
   const { after } = await import('next/server');
   const { dispatchPending } = await import('@pluma/services');
   after(() => dispatchPending(deps()).catch((e) => console.error('[eventos]', e)));

@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
-import { resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import {
+  DemoMailbox,
   DevMailbox,
   DevPush,
   DevWhatsApp,
@@ -19,10 +21,10 @@ import {
   type PushSender,
   type WhatsAppSender,
 } from '@pluma/adapters';
-import { createDb, type DbHandle } from '@pluma/db';
+import { createDb, sql, isDemoMode, onVercel, runtimeDatabaseUrl, supabaseServiceKey, supabaseUrl, vercelUrl, type DbHandle } from '@pluma/db';
 import type { Deps } from './deps';
 
-const g = globalThis as unknown as { __plumaDb?: DbHandle; __plumaDeps?: Deps };
+const g = globalThis as unknown as { __plumaDb?: DbHandle; __plumaDeps?: Deps; __plumaAppUrlResolved?: boolean };
 
 function env(name: string, fallback?: string): string {
   const v = process.env[name] ?? fallback;
@@ -30,8 +32,16 @@ function env(name: string, fallback?: string): string {
   return v;
 }
 
-const isProd = () => process.env.NODE_ENV === 'production';
-const devSecret = (name: string) => (isProd() ? env(name) : (process.env[name] ?? `dev-only-${name.toLowerCase()}`));
+/** Producción estricta: proveedores reales obligatorios. La demo en Vercel no lo es. */
+const isProd = () => process.env.NODE_ENV === 'production' && !isDemoMode();
+
+/** En demo, los secretos se derivan de la clave de servicio de Supabase (la comparten web y admin). */
+function demoSecret(name: string) {
+  const base = supabaseServiceKey() ?? runtimeDatabaseUrl();
+  if (!base) throw new Error(`Falta ${name}`);
+  return createHash('sha256').update(`pluma-demo:${name}:${base}`).digest('base64url');
+}
+const devSecret = (name: string) => process.env[name] || (isDemoMode() ? demoSecret(name) : isProd() ? env(name) : `dev-only-${name.toLowerCase()}`);
 
 /** Raíz del monorepo (para carpetas de desarrollo compartidas entre apps). */
 const repoRoot = () => process.env.PLUMA_REPO_ROOT ?? resolve(/*turbopackIgnore: true*/ process.cwd(), process.cwd().includes('/apps/') ? '../..' : '.');
@@ -48,8 +58,20 @@ function dataKeyFromEnv(): Buffer {
   return createHash('sha256').update(`data-key:${devSecret('PLUMA_SIGNING_SECRET')}`).digest();
 }
 
+/** URL pública de la app del autor. En Vercel (web) se toma del despliegue; el admin la necesita en PLUMA_APP_URL. */
+export function appUrlFromEnv(): string {
+  return process.env.PLUMA_APP_URL || (process.env.PLUMA_APP_KIND !== 'admin' ? vercelUrl() : undefined) || 'http://localhost:3000';
+}
+
+export function supabaseStorage(): SupabaseStorage {
+  const url = supabaseUrl();
+  const key = supabaseServiceKey();
+  if (!url || !key) throw new Error('Faltan SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY');
+  return new SupabaseStorage(url, key);
+}
+
 export function localStorageAdapter(): LocalStorage {
-  return new LocalStorage(process.env.PLUMA_LOCAL_STORAGE_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-storage'), `${env('PLUMA_APP_URL', 'http://localhost:3000')}/api/dev-storage`, devSecret('PLUMA_SIGNING_SECRET'));
+  return new LocalStorage(process.env.PLUMA_LOCAL_STORAGE_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-storage'), `${appUrlFromEnv()}/api/dev-storage`, devSecret('PLUMA_SIGNING_SECRET'));
 }
 
 /**
@@ -58,8 +80,12 @@ export function localStorageAdapter(): LocalStorage {
  */
 export function depsFromEnv(): Deps {
   if (g.__plumaDeps) return g.__plumaDeps;
-  g.__plumaDb ??= createDb(env('DATABASE_URL'), { max: Number(process.env.PLUMA_DB_POOL ?? 10) });
-  const appUrl = env('PLUMA_APP_URL', 'http://localhost:3000');
+  const dbUrl = runtimeDatabaseUrl();
+  if (!dbUrl) throw new Error('Falta DATABASE_URL (o POSTGRES_URL de la integración de Supabase)');
+  g.__plumaDb ??= createDb(dbUrl, { max: Number(process.env.PLUMA_DB_POOL ?? (onVercel() ? 3 : 10)) });
+  const appUrl = appUrlFromEnv();
+  const demo = isDemoMode();
+  const scratch = (name: string) => (onVercel() ? join(tmpdir(), name) : resolve(/*turbopackIgnore: true*/ repoRoot(), name));
 
   const paymentsKind = process.env.PLUMA_PAYMENTS ?? (isProd() ? 'stripe' : 'fake');
   if (isProd() && paymentsKind !== 'stripe') throw new Error('En producción PLUMA_PAYMENTS debe ser "stripe"');
@@ -71,14 +97,18 @@ export function depsFromEnv(): Deps {
         })
       : new FakePayments(appUrl, devSecret('PLUMA_SIGNING_SECRET'));
 
-  const emailKind = process.env.PLUMA_EMAIL ?? (isProd() ? 'postmark' : 'dev');
+  const emailKind = process.env.PLUMA_EMAIL ?? (isProd() ? 'postmark' : demo ? 'demo' : 'dev');
   if (isProd() && emailKind !== 'postmark') throw new Error('En producción PLUMA_EMAIL debe ser "postmark"');
   const mail: EmailSender =
-    emailKind === 'postmark' ? new PostmarkEmail(env('POSTMARK_TOKEN'), env('PLUMA_EMAIL_FROM')) : new DevMailbox(process.env.PLUMA_DEV_MAIL_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-mail'));
+    emailKind === 'postmark'
+      ? new PostmarkEmail(env('POSTMARK_TOKEN'), env('PLUMA_EMAIL_FROM'))
+      : emailKind === 'demo'
+        ? new DemoMailbox(g.__plumaDb.db)
+        : new DevMailbox(process.env.PLUMA_DEV_MAIL_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-mail'));
 
   const storage: ObjectStorage =
-    (process.env.PLUMA_STORAGE ?? (isProd() ? 'supabase' : 'local')) === 'supabase'
-      ? new SupabaseStorage(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'))
+    (process.env.PLUMA_STORAGE ?? (isProd() || (demo && onVercel()) ? 'supabase' : 'local')) === 'supabase'
+      ? supabaseStorage()
       : localStorageAdapter();
 
   // Push: Web Push con VAPID si hay claves; si no, carpeta de desarrollo (en producción son obligatorias).
@@ -86,12 +116,12 @@ export function depsFromEnv(): Deps {
   if (isProd() && !vapidPublic) throw new Error('Falta PLUMA_VAPID_PUBLIC');
   const push: PushSender = vapidPublic
     ? new WebPushSender(vapidPublic, env('PLUMA_VAPID_PRIVATE'), env('PLUMA_VAPID_SUBJECT', 'mailto:soporte@pluma.mu'))
-    : new DevPush(process.env.PLUMA_DEV_PUSH_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-push'));
+    : new DevPush(process.env.PLUMA_DEV_PUSH_DIR ?? scratch('.dev-push'));
 
   // WhatsApp: apagado salvo que se configure ("meta" o "dev").
   const waKind = process.env.PLUMA_WHATSAPP ?? 'off';
   const whatsapp: WhatsAppSender | null =
-    waKind === 'meta' ? new MetaWhatsApp(env('WHATSAPP_PHONE_NUMBER_ID'), env('WHATSAPP_TOKEN')) : waKind === 'dev' ? new DevWhatsApp(resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-whatsapp')) : null;
+    waKind === 'meta' ? new MetaWhatsApp(env('WHATSAPP_PHONE_NUMBER_ID'), env('WHATSAPP_TOKEN')) : waKind === 'dev' ? new DevWhatsApp(scratch('.dev-whatsapp')) : null;
 
   g.__plumaDeps = {
     db: g.__plumaDb.db,
@@ -108,6 +138,24 @@ export function depsFromEnv(): Deps {
     now: () => new Date(),
   };
   return g.__plumaDeps;
+}
+
+/**
+ * Demo: el admin no conoce la URL de la app del autor; la lee de pluma_demo.settings (la guarda el despliegue de la app).
+ * Con PLUMA_APP_URL definida no hace nada.
+ */
+export async function ensureDemoAppUrl(deps: Deps) {
+  if (process.env.PLUMA_APP_URL || !isDemoMode() || process.env.PLUMA_APP_KIND !== 'admin' || g.__plumaAppUrlResolved) return;
+  try {
+    const [row] = await deps.db.execute<{ value: string }>(sql`select value from pluma_demo.settings where key = 'app_url'`);
+    if (row) {
+      deps.appUrl = row.value;
+      deps.signUrl = `${row.value}/firmar`;
+      g.__plumaAppUrlResolved = true;
+    }
+  } catch {
+    // Sin esquema de demo todavía: se reintenta en la próxima petición.
+  }
 }
 
 export async function closeRuntime() {

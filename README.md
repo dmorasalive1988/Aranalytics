@@ -83,6 +83,33 @@ Qué cubren:
 - Distribución y conciliación (entregable 4): reparto por mayor residuo, negativos, retenidos, suspenso, FX, reproducibilidad; retiros con doble aprobación y datos bancarios cifrados.
 - Contraste de todos los pares de color, paridad de textos entre idiomas y ausencia de nombres de proveedores en textos visibles.
 
+## Demo en Vercel
+
+La demo corre en Vercel con Supabase y datos ficticios, sin Stripe, Postmark ni worker. En Vercel el modo demo es el predeterminado; se apaga con `PLUMA_MODE=production` cuando estén los proveedores reales.
+
+1. **Supabase**: conéctalo desde Vercel (Storage → Supabase) a los dos proyectos. La integración crea las variables `POSTGRES_URL`, `POSTGRES_URL_NON_POOLING`, `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` (también sirven con prefijo).
+2. **Dos proyectos** desde el mismo repositorio, cada uno con su *Root Directory*:
+   - `apps/web`: app del autor y firma de coautores.
+   - `apps/admin`: back-office.
+3. **Despliega primero `apps/web`** y después `apps/admin`. Cada build corre `demo:setup` antes de `next build` (ver `vercel.json`): aplica las migraciones, crea el esquema `pluma_demo` (cuentas y buzón, fuera de la API pública de Supabase) y los buckets privados, y carga los datos de ejemplo si la base está vacía. Es idempotente; volver a desplegar no borra nada.
+
+No hace falta definir secretos: en la demo se derivan de la clave de servicio de Supabase. El admin toma la URL de la app del autor de la base (la guarda el despliegue de `apps/web`); si usas un dominio propio, define `PLUMA_APP_URL` en los dos proyectos.
+
+**Qué cambia en la demo**
+
+| | Demo | Producción |
+|---|---|---|
+| Cuentas | Contraseña; el código de verificación se muestra en la pantalla | Supabase Auth (código por correo, Google, Apple, TOTP en el back-office) |
+| Correos | No salen: se ven en `/demo/correo` (franja superior → "Ver correos enviados") | Postmark |
+| Pagos | Checkout simulado | Stripe |
+| Avisos y tareas | Se despachan al responder cada acción | Worker (`apps/worker`) |
+| Publicación programada, recordatorios y renovaciones | No corren (no hay worker): publica con "ahora" | Worker |
+| Push y WhatsApp | Apagados | VAPID y Meta, si se configuran |
+
+Cuentas de ejemplo (contraseña `pluma-dev-2026`): `valentina@pluma.test`, `diego@pluma.test`, `sam@pluma.test`, `camila@pluma.test` en la app; `operaciones@pluma.test`, `aprobaciones@pluma.test` y `admin@pluma.test` en el back-office. Las pantallas de entrada las muestran.
+
+La demo es accesible para cualquiera con el enlace y su buzón muestra todos los correos: comparte la URL solo con quien corresponda y no cargues datos reales. Para empezar de cero, borra las tablas desde el panel de Supabase (o crea otro proyecto) y vuelve a desplegar.
+
 ## Desplegar en producción
 
 1. **Supabase**: crea el proyecto y aplica las migraciones con `DATABASE_URL=<conexión directa> pnpm db:migrate`. En el entorno local la capa de compatibilidad solo se aplica si no existe el esquema `auth`; en Supabase no se aplica.
@@ -93,7 +120,7 @@ Qué cubren:
    - **Push**: genera las claves VAPID una vez (`npx web-push generate-vapid-keys`) y configura `PLUMA_VAPID_PUBLIC`, `PLUMA_VAPID_PRIVATE` y `PLUMA_VAPID_SUBJECT`. Son obligatorias en producción.
    - **WhatsApp** (opcional, apagado por defecto): con `PLUMA_WHATSAPP=meta`, `WHATSAPP_PHONE_NUMBER_ID` y `WHATSAPP_TOKEN` de la WhatsApp Cloud API. Antes, aprueba en Meta las plantillas `pluma_statement_published`, `pluma_payout_sent`, `pluma_payment_failed` y `pluma_split_invitation` en es, en_US y pt_BR.
 4. **Vercel**: crea dos proyectos, `apps/web` (app.<dominio>) y `apps/admin` (admin.<dominio>), con las variables de `.env.example`:
-   - `NODE_ENV=production`, `PLUMA_AUTH_MODE=supabase`, `PLUMA_PAYMENTS=stripe`, `PLUMA_EMAIL=postmark`, `PLUMA_STORAGE=supabase`, `PLUMA_INLINE_DISPATCH=0`.
+   - `PLUMA_MODE=production` (sin ella, Vercel arranca en modo demo), `NODE_ENV=production`, `PLUMA_AUTH_MODE=supabase`, `PLUMA_PAYMENTS=stripe`, `PLUMA_EMAIL=postmark`, `PLUMA_STORAGE=supabase`, `PLUMA_INLINE_DISPATCH=0`.
    - `DATABASE_URL` debe apuntar al pooler de Supabase (puerto 6543).
    - En producción la app se niega a arrancar con pagos simulados, correo local o autenticación de desarrollo.
 5. **Clave de datos**: `PLUMA_DATA_KEY` (32 bytes en base64, `openssl rand -base64 32`) cifra el ID fiscal y los datos bancarios. Guárdala en el gestor de secretos: sin ella esos datos no se pueden leer.

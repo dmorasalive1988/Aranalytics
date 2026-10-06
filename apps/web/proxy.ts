@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { authMode } from '@pluma/db/env';
 
 const LOCALE_COOKIE = 'PLUMA_LOCALE';
 
@@ -19,8 +20,7 @@ export async function proxy(req: NextRequest) {
     res.cookies.set(LOCALE_COOKIE, locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' });
   }
 
-  const mode = process.env.PLUMA_AUTH_MODE ?? (process.env.NODE_ENV === 'production' ? 'supabase' : 'dev');
-  if (mode === 'supabase' && process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  if (authMode() === 'supabase' && process.env.NEXT_PUBLIC_SUPABASE_URL) {
     const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
       cookies: {
         getAll: () => req.cookies.getAll(),

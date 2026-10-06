@@ -11,6 +11,10 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const config: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR ?? '.next',
+  // Monorepo: rastrear archivos desde la raíz e incluir las fuentes del PDF en las funciones de Vercel.
+  outputFileTracingRoot: resolve(process.cwd(), '../..'),
+  turbopack: { root: resolve(process.cwd(), '../..') },
+  outputFileTracingIncludes: { '/**': ['../../packages/pdf/fonts/**/*'] },
   transpilePackages: ['@pluma/ui', '@pluma/domain', '@pluma/i18n', '@pluma/services', '@pluma/adapters', '@pluma/db', '@pluma/emails'],
   serverExternalPackages: ['postgres'],
   experimental: {

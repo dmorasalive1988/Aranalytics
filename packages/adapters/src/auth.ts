@@ -2,7 +2,7 @@ import { createHmac, randomInt, scrypt as scryptCb, timingSafeEqual, randomBytes
 import { promisify } from 'node:util';
 import { createServerClient } from '@supabase/ssr';
 import type { Db } from '@pluma/db';
-import { sql } from '@pluma/db';
+import { isDemoMode, sql } from '@pluma/db';
 import type { EmailSender } from './email';
 
 const scrypt = promisify(scryptCb) as (pw: string, salt: Buffer, len: number) => Promise<Buffer>;
@@ -27,6 +27,9 @@ export class AuthError extends Error {
     this.name = 'AuthError';
   }
 }
+
+/** Por nombre y no por clase: en el build de producción el módulo puede quedar duplicado entre chunks. */
+export const isAuthError = (e: unknown): e is AuthError => e instanceof Error && e.name === 'AuthError' && typeof (e as AuthError).code === 'string';
 
 export interface AuthProvider {
   readonly kind: 'supabase' | 'dev';
@@ -115,13 +118,17 @@ const TTL_MS = 7 * 86_400_000;
  */
 export class DevAuth implements AuthProvider {
   readonly kind = 'dev' as const;
+  private readonly table: ReturnType<typeof sql.raw>;
   constructor(
     private readonly db: Db,
     private readonly cookies: CookieStore,
     private readonly secret: string,
     private readonly mail: EmailSender,
+    /** auth.users (capa local) o pluma_demo.accounts (demo sobre Supabase, sin tocar Supabase Auth). */
+    table: 'auth.users' | 'pluma_demo.accounts' = 'auth.users',
   ) {
-    if (process.env.NODE_ENV === 'production' && process.env.PLUMA_ALLOW_DEV_AUTH !== 'yes-i-know') {
+    this.table = sql.raw(table === 'pluma_demo.accounts' ? 'pluma_demo.accounts' : 'auth.users');
+    if (process.env.NODE_ENV === 'production' && !isDemoMode() && process.env.PLUMA_ALLOW_DEV_AUTH !== 'yes-i-know') {
       throw new Error('DevAuth no se puede usar en producción');
     }
   }
@@ -144,14 +151,14 @@ export class DevAuth implements AuthProvider {
   }
   private async row(email: string) {
     const r = await this.db.execute<{ id: string; email: string; encrypted_password: string | null; email_confirmed_at: string | null; raw_user_meta_data: Record<string, unknown> }>(
-      sql`select id, email, encrypted_password, email_confirmed_at, raw_user_meta_data from auth.users where lower(email) = lower(${email})`,
+      sql`select id, email, encrypted_password, email_confirmed_at, raw_user_meta_data from ${this.table} where lower(email) = lower(${email})`,
     );
     return r[0] ?? null;
   }
   private async sendCode(email: string, locale: string) {
     const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
     const codeHash = createHash('sha256').update(code).digest('hex');
-    await this.db.execute(sql`update auth.users set raw_user_meta_data = raw_user_meta_data || ${JSON.stringify({ verify_hash: codeHash, verify_exp: Date.now() + 3_600_000, locale })}::jsonb where lower(email) = lower(${email})`);
+    await this.db.execute(sql`update ${this.table} set raw_user_meta_data = raw_user_meta_data || ${JSON.stringify({ verify_hash: codeHash, verify_exp: Date.now() + 3_600_000, locale })}::jsonb where lower(email) = lower(${email})`);
     const subject = { es: 'Tu código de Pluma', en: 'Your Pluma code', 'pt-BR': 'Seu código da Pluma' }[locale as 'es'] ?? 'Tu código de Pluma';
     await this.mail.send({ to: email, subject: `${subject}: ${code}`, html: `<p>${code}</p>`, text: code, tag: 'auth_code', idempotencyKey: `auth:${email}:${codeHash}` });
   }
@@ -161,9 +168,9 @@ export class DevAuth implements AuthProvider {
     const existing = await this.row(email);
     if (existing?.email_confirmed_at) throw new AuthError('EMAIL_TAKEN');
     if (!existing) {
-      await this.db.execute(sql`insert into auth.users (email, encrypted_password, raw_user_meta_data) values (${email.toLowerCase()}, ${await this.hash(password)}, ${JSON.stringify({ locale })}::jsonb)`);
+      await this.db.execute(sql`insert into ${this.table} (email, encrypted_password, raw_user_meta_data) values (${email.toLowerCase()}, ${await this.hash(password)}, ${JSON.stringify({ locale })}::jsonb)`);
     } else {
-      await this.db.execute(sql`update auth.users set encrypted_password = ${await this.hash(password)} where id = ${existing.id}`);
+      await this.db.execute(sql`update ${this.table} set encrypted_password = ${await this.hash(password)} where id = ${existing.id}`);
     }
     await this.sendCode(email, locale);
   }
@@ -173,7 +180,7 @@ export class DevAuth implements AuthProvider {
     const meta = r?.raw_user_meta_data as { verify_hash?: string; verify_exp?: number } | undefined;
     const hash = createHash('sha256').update(code.trim()).digest('hex');
     if (!r || !meta?.verify_hash || meta.verify_hash !== hash || (meta.verify_exp ?? 0) < Date.now()) throw new AuthError('INVALID_CODE');
-    await this.db.execute(sql`update auth.users set email_confirmed_at = coalesce(email_confirmed_at, now()), raw_user_meta_data = raw_user_meta_data - 'verify_hash' - 'verify_exp' where id = ${r.id}`);
+    await this.db.execute(sql`update ${this.table} set email_confirmed_at = coalesce(email_confirmed_at, now()), raw_user_meta_data = raw_user_meta_data - 'verify_hash' - 'verify_exp' where id = ${r.id}`);
     this.setSession(r.id);
     return { id: r.id, email: r.email, emailVerified: true, aal: 'aal2' };
   }
@@ -208,7 +215,7 @@ export class DevAuth implements AuthProvider {
     if (expected.length !== Buffer.from(sig).length || !timingSafeEqual(expected, Buffer.from(sig))) return null;
     const [id, exp] = body.split('.');
     if (!id || Number(exp) < Date.now()) return null;
-    const r = await this.db.execute<{ id: string; email: string; email_confirmed_at: string | null }>(sql`select id, email, email_confirmed_at from auth.users where id = ${id}`);
+    const r = await this.db.execute<{ id: string; email: string; email_confirmed_at: string | null }>(sql`select id, email, email_confirmed_at from ${this.table} where id = ${id}`);
     const u = r[0];
     return u ? { id: u.id, email: u.email, emailVerified: !!u.email_confirmed_at, aal: 'aal2' } : null;
   }

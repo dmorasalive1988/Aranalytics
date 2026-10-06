@@ -386,7 +386,7 @@
   },
   "devCheckout": {
     "title": "Test payment",
-    "body": "You’re in development mode: nothing is charged. This step simulates a card payment.",
+    "body": "Nothing is charged: this step simulates a card payment (demo and development).",
     "pay": "Simulate {amount} payment"
   },
   "errors": {
@@ -603,5 +603,18 @@
     "phoneHint": "Include your country code, e.g. +1.",
     "consent": "I agree to receive Pluma alerts on WhatsApp. I can turn them off anytime.",
     "phonePlaceholder": "+1 305 555 0123"
+  },
+  "demo": {
+    "banner": "Pluma demo · sample data, no real payments or emails",
+    "inboxLink": "See sent emails",
+    "mailTitle": "Demo emails",
+    "mailIntro": "No emails leave the demo. Here you can see what writers and co-writers would get, with their codes and links.",
+    "filter": "Filter by recipient",
+    "search": "Filter",
+    "all": "See all",
+    "empty": "No emails yet.",
+    "to": "To",
+    "code": "Demo: your code is {code}",
+    "accounts": "Sample accounts (password at the end)"
   }
 }

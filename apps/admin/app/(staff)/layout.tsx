@@ -1,6 +1,7 @@
 import { PlumaLogo } from '@pluma/ui';
 import { Sidebar } from '@/components/sidebar';
-import { requireStaff } from '@/lib/server';
+import { isDemoMode } from '@pluma/db/env';
+import { deps, requireStaff } from '@/lib/server';
 import { signOutAction } from '../entrar/actions';
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
@@ -8,6 +9,12 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   const sa = staff.roles.includes('super_admin');
   return (
     <div className="flex min-h-dvh flex-wrap">
+      {isDemoMode() && (
+        <div role="note" className="flex w-full flex-wrap items-center justify-center gap-x-3 bg-ambar px-4 py-1.5 text-center text-xs font-bold text-tinta">
+          <span>Demo de Pluma · datos ficticios, sin pagos ni correos reales</span>
+          <a href={`${deps().appUrl}/demo/correo`} className="text-tinta underline">Ver correos enviados</a>
+        </div>
+      )}
       <aside data-theme="dark" className="flex w-full flex-col gap-6 bg-tinta px-5 py-7 text-papel md:sticky md:top-0 md:h-dvh md:w-[248px]">
         <PlumaLogo size={24} product="admin" />
         <nav aria-label="Back-office">

@@ -9,7 +9,8 @@
   "scripts": {
     "seed": "tsx src/cli/seed.ts",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "demo:setup": "tsx src/cli/demo-setup.ts"
   },
   "dependencies": {
     "@pluma/adapters": "workspace:*",

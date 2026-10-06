@@ -386,7 +386,7 @@
   },
   "devCheckout": {
     "title": "Pago de prueba",
-    "body": "Estás en modo de desarrollo: no se cobra nada. Este paso simula el pago con tarjeta.",
+    "body": "No se cobra nada: este paso simula el pago con tarjeta (demo y desarrollo).",
     "pay": "Simular pago de {amount}"
   },
   "errors": {
@@ -603,5 +603,18 @@
     "phoneHint": "Con el código de país, por ejemplo +57.",
     "consent": "Acepto recibir avisos de Pluma por WhatsApp. Puedo desactivarlos cuando quiera.",
     "phonePlaceholder": "+57 300 123 4567"
+  },
+  "demo": {
+    "banner": "Demo de Pluma · datos ficticios, sin pagos ni correos reales",
+    "inboxLink": "Ver correos enviados",
+    "mailTitle": "Correos de la demo",
+    "mailIntro": "En la demo no sale ningún correo: aquí ves los que recibirían los autores y coautores, con sus códigos y enlaces.",
+    "filter": "Filtrar por destinatario",
+    "search": "Filtrar",
+    "all": "Ver todos",
+    "empty": "Todavía no hay correos.",
+    "to": "Para",
+    "code": "Demo: tu código es {code}",
+    "accounts": "Cuentas de ejemplo (contraseña al final)"
   }
 }

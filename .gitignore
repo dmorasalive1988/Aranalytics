@@ -14,3 +14,4 @@ test-results
 playwright-report
 next-env.d.ts
 .next-e2e
+.next-*
