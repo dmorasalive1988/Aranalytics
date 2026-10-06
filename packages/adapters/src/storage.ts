@@ -26,7 +26,8 @@ export class SupabaseStorage implements ObjectStorage {
   }
   async putOnce(bucket: Bucket, path: string, data: Buffer, contentType: string) {
     const { error } = await this.client.storage.from(bucket).upload(safe(path), data, { contentType, upsert: false });
-    if (error) throw error;
+    // Mismo contrato que el almacenamiento local: un archivo que ya existe es OBJECT_EXISTS (los nombres llevan su hash).
+    if (error) throw /already exists|duplicate/i.test(error.message) || (error as { statusCode?: string }).statusCode === '409' ? new Error('OBJECT_EXISTS') : error;
   }
   async get(bucket: Bucket, path: string) {
     const { data, error } = await this.client.storage.from(bucket).download(safe(path));
