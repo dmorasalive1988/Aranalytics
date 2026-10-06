@@ -122,3 +122,12 @@ describe('versión de split aplicable', () => {
     expect(applicableVersion([{ version: 1, effectiveFrom: null }], '2026-01-01')).toBeNull();
   });
 });
+
+import { parseMoneyInput } from '../src';
+describe('montos escritos por personas', () => {
+  it.each([
+    ['1442.17', '1442.17'], ['1442,17', '1442.17'], ['1.442,17', '1442.17'], ['1,442.17', '1442.17'],
+    ['USD 1.442,17', '1442.17'], ['50', '50'], ['50,5', '50.50'], ['1.442', '1442'], ['1,442', '1442'], ['-15,00', '-15.00'],
+  ])('%s → %s', (a, b) => expect(parseMoneyInput(a)).toBe(b));
+  it.each(['', 'abc', '1,2,3,4.5.6.7'])('rechaza %s', (a) => expect(parseMoneyInput(a)).toBeNull());
+});

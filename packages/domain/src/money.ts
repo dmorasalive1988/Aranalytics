@@ -43,3 +43,28 @@ export function splitByBps(amount: Dec, bps: number[]): Dec[] {
   const unit = dec('0.000001');
   return largestRemainder(exact, unit, q6(amount));
 }
+
+/**
+ * Interpreta un monto escrito por una persona en cualquier formato regional:
+ * "1442.17", "1442,17", "1.442,17", "1,442.17", "USD 1.442,17". Devuelve "1442.17" o null.
+ * El último separador seguido de 1–2 dígitos es el decimal; los demás son de miles.
+ */
+export function parseMoneyInput(input: string): string | null {
+  const s = input.replace(/[^\d.,-]/g, '');
+  if (!/^-?[\d.,]+$/.test(s) || !/\d/.test(s)) return null;
+  const neg = s.startsWith('-');
+  const body = neg ? s.slice(1) : s;
+  const m = body.match(/^(.*?)[.,](\d{1,2})$/);
+  const intRaw = m ? m[1]! : body;
+  // Separadores de miles: grupos de exactamente 3 dígitos, con un solo tipo de separador.
+  if (/[.,]/.test(intRaw)) {
+    const seps = new Set(intRaw.replace(/\d/g, ''));
+    const groups = intRaw.split(/[.,]/);
+    if (seps.size > 1 || !/^\d{1,3}$/.test(groups[0]!) || groups.slice(1).some((g) => !/^\d{3}$/.test(g))) return null;
+  }
+  const intPart = intRaw.replace(/[.,]/g, '');
+  const dec = m ? m[2]! : '';
+  if (!/^\d+$/.test(intPart || '0')) return null;
+  const n = `${neg ? '-' : ''}${intPart || '0'}${dec ? `.${dec.padEnd(2, '0')}` : ''}`;
+  return /^-?\d{1,12}(\.\d{2})?$/.test(n) ? n : null;
+}

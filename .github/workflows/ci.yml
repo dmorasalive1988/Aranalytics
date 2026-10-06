@@ -32,7 +32,7 @@ jobs:
         run: pnpm -r --workspace-concurrency=1 typecheck
       - name: Pruebas de dominio, base de datos, servicios, diseño e idiomas
         run: |
-          for p in domain db adapters emails services ui i18n; do
+          for p in domain db adapters emails connectors pdf services ui i18n; do
             (cd packages/$p && pnpm vitest run)
           done
       - name: Build

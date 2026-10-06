@@ -19,9 +19,20 @@
     "stepOf": "Step {current} of {total}",
     "you": "You",
     "comingSoon": "Coming soon",
-    "languages": { "es": "Español", "en": "English", "pt-BR": "Português" }
+    "languages": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português"
+    }
   },
-  "nav": { "home": "Home", "works": "Songs", "network": "Network", "sync": "Sync", "payments": "Payments", "main": "Main navigation" },
+  "nav": {
+    "home": "Home",
+    "works": "Songs",
+    "network": "Network",
+    "sync": "Sync",
+    "payments": "Payments",
+    "main": "Main navigation"
+  },
   "welcome": {
     "headline": "Where songs are born.",
     "sub": "Register your songs, sign your splits and collect your royalties worldwide. Your songs stay 100% yours.",
@@ -87,7 +98,11 @@
       "name": "Guardian’s full name",
       "email": "Guardian’s email",
       "relationship": "Relationship",
-      "relationships": { "madre": "Mother", "padre": "Father", "tutor": "Legal guardian" }
+      "relationships": {
+        "madre": "Mother",
+        "padre": "Father",
+        "tutor": "Legal guardian"
+      }
     },
     "plan": {
       "title": "Choose your plan",
@@ -198,7 +213,12 @@
     },
     "aiHint": "This declaration is required and doesn’t affect your registration.",
     "create": "Save and continue",
-    "languages": { "es": "Spanish", "en": "English", "pt": "Portuguese", "other": "Other" }
+    "languages": {
+      "es": "Spanish",
+      "en": "English",
+      "pt": "Portuguese",
+      "other": "Other"
+    }
   },
   "files": {
     "title": "Audio demo",
@@ -341,15 +361,28 @@
     "keepPro": "Stay on Pro",
     "payments": "Membership payments",
     "noPayments": "No payments yet.",
-    "paymentKinds": { "new": "Sign-up", "renewal": "Renewal", "upgrade_proration": "Upgrade to Pro" },
+    "paymentKinds": {
+      "new": "Sign-up",
+      "renewal": "Renewal",
+      "upgrade_proration": "Upgrade to Pro"
+    },
     "privacy": "Privacy and data",
     "privacyBody": "You can request a copy of your data or ask us to delete it. We respond under Habeas Data, LGPD and CCPA.",
     "privacyCta": "Email our privacy team"
   },
   "soon": {
-    "network": { "title": "The Pluma Network", "body": "Post what you’re looking for (“I’ve got a beat, need a hook”) and find co-writers with verified credits. Coming in the next phase." },
-    "sync": { "title": "Sync", "body": "Get your songs in front of music supervisors and agencies. Turn on the sync catalog for each song (Pro plan)." },
-    "payments": { "title": "Payments", "body": "Your official statements, balance and withdrawals will live here. The first statement arrives on the official payment calendar." }
+    "network": {
+      "title": "The Pluma Network",
+      "body": "Post what you’re looking for (“I’ve got a beat, need a hook”) and find co-writers with verified credits. Coming in the next phase."
+    },
+    "sync": {
+      "title": "Sync",
+      "body": "Get your songs in front of music supervisors and agencies. Turn on the sync catalog for each song (Pro plan)."
+    },
+    "payments": {
+      "title": "Payments",
+      "body": "Your official statements, balance and withdrawals will live here. The first statement arrives on the official payment calendar."
+    }
   },
   "devCheckout": {
     "title": "Test payment",
@@ -401,6 +434,115 @@
     "INVITATION_NOT_OPEN": "The invitation is no longer active.",
     "INVITATION_NOT_FOUND": "We couldn’t find the invitation.",
     "REASON_REQUIRED": "Tell us the reason (at least 5 characters).",
-    "AR_REQUIRES_UNRECORDED": "The A&R catalog is only for unreleased songs."
+    "AR_REQUIRES_UNRECORDED": "The A&R catalog is only for unreleased songs.",
+    "PERIOD_ALREADY_PUBLISHED": "This period is already published.",
+    "KYC_REQUIRED": "We need to verify your identity first.",
+    "TAX_PROFILE_REQUIRED": "Complete your tax details.",
+    "PAYOUT_METHOD_REQUIRED": "Add where we should pay you.",
+    "PAYOUT_BELOW_MINIMUM": "The amount is below the minimum.",
+    "PAYOUT_ABOVE_BALANCE": "The amount is higher than your available balance.",
+    "PAYOUT_DETAILS_INVALID": "Check the account details.",
+    "PAYOUT_PROVIDER_INVALID": "Choose a provider.",
+    "TAX_ID_INVALID": "Check the tax ID number.",
+    "CURRENCY_INVALID": "Choose a currency."
+  },
+  "payments": {
+    "title": "Payments",
+    "balance": "Available balance",
+    "nextStatement": "Next official statement",
+    "noCalendar": "We’ll let you know once the official date is confirmed.",
+    "withdraw": "Withdraw",
+    "history": "Royalties by period",
+    "statements": "Official statements",
+    "noStatements": "No statements yet. The first one arrives on the official payment calendar.",
+    "held": "Held in dispute",
+    "net": "Net",
+    "analytics": "Analytics",
+    "payouts": "Withdrawals",
+    "noPayouts": "You haven’t requested any withdrawals yet.",
+    "payoutStatus": {
+      "requested": "Requested",
+      "approved": "Approved",
+      "sent": "Sent",
+      "paid": "Paid",
+      "failed": "Failed · balance returned",
+      "canceled": "Canceled"
+    },
+    "alerts": "Alerts",
+    "alertNoIncome": "“{title}” had no income in the last two periods. Make sure it’s complete and registered.",
+    "alertNewTerritory": "New income from {territory} this period.",
+    "chartLabel": "Net by period, in USD"
+  },
+  "statement": {
+    "title": "{period} statement",
+    "official": "Official statement",
+    "payDate": "Payment date: {date}",
+    "summary": "Summary",
+    "opening": "Previous balance",
+    "gross": "Gross royalties (your share)",
+    "commission": "Administration fee ({pct})",
+    "withholding": "Tax withholding",
+    "held": "Held in dispute (not added)",
+    "adjustments": "Prior-period adjustments",
+    "net": "Net for the period",
+    "closing": "Balance after this statement",
+    "byWork": "By song",
+    "byType": "By income type",
+    "bySource": "By source",
+    "byTerritory": "By territory",
+    "share": "Your share {pct}",
+    "inDispute": "In dispute",
+    "downloadPdf": "Download PDF",
+    "downloadCsv": "Download CSV",
+    "generating": "We’re generating the PDF. Refresh in a few seconds.",
+    "types": {
+      "performance": "Public performance",
+      "mechanical": "Mechanicals",
+      "youtube_ugc": "YouTube / UGC",
+      "sync": "Sync",
+      "other": "Other"
+    },
+    "rounding": "Breakdown amounts are rounded; the net is the official figure."
+  },
+  "withdraw": {
+    "title": "Withdraw balance",
+    "sub": "We pay into your account. Before your first withdrawal we verify your identity and tax details.",
+    "kycTitle": "1. Identity verification",
+    "kycNotStarted": "We need to confirm it’s you before sending money.",
+    "kycStart": "Start verification",
+    "kycPending": "We’re reviewing your identity. We’ll let you know when it’s done.",
+    "kycApproved": "Identity verified.",
+    "kycRejected": "We couldn’t verify your identity. Write to us so we can review it.",
+    "taxTitle": "2. Tax details",
+    "taxCountry": "Country of tax residence",
+    "taxId": "Tax ID number",
+    "taxIdHint": "SSN/ITIN, RFC, CPF, NIT… Stored encrypted.",
+    "entity": "Type",
+    "individual": "Individual",
+    "company": "Company",
+    "taxSaved": "Tax details saved (••{last4}).",
+    "methodTitle": "3. Where should we pay you?",
+    "provider": "Provider",
+    "holder": "Account holder",
+    "account": "Account, IBAN or provider email",
+    "bank": "Bank",
+    "currency": "Currency you receive",
+    "methodSaved": "We pay you via {label}.",
+    "amountTitle": "4. Amount",
+    "amount": "Amount in USD",
+    "amountHint": "Minimum {min}. Available: {balance}.",
+    "request": "Request withdrawal",
+    "requested": "Done. We’ve requested your withdrawal; we’ll review it and let you know when it’s sent.",
+    "saveData": "Save"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "locked": "Advanced analytics is a Pro feature: trends by song, period comparison and projection.",
+    "byWork": "Trend by song",
+    "compare": "Compared with the previous period",
+    "projection": "Next-period projection",
+    "projectionNote": "This is an estimate based on the average of your recent periods. It’s not an official amount.",
+    "noData": "You need at least one published statement.",
+    "change": "{pct} vs. previous period"
   }
 }

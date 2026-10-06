@@ -8,6 +8,7 @@ import {
   dec,
   distributeLine,
   normalizeTitle,
+  parseMoneyInput,
   reconcile,
   titleSimilarity,
   type DistributionRow,
@@ -307,7 +308,8 @@ interface Snapshot {
 /** Pasos 4–6: distribución con el split vigente, comisión por plan, retenciones y FX; conciliación al centavo. */
 export async function calculateRun(deps: Deps, staffId: string, periodId: string, receivedAmountUsd: string, ctx: RequestCtx) {
   const role = await staff(deps, staffId, ['operator', 'super_admin']);
-  if (!/^-?\d{1,12}(\.\d{1,2})?$/.test(receivedAmountUsd.trim())) throw new DomainError('RECEIVED_AMOUNT_INVALID');
+  const received = parseMoneyInput(receivedAmountUsd);
+  if (received === null) throw new DomainError('RECEIVED_AMOUNT_INVALID');
   await assertPeriodOpen(deps, periodId);
   const [period] = await deps.db.select().from(t.statementPeriods).where(eq(t.statementPeriods.id, periodId));
   if (!period) throw new DomainError('PERIOD_NOT_FOUND');
@@ -360,7 +362,7 @@ export async function calculateRun(deps: Deps, staffId: string, periodId: string
     for (const r of distributeLine({ lineId: l.id, net: l.net, currency: l.currency, fxRate: rate.rate, shares: lineShares, held }, terms)) rows.push({ ...r, fxRateId: rate.id });
   }
   const controlTotalUsd = files.reduce((acc, f) => Object.entries(f.controlTotals as Record<string, string>).reduce((a, [ccy, v]) => a.plus(dec(v).times(fx[ccy]!.rate)), acc), dec(0));
-  const receivedCents = dec(receivedAmountUsd.trim()).times(100).toNumber();
+  const receivedCents = dec(received).times(100).toNumber();
   const rec = reconcile({ rows, receivedCents, controlTotalUsd: controlTotalUsd.toFixed(6), parsedTotalUsd: parsedTotalUsd.toFixed(6) });
 
   const snapshot: Snapshot = { computedAt: now.toISOString(), payDate: period.payDate, fx, writers, withholdingRules: rules, lineVersions };
@@ -710,4 +712,56 @@ export async function periodDetail(deps: Deps, periodId: string) {
   const currencies = await deps.db.execute<{ currency: string }>(sql`select distinct l.currency from statement_lines l join statement_files f on f.id = l.file_id where f.period_id = ${periodId} and l.currency <> 'USD'`);
   const rates = currencies.length ? await deps.db.select().from(t.fxRates).where(inArray(t.fxRates.base, currencies.map((c) => c.currency))).orderBy(desc(t.fxRates.asOf)) : [];
   return { period, files, lineStats, run: run ?? null, currencies: currencies.map((c) => c.currency), rates };
+}
+
+/* ------------------------- Analítica y alertas (A19–A20) ------------------------- */
+
+/** Ingresos netos por obra y período (solo statements publicados del autor). */
+export async function writerIncomeByWork(deps: Deps, userId: string) {
+  return deps.db.execute<{ period: string; pay_date: string; work_id: string | null; title: string; net: string; territories: string[] }>(sql`
+    select p.code as period, p.pay_date, w.id as work_id, coalesce(w.title, '—') as title, sum(d.net)::text as net,
+      array_agg(distinct l.territory) filter (where l.territory is not null) as territories
+    from writer_statements s
+    join statement_periods p on p.id = s.period_id
+    join distributions d on d.run_id = s.run_id and d.writer_user_id = s.writer_user_id and d.status = 'payable'
+    join statement_lines l on l.id = d.line_id
+    left join works w on w.id = l.matched_work_id
+    where s.writer_user_id = ${userId} and s.published_at is not null
+    group by p.code, p.pay_date, w.id, w.title
+    order by p.pay_date, title`);
+}
+
+export interface WriterAlert {
+  kind: 'no_income' | 'new_territory';
+  title?: string;
+  territory?: string;
+}
+
+/** Alertas: obras administradas sin ingresos en los dos últimos períodos e ingresos en territorios nuevos. */
+export async function writerAlerts(deps: Deps, userId: string): Promise<WriterAlert[]> {
+  const periods = await deps.db.execute<{ id: string; run_id: string }>(sql`
+    select s.period_id as id, s.run_id from writer_statements s join statement_periods p on p.id = s.period_id
+    where s.writer_user_id = ${userId} and s.published_at is not null order by p.pay_date desc limit 2`);
+  if (!periods.length) return [];
+  const alerts: WriterAlert[] = [];
+  if (periods.length === 2) {
+    const quiet = await deps.db.execute<{ title: string }>(sql`
+      select distinct w.title from works w
+      join split_versions sv on sv.work_id = w.id and sv.status = 'signed'
+      join split_shares ss on ss.split_version_id = sv.id and ss.writer_user_id = ${userId} and ss.administered
+      where w.status in ('registered', 'sent_to_publisher')
+        and not exists (select 1 from distributions d join statement_lines l on l.id = d.line_id
+                        where d.writer_user_id = ${userId} and l.matched_work_id = w.id and d.run_id in (${periods[0]!.run_id}, ${periods[1]!.run_id}))`);
+    for (const q of quiet) alerts.push({ kind: 'no_income', title: q.title });
+  }
+  const fresh = await deps.db.execute<{ territory: string }>(sql`
+    select distinct l.territory from distributions d join statement_lines l on l.id = d.line_id
+    where d.run_id = ${periods[0]!.run_id} and d.writer_user_id = ${userId} and l.territory is not null
+      and not exists (select 1 from distributions d2 join statement_lines l2 on l2.id = d2.line_id join writer_statements s2 on s2.run_id = d2.run_id and s2.writer_user_id = d2.writer_user_id
+                      where d2.writer_user_id = ${userId} and l2.territory = l.territory and d2.run_id <> ${periods[0]!.run_id} and s2.published_at is not null)`);
+  // Un territorio solo es "nuevo" si hay historia con qué comparar.
+  if (periods.length === 2) {
+    for (const f of fresh) alerts.push({ kind: 'new_territory', territory: f.territory });
+  }
+  return alerts;
 }

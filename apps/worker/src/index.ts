@@ -12,7 +12,7 @@ import { PgBoss } from 'pg-boss';
 const rootEnv = resolve(import.meta.dirname, '../../../.env');
 if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 
-const { closeRuntime, depsFromEnv, dispatchPending, retryFailedDeliveries, runDailyJobs } = await import('@pluma/services');
+const { closeRuntime, depsFromEnv, dispatchPending, retryFailedDeliveries, runDailyJobs, statements } = await import('@pluma/services');
 
 const deps = depsFromEnv();
 const log = (msg: string, extra?: unknown) => console.log(JSON.stringify({ at: new Date().toISOString(), msg, ...(extra ? { extra } : {}) }));
@@ -24,12 +24,14 @@ await boss.start();
 const JOBS = {
   daily: 'daily-jobs',
   retry: 'retry-deliveries',
+  scheduled: 'publish-scheduled-statements',
 } as const;
 
 for (const q of Object.values(JOBS)) await boss.createQueue(q);
 // 06:10 en Bogotá / Ciudad de México ≈ 11:10 UTC.
 await boss.schedule(JOBS.daily, process.env.PLUMA_DAILY_CRON ?? '10 11 * * *');
 await boss.schedule(JOBS.retry, '7 * * * *');
+await boss.schedule(JOBS.scheduled, '* * * * *');
 
 await boss.work(JOBS.daily, async () => {
   const r = await runDailyJobs(deps);
@@ -37,6 +39,11 @@ await boss.work(JOBS.daily, async () => {
 });
 await boss.work(JOBS.retry, async () => {
   log('retry-deliveries', await retryFailedDeliveries(deps));
+});
+
+await boss.work(JOBS.scheduled, async () => {
+  const n = await statements.publishDueRuns(deps);
+  if (n) log('statements.published', { runs: n });
 });
 
 // Outbox: cada 5 s (FOR UPDATE SKIP LOCKED permite varios workers en paralelo).

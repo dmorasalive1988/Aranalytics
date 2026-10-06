@@ -19,9 +19,20 @@
     "stepOf": "Passo {current} de {total}",
     "you": "Você",
     "comingSoon": "Em breve",
-    "languages": { "es": "Español", "en": "English", "pt-BR": "Português" }
+    "languages": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português"
+    }
   },
-  "nav": { "home": "Início", "works": "Obras", "network": "Rede", "sync": "Sync", "payments": "Pagamentos", "main": "Navegação principal" },
+  "nav": {
+    "home": "Início",
+    "works": "Obras",
+    "network": "Rede",
+    "sync": "Sync",
+    "payments": "Pagamentos",
+    "main": "Navegação principal"
+  },
   "welcome": {
     "headline": "Onde nascem as canções.",
     "sub": "Registre suas obras, assine seus splits e receba seus royalties no mundo todo. Suas canções continuam 100% suas.",
@@ -87,7 +98,11 @@
       "name": "Nome completo do responsável",
       "email": "E-mail do responsável",
       "relationship": "Parentesco",
-      "relationships": { "madre": "Mãe", "padre": "Pai", "tutor": "Responsável legal" }
+      "relationships": {
+        "madre": "Mãe",
+        "padre": "Pai",
+        "tutor": "Responsável legal"
+      }
     },
     "plan": {
       "title": "Escolha seu plano",
@@ -198,7 +213,12 @@
     },
     "aiHint": "A declaração é obrigatória e não afeta seu registro.",
     "create": "Salvar e continuar",
-    "languages": { "es": "Espanhol", "en": "Inglês", "pt": "Português", "other": "Outro" }
+    "languages": {
+      "es": "Espanhol",
+      "en": "Inglês",
+      "pt": "Português",
+      "other": "Outro"
+    }
   },
   "files": {
     "title": "Demo de áudio",
@@ -341,15 +361,28 @@
     "keepPro": "Continuar no Pro",
     "payments": "Pagamentos da assinatura",
     "noPayments": "Nenhum pagamento ainda.",
-    "paymentKinds": { "new": "Adesão", "renewal": "Renovação", "upgrade_proration": "Mudança para o Pro" },
+    "paymentKinds": {
+      "new": "Adesão",
+      "renewal": "Renovação",
+      "upgrade_proration": "Mudança para o Pro"
+    },
     "privacy": "Privacidade e dados",
     "privacyBody": "Você pode pedir uma cópia dos seus dados ou a exclusão deles. Respondemos conforme a LGPD, o Habeas Data e a CCPA.",
     "privacyCta": "Escrever para privacidade"
   },
   "soon": {
-    "network": { "title": "A Rede Pluma", "body": "Publique o que você procura (“tenho um beat, procuro refrão”) e encontre coautores com créditos verificados. Chega na próxima fase." },
-    "sync": { "title": "Sync", "body": "Leve suas obras a supervisores musicais e agências. Ative o catálogo de sync em cada obra (plano Pro)." },
-    "payments": { "title": "Pagamentos", "body": "Aqui você vai ver seus statements oficiais, seu saldo e seus saques. O primeiro statement chega pelo calendário oficial de pagamentos." }
+    "network": {
+      "title": "A Rede Pluma",
+      "body": "Publique o que você procura (“tenho um beat, procuro refrão”) e encontre coautores com créditos verificados. Chega na próxima fase."
+    },
+    "sync": {
+      "title": "Sync",
+      "body": "Leve suas obras a supervisores musicais e agências. Ative o catálogo de sync em cada obra (plano Pro)."
+    },
+    "payments": {
+      "title": "Pagamentos",
+      "body": "Aqui você vai ver seus statements oficiais, seu saldo e seus saques. O primeiro statement chega pelo calendário oficial de pagamentos."
+    }
   },
   "devCheckout": {
     "title": "Pagamento de teste",
@@ -401,6 +434,115 @@
     "INVITATION_NOT_OPEN": "O convite não está mais ativo.",
     "INVITATION_NOT_FOUND": "Não encontramos o convite.",
     "REASON_REQUIRED": "Conte o motivo (mínimo de 5 caracteres).",
-    "AR_REQUIRES_UNRECORDED": "O catálogo A&R é só para obras inéditas."
+    "AR_REQUIRES_UNRECORDED": "O catálogo A&R é só para obras inéditas.",
+    "PERIOD_ALREADY_PUBLISHED": "O período já foi publicado.",
+    "KYC_REQUIRED": "Primeiro precisamos verificar sua identidade.",
+    "TAX_PROFILE_REQUIRED": "Complete seus dados fiscais.",
+    "PAYOUT_METHOD_REQUIRED": "Adicione onde pagamos você.",
+    "PAYOUT_BELOW_MINIMUM": "O valor está abaixo do mínimo.",
+    "PAYOUT_ABOVE_BALANCE": "O valor é maior que seu saldo disponível.",
+    "PAYOUT_DETAILS_INVALID": "Confira os dados da conta.",
+    "PAYOUT_PROVIDER_INVALID": "Escolha um provedor.",
+    "TAX_ID_INVALID": "Confira o número de identificação fiscal.",
+    "CURRENCY_INVALID": "Escolha uma moeda."
+  },
+  "payments": {
+    "title": "Pagamentos",
+    "balance": "Saldo disponível",
+    "nextStatement": "Próximo statement oficial",
+    "noCalendar": "Avisamos assim que a data oficial for confirmada.",
+    "withdraw": "Sacar",
+    "history": "Royalties por período",
+    "statements": "Statements oficiais",
+    "noStatements": "Você ainda não tem statements. O primeiro chega pelo calendário oficial de pagamentos.",
+    "held": "Retido por disputa",
+    "net": "Líquido",
+    "analytics": "Análises",
+    "payouts": "Saques",
+    "noPayouts": "Você ainda não pediu saques.",
+    "payoutStatus": {
+      "requested": "Solicitado",
+      "approved": "Aprovado",
+      "sent": "Enviado",
+      "paid": "Pago",
+      "failed": "Falhou · saldo devolvido",
+      "canceled": "Cancelado"
+    },
+    "alerts": "Alertas",
+    "alertNoIncome": "“{title}” não teve receita nos dois últimos períodos. Confira se está completa e registrada.",
+    "alertNewTerritory": "Receita nova de {territory} neste período.",
+    "chartLabel": "Líquido por período, em USD"
+  },
+  "statement": {
+    "title": "Statement {period}",
+    "official": "Statement oficial",
+    "payDate": "Data de pagamento: {date}",
+    "summary": "Resumo",
+    "opening": "Saldo anterior",
+    "gross": "Royalties brutos da sua parte",
+    "commission": "Comissão de administração ({pct})",
+    "withholding": "Retenções fiscais",
+    "held": "Retido por disputa (não somado)",
+    "adjustments": "Ajustes de períodos anteriores",
+    "net": "Líquido do período",
+    "closing": "Saldo depois deste statement",
+    "byWork": "Por obra",
+    "byType": "Por tipo de receita",
+    "bySource": "Por fonte",
+    "byTerritory": "Por território",
+    "share": "Sua parte {pct}",
+    "inDispute": "Em disputa",
+    "downloadPdf": "Baixar PDF",
+    "downloadCsv": "Baixar CSV",
+    "generating": "Estamos gerando o PDF. Atualize em alguns segundos.",
+    "types": {
+      "performance": "Execução pública",
+      "mechanical": "Mecânicos",
+      "youtube_ugc": "YouTube / UGC",
+      "sync": "Sync",
+      "other": "Outros"
+    },
+    "rounding": "Os valores do detalhamento são arredondados; o líquido é o oficial."
+  },
+  "withdraw": {
+    "title": "Sacar saldo",
+    "sub": "Pagamos na sua conta. Antes do primeiro saque, verificamos sua identidade e seus dados fiscais.",
+    "kycTitle": "1. Verificação de identidade",
+    "kycNotStarted": "Precisamos confirmar que é você antes de enviar dinheiro.",
+    "kycStart": "Iniciar verificação",
+    "kycPending": "Estamos revisando sua identidade. Avisamos quando terminar.",
+    "kycApproved": "Identidade verificada.",
+    "kycRejected": "Não conseguimos verificar sua identidade. Fale com a gente para revisar.",
+    "taxTitle": "2. Dados fiscais",
+    "taxCountry": "País de residência fiscal",
+    "taxId": "Número de identificação fiscal",
+    "taxIdHint": "CPF, CNPJ, RFC, NIT… Guardado com criptografia.",
+    "entity": "Tipo",
+    "individual": "Pessoa física",
+    "company": "Empresa",
+    "taxSaved": "Dados fiscais salvos (••{last4}).",
+    "methodTitle": "3. Onde pagamos você?",
+    "provider": "Provedor",
+    "holder": "Titular da conta",
+    "account": "Conta, IBAN ou e-mail do provedor",
+    "bank": "Banco",
+    "currency": "Moeda em que você recebe",
+    "methodSaved": "Pagamos você via {label}.",
+    "amountTitle": "4. Valor",
+    "amount": "Valor em USD",
+    "amountHint": "Mínimo {min}. Disponível: {balance}.",
+    "request": "Solicitar saque",
+    "requested": "Pronto. Pedimos seu saque: vamos revisar e avisamos quando sair.",
+    "saveData": "Salvar"
+  },
+  "analytics": {
+    "title": "Análises",
+    "locked": "As análises avançadas são do plano Pro: tendências por obra, comparação entre períodos e projeção.",
+    "byWork": "Tendência por obra",
+    "compare": "Comparação com o período anterior",
+    "projection": "Projeção do próximo período",
+    "projectionNote": "É uma estimativa com a média dos seus últimos períodos. Não é um valor oficial.",
+    "noData": "Você precisa de pelo menos um statement publicado.",
+    "change": "{pct} vs. período anterior"
   }
 }

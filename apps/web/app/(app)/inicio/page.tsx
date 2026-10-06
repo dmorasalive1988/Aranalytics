@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { HighlightCard, Notice, StatusPill, buttonClass } from '@pluma/ui';
 import { CircleAlert, PenLine } from 'lucide-react';
-import { listMyWorks } from '@pluma/services';
+import { listMyWorks, statements } from '@pluma/services';
 import { WorkRow } from '@/components/work-row';
 import { date, money, planName } from '@/lib/format';
 import { deps, requireMember } from '@/lib/server';
@@ -17,7 +17,7 @@ export default async function Home() {
   const s = await requireMember();
   const t = await getTranslations('home');
   const locale = await getLocale();
-  const [works, pending, balanceCents] = await Promise.all([listMyWorks(deps(), s.userId), pendingForMe(s.userId), balanceFor(s.userId)]);
+  const [works, pending, balanceCents, next] = await Promise.all([listMyWorks(deps(), s.userId), pendingForMe(s.userId), balanceFor(s.userId), statements.nextOfficialStatement(deps())]);
   const name = s.profile?.artistName || s.profile?.legalName.split(' ')[0] || '';
   const m = s.membership!;
   return (
@@ -37,7 +37,8 @@ export default async function Home() {
       <HighlightCard className="flex flex-col gap-1.5">
         <span className="text-[13px] font-medium">{t('balance')}</span>
         <span className="tabular text-[38px] font-bold tracking-[-0.02em]">{money(balanceCents, locale, s.profile?.country)}</span>
-        <span className="text-[13px]">{t('nextStatement')}: {t('nextStatementValue')}</span>
+        <span className="text-[13px]">{t('nextStatement')}: {next ? date(next.payDate, locale, s.profile?.country) : t('nextStatementValue')}</span>
+        <Link href="/pagos" className="mt-1 text-[13px] font-bold text-tinta">{(await getTranslations('payments'))('statements')}</Link>
         {balanceCents === 0 && <span className="mt-1 text-[13px] leading-snug">{t('noStatementYet')}</span>}
       </HighlightCard>
 

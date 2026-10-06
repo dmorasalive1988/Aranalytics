@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, rename, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export interface EmailMessage {
@@ -53,8 +53,11 @@ export class DevMailbox implements EmailSender {
   async send(msg: EmailMessage) {
     await mkdir(this.dir, { recursive: true });
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    await writeFile(join(this.dir, `${id}.json`), JSON.stringify({ id, at: new Date().toISOString(), ...msg }, null, 2));
-    await writeFile(join(this.dir, `${id}.html`), msg.html);
+    // Escritura atómica: quien lea la carpeta nunca ve un archivo a medio escribir.
+    for (const [ext, body] of [['html', msg.html], ['json', JSON.stringify({ id, at: new Date().toISOString(), ...msg }, null, 2)]] as const) {
+      await writeFile(join(this.dir, `.${id}.${ext}.tmp`), body);
+      await rename(join(this.dir, `.${id}.${ext}.tmp`), join(this.dir, `${id}.${ext}`));
+    }
     if (process.env.NODE_ENV !== 'test') console.log(`[correo] ${msg.to} · ${msg.subject}`);
     return { providerMessageId: `dev-${id}` };
   }

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { admin, dispatchPending } from '@pluma/services';
 import { after } from 'next/server';
+import { parseMoneyInput } from '@pluma/domain';
 import { run, str, type ActionState } from '@/lib/actions';
 import { deps, requestCtx, requireStaff } from '@/lib/server';
 
@@ -60,7 +61,7 @@ export async function planAction(code: 'socio' | 'pro', _: ActionState, fd: Form
   return run(async () => {
     const s = await requireStaff();
     const pctToBps = (v: string) => Math.round(Number(v.replace(',', '.')) * 100);
-    const usdToCents = (v: string) => Math.round(Number(v.replace(',', '.')) * 100);
+    const usdToCents = (v: string) => { const n = parseMoneyInput(v); return n === null ? -1 : Math.round(Number(n) * 100); };
     await admin.updatePlan(deps(), s.id, code, {
       commissionBps: pctToBps(str(fd, 'commission')),
       amountCents: usdToCents(str(fd, 'price')),

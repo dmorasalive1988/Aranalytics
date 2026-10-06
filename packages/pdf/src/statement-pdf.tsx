@@ -1,3 +1,5 @@
+/** @jsxRuntime automatic */
+/** @jsxImportSource react */
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Document, Font, Page, Path, Rect, G, Svg, StyleSheet, Text, View, renderToBuffer } from '@react-pdf/renderer';

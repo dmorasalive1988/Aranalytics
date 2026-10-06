@@ -18,8 +18,9 @@ export default async function StaffLayout({ children }: { children: React.ReactN
               { href: '/obras', label: 'Obras' },
               { href: '/exportar', label: 'Exportar para registro' },
               { href: '/disputas', label: 'Disputas y conflictos' },
-              { href: '/statements', label: 'Statements', soon: true },
-              { href: '/pagos', label: 'Pagos', soon: true },
+              { href: '/statements', label: 'Statements' },
+              { href: '/matching', label: 'Matching' },
+              { href: '/pagos', label: 'Retiros' },
               { href: '/auditoria', label: 'Auditoría' },
               ...(sa ? [{ href: '/configuracion', label: 'Configuración' }, { href: '/usuarios', label: 'Usuarios internos' }] : []),
             ]}

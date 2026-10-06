@@ -19,9 +19,20 @@
     "stepOf": "Paso {current} de {total}",
     "you": "Tú",
     "comingSoon": "Muy pronto",
-    "languages": { "es": "Español", "en": "English", "pt-BR": "Português" }
+    "languages": {
+      "es": "Español",
+      "en": "English",
+      "pt-BR": "Português"
+    }
   },
-  "nav": { "home": "Inicio", "works": "Obras", "network": "Red", "sync": "Sync", "payments": "Pagos", "main": "Navegación principal" },
+  "nav": {
+    "home": "Inicio",
+    "works": "Obras",
+    "network": "Red",
+    "sync": "Sync",
+    "payments": "Pagos",
+    "main": "Navegación principal"
+  },
   "welcome": {
     "headline": "Donde nacen las canciones.",
     "sub": "Registra tus obras, firma tus splits y cobra tus regalías en todo el mundo. Tus canciones siguen siendo 100% tuyas.",
@@ -87,7 +98,11 @@
       "name": "Nombre completo del tutor",
       "email": "Correo del tutor",
       "relationship": "Parentesco",
-      "relationships": { "madre": "Madre", "padre": "Padre", "tutor": "Tutor legal" }
+      "relationships": {
+        "madre": "Madre",
+        "padre": "Padre",
+        "tutor": "Tutor legal"
+      }
     },
     "plan": {
       "title": "Elige tu plan",
@@ -198,7 +213,12 @@
     },
     "aiHint": "La declaración es obligatoria y no afecta tu registro.",
     "create": "Guardar y seguir",
-    "languages": { "es": "Español", "en": "Inglés", "pt": "Portugués", "other": "Otro" }
+    "languages": {
+      "es": "Español",
+      "en": "Inglés",
+      "pt": "Portugués",
+      "other": "Otro"
+    }
   },
   "files": {
     "title": "Demo de audio",
@@ -341,15 +361,28 @@
     "keepPro": "Seguir en Pro",
     "payments": "Pagos de membresía",
     "noPayments": "Sin pagos todavía.",
-    "paymentKinds": { "new": "Alta", "renewal": "Renovación", "upgrade_proration": "Mejora a Pro" },
+    "paymentKinds": {
+      "new": "Alta",
+      "renewal": "Renovación",
+      "upgrade_proration": "Mejora a Pro"
+    },
     "privacy": "Privacidad y datos",
     "privacyBody": "Puedes pedir una copia de tus datos o su eliminación. Respondemos según Habeas Data, LGPD y CCPA.",
     "privacyCta": "Escribir a privacidad"
   },
   "soon": {
-    "network": { "title": "La Red Pluma", "body": "Publica lo que buscas (“tengo un beat, busco coro”) y encuentra coautores con créditos verificados. Llega en la próxima fase." },
-    "sync": { "title": "Sync", "body": "Lleva tus obras a supervisores musicales y agencias. Activa el catálogo de sync en cada obra (plan Pro)." },
-    "payments": { "title": "Pagos", "body": "Aquí verás tus statements oficiales, tu saldo y tus retiros. El primer statement llega con el calendario oficial de pagos." }
+    "network": {
+      "title": "La Red Pluma",
+      "body": "Publica lo que buscas (“tengo un beat, busco coro”) y encuentra coautores con créditos verificados. Llega en la próxima fase."
+    },
+    "sync": {
+      "title": "Sync",
+      "body": "Lleva tus obras a supervisores musicales y agencias. Activa el catálogo de sync en cada obra (plan Pro)."
+    },
+    "payments": {
+      "title": "Pagos",
+      "body": "Aquí verás tus statements oficiales, tu saldo y tus retiros. El primer statement llega con el calendario oficial de pagos."
+    }
   },
   "devCheckout": {
     "title": "Pago de prueba",
@@ -401,6 +434,115 @@
     "INVITATION_NOT_OPEN": "La invitación ya no está activa.",
     "INVITATION_NOT_FOUND": "No encontramos la invitación.",
     "REASON_REQUIRED": "Cuéntanos el motivo (mínimo 5 caracteres).",
-    "AR_REQUIRES_UNRECORDED": "El catálogo A&R es solo para obras sin grabar."
+    "AR_REQUIRES_UNRECORDED": "El catálogo A&R es solo para obras sin grabar.",
+    "PERIOD_ALREADY_PUBLISHED": "El período ya está publicado.",
+    "KYC_REQUIRED": "Primero verificamos tu identidad.",
+    "TAX_PROFILE_REQUIRED": "Completa tus datos fiscales.",
+    "PAYOUT_METHOD_REQUIRED": "Agrega dónde te pagamos.",
+    "PAYOUT_BELOW_MINIMUM": "El monto está por debajo del mínimo.",
+    "PAYOUT_ABOVE_BALANCE": "El monto supera tu saldo disponible.",
+    "PAYOUT_DETAILS_INVALID": "Revisa los datos de la cuenta.",
+    "PAYOUT_PROVIDER_INVALID": "Elige un proveedor.",
+    "TAX_ID_INVALID": "Revisa el número de identificación fiscal.",
+    "CURRENCY_INVALID": "Elige una moneda."
+  },
+  "payments": {
+    "title": "Pagos",
+    "balance": "Saldo disponible",
+    "nextStatement": "Próximo statement oficial",
+    "noCalendar": "Te avisaremos cuando se confirme la fecha oficial.",
+    "withdraw": "Retirar",
+    "history": "Regalías por período",
+    "statements": "Statements oficiales",
+    "noStatements": "Aún no tienes statements. El primero llega con el calendario oficial de pagos.",
+    "held": "Retenido por disputa",
+    "net": "Neto",
+    "analytics": "Analítica",
+    "payouts": "Retiros",
+    "noPayouts": "Todavía no has pedido retiros.",
+    "payoutStatus": {
+      "requested": "Solicitado",
+      "approved": "Aprobado",
+      "sent": "Enviado",
+      "paid": "Pagado",
+      "failed": "Falló · saldo devuelto",
+      "canceled": "Cancelado"
+    },
+    "alerts": "Alertas",
+    "alertNoIncome": "“{title}” no tuvo ingresos en los dos últimos períodos. Revisa que esté completa y registrada.",
+    "alertNewTerritory": "Ingresos nuevos en {territory} este período.",
+    "chartLabel": "Neto por período, en USD"
+  },
+  "statement": {
+    "title": "Statement {period}",
+    "official": "Statement oficial",
+    "payDate": "Fecha de pago: {date}",
+    "summary": "Resumen",
+    "opening": "Saldo anterior",
+    "gross": "Regalías brutas de tu parte",
+    "commission": "Comisión de administración ({pct})",
+    "withholding": "Retenciones fiscales",
+    "held": "Retenido por disputa (no se suma)",
+    "adjustments": "Ajustes de períodos anteriores",
+    "net": "Neto del período",
+    "closing": "Saldo después de este statement",
+    "byWork": "Por obra",
+    "byType": "Por tipo de ingreso",
+    "bySource": "Por fuente",
+    "byTerritory": "Por territorio",
+    "share": "Tu parte {pct}",
+    "inDispute": "En disputa",
+    "downloadPdf": "Descargar PDF",
+    "downloadCsv": "Descargar CSV",
+    "generating": "Estamos generando el PDF. Recarga en unos segundos.",
+    "types": {
+      "performance": "Ejecución pública",
+      "mechanical": "Mecánicos",
+      "youtube_ugc": "YouTube / UGC",
+      "sync": "Sync",
+      "other": "Otros"
+    },
+    "rounding": "Los montos del desglose están redondeados; el neto es el oficial."
+  },
+  "withdraw": {
+    "title": "Retirar saldo",
+    "sub": "Te pagamos a tu cuenta. Antes del primer retiro verificamos tu identidad y tus datos fiscales.",
+    "kycTitle": "1. Verificación de identidad",
+    "kycNotStarted": "Necesitamos verificar que eres tú antes de enviarte dinero.",
+    "kycStart": "Iniciar verificación",
+    "kycPending": "Estamos revisando tu identidad. Te avisamos al terminar.",
+    "kycApproved": "Identidad verificada.",
+    "kycRejected": "No pudimos verificar tu identidad. Escríbenos para revisarlo.",
+    "taxTitle": "2. Datos fiscales",
+    "taxCountry": "País de residencia fiscal",
+    "taxId": "Número de identificación fiscal",
+    "taxIdHint": "NIT, RFC, CPF, RUT, SSN/ITIN… Se guarda cifrado.",
+    "entity": "Tipo",
+    "individual": "Persona natural",
+    "company": "Empresa",
+    "taxSaved": "Datos fiscales guardados (••{last4}).",
+    "methodTitle": "3. ¿Dónde te pagamos?",
+    "provider": "Proveedor",
+    "holder": "Titular de la cuenta",
+    "account": "Cuenta, IBAN o correo del proveedor",
+    "bank": "Banco",
+    "currency": "Moneda en que recibes",
+    "methodSaved": "Te pagamos en {label}.",
+    "amountTitle": "4. Monto",
+    "amount": "Monto en USD",
+    "amountHint": "Mínimo {min}. Disponible: {balance}.",
+    "request": "Solicitar retiro",
+    "requested": "Listo. Pedimos tu retiro: lo revisamos y te avisamos cuando salga.",
+    "saveData": "Guardar"
+  },
+  "analytics": {
+    "title": "Analítica",
+    "locked": "La analítica avanzada es del plan Pro: tendencias por obra, comparación entre períodos y proyección.",
+    "byWork": "Tendencia por obra",
+    "compare": "Comparación con el período anterior",
+    "projection": "Proyección del próximo período",
+    "projectionNote": "Es un estimado con el promedio de tus últimos períodos. No es un monto oficial.",
+    "noData": "Necesitas al menos un statement publicado.",
+    "change": "{pct} vs. período anterior"
   }
 }
