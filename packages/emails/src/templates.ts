@@ -31,6 +31,7 @@ export interface TemplateData {
   statement_published: { period: string; net: string; topWork: string; highlights: string; statementUrl: string };
   statement_published_zero: { period: string; statementUrl: string };
   payout_sent: { amount: string; method: string; paymentsUrl: string };
+  royalties_unclaimed: { count: number; works: string; paymentsUrl: string };
 }
 export type TemplateName = keyof TemplateData;
 
@@ -222,6 +223,20 @@ const T: { [K in TemplateName]: L<Builder<K>> } = {
     'pt-BR': (d) => ({ subject: `Enviamos seu pagamento de ${d.amount}`, title: 'Seu pagamento está a caminho', blocks: [
       { kind: 'facts', facts: [['Valor', d.amount], ['Método', d.method]] }, { kind: 'p', text: 'Dependendo do seu banco, pode levar de 1 a 3 dias úteis para aparecer.' }, { kind: 'button', text: 'Ver meus pagamentos', href: d.paymentsUrl }] }),
   },
+  royalties_unclaimed: {
+    es: (d) => ({ subject: `Encontramos regalías que podrían ser tuyas`, title: 'Regalías sin reclamar', blocks: [
+      { kind: 'p', text: `En el último statement hay ${d.count} ${d.count === 1 ? 'línea' : 'líneas'} sin asignar que parecen de tus obras: ${d.works}.` },
+      { kind: 'p', text: 'Nuestro equipo ya las está revisando. Si la obra no está registrada en Pluma o le falta un dato, complétala para que no se pierda el pago.' },
+      { kind: 'button', text: 'Revisar mis obras', href: d.paymentsUrl }] }),
+    en: (d) => ({ subject: 'We found royalties that may be yours', title: 'Unclaimed royalties', blocks: [
+      { kind: 'p', text: `The latest statement has ${d.count} unassigned ${d.count === 1 ? 'line' : 'lines'} that look like your songs: ${d.works}.` },
+      { kind: 'p', text: 'Our team is already reviewing them. If the song isn’t registered on Pluma or is missing details, complete it so the payment isn’t lost.' },
+      { kind: 'button', text: 'Review my songs', href: d.paymentsUrl }] }),
+    'pt-BR': (d) => ({ subject: 'Encontramos royalties que podem ser seus', title: 'Royalties não reclamados', blocks: [
+      { kind: 'p', text: `No último statement há ${d.count} ${d.count === 1 ? 'linha' : 'linhas'} sem dono que parecem das suas obras: ${d.works}.` },
+      { kind: 'p', text: 'Nossa equipe já está revisando. Se a obra não estiver registrada na Pluma ou faltar algum dado, complete para não perder o pagamento.' },
+      { kind: 'button', text: 'Revisar minhas obras', href: d.paymentsUrl }] }),
+  },
 };
 
 export function renderEmail<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]) {
@@ -231,3 +246,44 @@ export function renderEmail<K extends TemplateName>(name: K, locale: Locale, dat
 }
 
 export const TEMPLATE_NAMES = Object.keys(T) as TemplateName[];
+
+/* --------------------------- Canales y categorías --------------------------- */
+
+export type NotificationCategory = 'splits' | 'works' | 'money' | 'membership' | 'network' | 'sync';
+
+export const TEMPLATE_CATEGORY: Record<TemplateName, NotificationCategory> = {
+  split_invitation: 'splits', split_reminder: 'splits', split_signed: 'splits', split_completed: 'splits', split_rejected: 'splits',
+  signature_code: 'splits', guardian_code: 'membership',
+  work_status: 'works', work_conflict: 'works',
+  membership_activated: 'membership', renewal_upcoming: 'membership', payment_failed: 'membership', membership_suspended: 'membership',
+  statement_published: 'money', statement_published_zero: 'money', payout_sent: 'money', royalties_unclaimed: 'money',
+};
+
+/** Categorías cuyo correo no se puede apagar: dinero, firmas y membresía (son avisos contractuales). */
+export const MANDATORY_EMAIL: readonly NotificationCategory[] = ['money', 'splits', 'membership'];
+
+const URL_KEYS = ['signUrl', 'workUrl', 'statementUrl', 'paymentsUrl', 'manageUrl', 'appUrl'] as const;
+
+/** Push: título y cuerpo cortos, en el idioma de la persona, con el enlace de la notificación. */
+export function renderPush<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]) {
+  const built = (T[name][locale] ?? T[name].es)(data);
+  const d = data as Record<string, unknown>;
+  const url = URL_KEYS.map((k) => d[k]).find((v): v is string => typeof v === 'string') ?? '/';
+  return { title: built.title.slice(0, 80), body: built.subject.slice(0, 160), url };
+}
+
+/**
+ * WhatsApp (opcional): Meta exige plantillas aprobadas previamente. Solo estos avisos salen por
+ * WhatsApp; los parámetros van en el orden de la plantilla registrada.
+ */
+export function whatsappTemplate<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]): { template: string; language: string; params: string[] } | null {
+  const language = locale === 'pt-BR' ? 'pt_BR' : locale === 'en' ? 'en_US' : 'es';
+  const d = data as Record<string, string | number | boolean>;
+  switch (name) {
+    case 'statement_published': return { template: 'pluma_statement_published', language, params: [String(d.period), String(d.net)] };
+    case 'payout_sent': return { template: 'pluma_payout_sent', language, params: [String(d.amount)] };
+    case 'payment_failed': return { template: 'pluma_payment_failed', language, params: [String(d.graceEndsOn)] };
+    case 'split_invitation': return d.isMember ? { template: 'pluma_split_invitation', language, params: [String(d.inviterName), String(d.workTitle)] } : null;
+    default: return null;
+  }
+}

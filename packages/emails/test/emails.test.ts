@@ -16,3 +16,19 @@ describe('correos', () => {
     expect(r.text).toContain('https://firma.pluma.mu/t/abc');
   });
 });
+
+import { TEMPLATE_CATEGORY, TEMPLATE_NAMES, renderPush, whatsappTemplate } from '../src';
+describe('canales', () => {
+  it('cada plantilla tiene categoría', () => {
+    for (const n of TEMPLATE_NAMES) expect(TEMPLATE_CATEGORY[n], n).toBeTruthy();
+  });
+  it('push corto con enlace', () => {
+    const p = renderPush('statement_published', 'en', { period: '2026-Q2', net: 'USD 1,284.50', topWork: 'Luna', highlights: '', statementUrl: 'https://app.pluma.mu/pagos/x' });
+    expect(p).toEqual({ title: 'Official statement 2026-Q2', body: 'Your 2026-Q2 statement is ready: USD 1,284.50', url: 'https://app.pluma.mu/pagos/x' });
+  });
+  it('WhatsApp solo con plantillas aprobadas y nunca a invitados', () => {
+    expect(whatsappTemplate('statement_published', 'pt-BR', { period: '2026-Q2', net: 'USD 10', topWork: '', highlights: '', statementUrl: '' })).toEqual({ template: 'pluma_statement_published', language: 'pt_BR', params: ['2026-Q2', 'USD 10'] });
+    expect(whatsappTemplate('split_invitation', 'es', { inviterName: 'A', workTitle: 'B', share: '', role: '', signUrl: '', expiresOn: '', isMember: false })).toBeNull();
+    expect(whatsappTemplate('work_conflict', 'es', { workTitle: 'x', workUrl: '' })).toBeNull();
+  });
+});

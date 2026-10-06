@@ -564,8 +564,24 @@ export async function publishRun(deps: Deps, staffId: string | null, runId: stri
       published++;
     }
     await tx.update(t.distributionRuns).set({ status: 'published', publishedBy: staffId, publishedAt: now.toISOString() }).where(eq(t.distributionRuns.id, runId));
+    await detectUnclaimed(tx, run.periodId);
   });
   return { published };
+}
+
+/**
+ * Regalías sin reclamar: líneas del período que quedaron sin asignar (suspenso o sin match) pero cuyo
+ * IPI de autor es el de un autor de Pluma. Un aviso por autor y período (la clave de la notificación lo garantiza).
+ */
+export async function detectUnclaimed(tx: Tx, periodId: string) {
+  const rows = await tx.execute<{ user_id: string; count: number; titles: string[] }>(sql`
+    select wp.user_id, count(*)::int as count, array_agg(distinct coalesce(l.work_title, '—')) as titles
+    from statement_lines l join statement_files f on f.id = l.file_id
+    join writer_profiles wp on wp.ipi is not null and wp.ipi = l.writer_ipi
+    where f.period_id = ${periodId} and f.status <> 'superseded' and l.match_status in ('unmatched', 'suggested', 'suspense')
+    group by wp.user_id`);
+  for (const r of rows) await emit(tx, 'royalties.unclaimed_detected', 'user', r.user_id, { periodId, count: r.count, titles: r.titles.sort() });
+  return rows.length;
 }
 
 /* ------------------------------ Vista del autor ---------------------------- */

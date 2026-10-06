@@ -1,58 +1,50 @@
 // GENERADO. No editar a mano.
 import { relations } from "drizzle-orm/relations";
-import { statementPeriods, statementFiles, users, legalDocuments, agreements, signatures, plans, memberships, membershipPlanPeriods, membershipPayments, workFiles, works, recordings, splitVersions, splitShares, workStatusHistory, workConflicts, publisherSubmissions, writerTerminations, beneficiaryChanges, publishers, fxRates, distributions, statementLines, distributionRuns, advances, writerStatements, writerLedgerEntries, taxCertificates, payouts, payoutMethods, networkRequests, applications, collaborations, arInterests, credits, audioPlays, arInvitations, writerProfiles, proSocieties, guardians, taxProfiles, kycChecks, disputes, holds, syncBriefs, licenseRequests, syncRateCard, briefSubmissions, pushSubscriptions, dataSubjectRequests, reconciliations, syncBuyers, domainEvents, notifications, notificationDeliveries, planPrices, matchSuggestions, workAliases, userRoles, licenseApprovals, notificationPreferences } from "./schema";
+import { users, kycChecks, dataSubjectRequests, signatures, legalDocuments, agreements, publishers, writerProfiles, proSocieties, guardians, taxProfiles, works, recordings, publisherSubmissions, plans, memberships, membershipPlanPeriods, membershipPayments, workFiles, splitVersions, splitShares, workStatusHistory, workConflicts, disputes, beneficiaryChanges, statementPeriods, statementFiles, statementLines, advances, fxRates, distributions, distributionRuns, reconciliations, taxCertificates, payouts, payoutMethods, networkRequests, applications, collaborations, credits, arInvitations, arInterests, holds, syncBuyers, syncBriefs, briefSubmissions, licenseRequests, syncRateCard, domainEvents, notifications, notificationDeliveries, writerTerminations, writerStatements, writerLedgerEntries, audioPlays, pushSubscriptions, planPrices, matchSuggestions, userRoles, licenseApprovals, workAliases, notificationPreferences } from "./schema";
 
-export const statementFilesRelations = relations(statementFiles, ({one, many}) => ({
-	statementPeriod: one(statementPeriods, {
-		fields: [statementFiles.periodId],
-		references: [statementPeriods.id]
-	}),
-	statementFile: one(statementFiles, {
-		fields: [statementFiles.supersedesId],
-		references: [statementFiles.id],
-		relationName: "statementFiles_supersedesId_statementFiles_id"
-	}),
-	statementFiles: many(statementFiles, {
-		relationName: "statementFiles_supersedesId_statementFiles_id"
-	}),
+export const kycChecksRelations = relations(kycChecks, ({one}) => ({
 	user: one(users, {
-		fields: [statementFiles.uploadedBy],
+		fields: [kycChecks.userId],
 		references: [users.id]
 	}),
-	statementLines: many(statementLines),
-}));
-
-export const statementPeriodsRelations = relations(statementPeriods, ({one, many}) => ({
-	statementFiles: many(statementFiles),
-	publisher: one(publishers, {
-		fields: [statementPeriods.publisherId],
-		references: [publishers.id]
-	}),
-	distributionRuns: many(distributionRuns),
-	writerStatements: many(writerStatements),
 }));
 
 export const usersRelations = relations(users, ({many}) => ({
-	statementFiles: many(statementFiles),
+	kycChecks: many(kycChecks),
+	dataSubjectRequests: many(dataSubjectRequests),
+	signatures_onBehalfOfUserId: many(signatures, {
+		relationName: "signatures_onBehalfOfUserId_users_id"
+	}),
+	signatures_signerUserId: many(signatures, {
+		relationName: "signatures_signerUserId_users_id"
+	}),
 	agreements: many(agreements),
+	writerProfiles: many(writerProfiles),
+	taxProfiles: many(taxProfiles),
+	publisherSubmissions: many(publisherSubmissions),
 	memberships: many(memberships),
 	membershipPlanPeriods: many(membershipPlanPeriods),
 	membershipPayments: many(membershipPayments),
+	works: many(works),
 	workFiles: many(workFiles),
 	splitVersions: many(splitVersions),
 	splitShares: many(splitShares),
 	workConflicts: many(workConflicts),
-	publisherSubmissions: many(publisherSubmissions),
-	writerTerminations: many(writerTerminations),
+	disputes_raisedByUserId: many(disputes, {
+		relationName: "disputes_raisedByUserId_users_id"
+	}),
+	disputes_resolvedBy: many(disputes, {
+		relationName: "disputes_resolvedBy_users_id"
+	}),
 	beneficiaryChanges_approvedBy: many(beneficiaryChanges, {
 		relationName: "beneficiaryChanges_approvedBy_users_id"
 	}),
 	beneficiaryChanges_writerUserId: many(beneficiaryChanges, {
 		relationName: "beneficiaryChanges_writerUserId_users_id"
 	}),
-	distributions: many(distributions),
+	statementLines: many(statementLines),
 	advances: many(advances),
-	writerLedgerEntries: many(writerLedgerEntries),
+	distributions: many(distributions),
 	taxCertificates: many(taxCertificates),
 	payouts_approvedBy: many(payouts, {
 		relationName: "payouts_approvedBy_users_id"
@@ -65,16 +57,36 @@ export const usersRelations = relations(users, ({many}) => ({
 	}),
 	networkRequests: many(networkRequests),
 	applications: many(applications),
-	arInterests: many(arInterests),
 	credits: many(credits),
-	audioPlays: many(audioPlays),
 	arInvitations_acceptedUserId: many(arInvitations, {
 		relationName: "arInvitations_acceptedUserId_users_id"
 	}),
 	arInvitations_invitedBy: many(arInvitations, {
 		relationName: "arInvitations_invitedBy_users_id"
 	}),
-	writerProfiles: many(writerProfiles),
+	arInterests: many(arInterests),
+	holds_decidedBy: many(holds, {
+		relationName: "holds_decidedBy_users_id"
+	}),
+	holds_requesterUserId: many(holds, {
+		relationName: "holds_requesterUserId_users_id"
+	}),
+	syncBuyers: many(syncBuyers),
+	syncBriefs: many(syncBriefs),
+	briefSubmissions: many(briefSubmissions),
+	licenseRequests_buyerUserId: many(licenseRequests, {
+		relationName: "licenseRequests_buyerUserId_users_id"
+	}),
+	licenseRequests_operatorId: many(licenseRequests, {
+		relationName: "licenseRequests_operatorId_users_id"
+	}),
+	notifications: many(notifications),
+	writerTerminations: many(writerTerminations),
+	writerStatements: many(writerStatements),
+	writerLedgerEntries: many(writerLedgerEntries),
+	audioPlays: many(audioPlays),
+	pushSubscriptions: many(pushSubscriptions),
+	payoutMethods: many(payoutMethods),
 	distributionRuns_approvedBy: many(distributionRuns, {
 		relationName: "distributionRuns_approvedBy_users_id"
 	}),
@@ -84,43 +96,7 @@ export const usersRelations = relations(users, ({many}) => ({
 	distributionRuns_publishedBy: many(distributionRuns, {
 		relationName: "distributionRuns_publishedBy_users_id"
 	}),
-	taxProfiles: many(taxProfiles),
-	payoutMethods: many(payoutMethods),
-	kycChecks: many(kycChecks),
-	signatures_onBehalfOfUserId: many(signatures, {
-		relationName: "signatures_onBehalfOfUserId_users_id"
-	}),
-	signatures_signerUserId: many(signatures, {
-		relationName: "signatures_signerUserId_users_id"
-	}),
-	works: many(works),
-	disputes_raisedByUserId: many(disputes, {
-		relationName: "disputes_raisedByUserId_users_id"
-	}),
-	disputes_resolvedBy: many(disputes, {
-		relationName: "disputes_resolvedBy_users_id"
-	}),
-	statementLines: many(statementLines),
-	holds_decidedBy: many(holds, {
-		relationName: "holds_decidedBy_users_id"
-	}),
-	holds_requesterUserId: many(holds, {
-		relationName: "holds_requesterUserId_users_id"
-	}),
-	licenseRequests_buyerUserId: many(licenseRequests, {
-		relationName: "licenseRequests_buyerUserId_users_id"
-	}),
-	licenseRequests_operatorId: many(licenseRequests, {
-		relationName: "licenseRequests_operatorId_users_id"
-	}),
-	briefSubmissions: many(briefSubmissions),
-	pushSubscriptions: many(pushSubscriptions),
-	dataSubjectRequests: many(dataSubjectRequests),
-	writerStatements: many(writerStatements),
-	syncBuyers: many(syncBuyers),
-	syncBriefs: many(syncBriefs),
-	notifications: many(notifications),
-	workAliases: many(workAliases),
+	statementFiles: many(statementFiles),
 	userRoles_grantedBy: many(userRoles, {
 		relationName: "userRoles_grantedBy_users_id"
 	}),
@@ -128,7 +104,30 @@ export const usersRelations = relations(users, ({many}) => ({
 		relationName: "userRoles_userId_users_id"
 	}),
 	licenseApprovals: many(licenseApprovals),
+	workAliases: many(workAliases),
 	notificationPreferences: many(notificationPreferences),
+}));
+
+export const dataSubjectRequestsRelations = relations(dataSubjectRequests, ({one}) => ({
+	user: one(users, {
+		fields: [dataSubjectRequests.userId],
+		references: [users.id]
+	}),
+}));
+
+export const signaturesRelations = relations(signatures, ({one, many}) => ({
+	user_onBehalfOfUserId: one(users, {
+		fields: [signatures.onBehalfOfUserId],
+		references: [users.id],
+		relationName: "signatures_onBehalfOfUserId_users_id"
+	}),
+	user_signerUserId: one(users, {
+		fields: [signatures.signerUserId],
+		references: [users.id],
+		relationName: "signatures_signerUserId_users_id"
+	}),
+	agreements: many(agreements),
+	splitShares: many(splitShares),
 }));
 
 export const agreementsRelations = relations(agreements, ({one}) => ({
@@ -150,18 +149,90 @@ export const legalDocumentsRelations = relations(legalDocuments, ({many}) => ({
 	agreements: many(agreements),
 }));
 
-export const signaturesRelations = relations(signatures, ({one, many}) => ({
-	agreements: many(agreements),
-	splitShares: many(splitShares),
-	user_onBehalfOfUserId: one(users, {
-		fields: [signatures.onBehalfOfUserId],
-		references: [users.id],
-		relationName: "signatures_onBehalfOfUserId_users_id"
+export const writerProfilesRelations = relations(writerProfiles, ({one, many}) => ({
+	publisher: one(publishers, {
+		fields: [writerProfiles.publisherId],
+		references: [publishers.id]
 	}),
-	user_signerUserId: one(users, {
-		fields: [signatures.signerUserId],
-		references: [users.id],
-		relationName: "signatures_signerUserId_users_id"
+	proSociety: one(proSocieties, {
+		fields: [writerProfiles.societyCode],
+		references: [proSocieties.code]
+	}),
+	user: one(users, {
+		fields: [writerProfiles.userId],
+		references: [users.id]
+	}),
+	guardians: many(guardians),
+}));
+
+export const publishersRelations = relations(publishers, ({many}) => ({
+	writerProfiles: many(writerProfiles),
+	works: many(works),
+	statementPeriods: many(statementPeriods),
+	plans: many(plans),
+}));
+
+export const proSocietiesRelations = relations(proSocieties, ({many}) => ({
+	writerProfiles: many(writerProfiles),
+}));
+
+export const guardiansRelations = relations(guardians, ({one}) => ({
+	writerProfile: one(writerProfiles, {
+		fields: [guardians.writerUserId],
+		references: [writerProfiles.userId]
+	}),
+}));
+
+export const taxProfilesRelations = relations(taxProfiles, ({one}) => ({
+	user: one(users, {
+		fields: [taxProfiles.userId],
+		references: [users.id]
+	}),
+}));
+
+export const recordingsRelations = relations(recordings, ({one}) => ({
+	work: one(works, {
+		fields: [recordings.workId],
+		references: [works.id]
+	}),
+}));
+
+export const worksRelations = relations(works, ({one, many}) => ({
+	recordings: many(recordings),
+	user: one(users, {
+		fields: [works.createdBy],
+		references: [users.id]
+	}),
+	publisher: one(publishers, {
+		fields: [works.publisherId],
+		references: [publishers.id]
+	}),
+	workFiles: many(workFiles),
+	splitVersions: many(splitVersions),
+	workStatusHistories: many(workStatusHistory),
+	workConflicts_conflictingWorkId: many(workConflicts, {
+		relationName: "workConflicts_conflictingWorkId_works_id"
+	}),
+	workConflicts_workId: many(workConflicts, {
+		relationName: "workConflicts_workId_works_id"
+	}),
+	disputes: many(disputes),
+	statementLines: many(statementLines),
+	collaborations: many(collaborations),
+	credits: many(credits),
+	arInterests: many(arInterests),
+	holds: many(holds),
+	briefSubmissions: many(briefSubmissions),
+	licenseRequests: many(licenseRequests),
+	writerStatements: many(writerStatements),
+	matchSuggestions: many(matchSuggestions),
+	workAliases: many(workAliases),
+}));
+
+export const publisherSubmissionsRelations = relations(publisherSubmissions, ({one}) => ({
+	user: one(users, {
+		fields: [publisherSubmissions.createdBy],
+		references: [users.id]
 	}),
 }));
 
@@ -211,45 +282,6 @@ export const workFilesRelations = relations(workFiles, ({one, many}) => ({
 	networkRequests: many(networkRequests),
 	applications: many(applications),
 	audioPlays: many(audioPlays),
-}));
-
-export const worksRelations = relations(works, ({one, many}) => ({
-	workFiles: many(workFiles),
-	recordings: many(recordings),
-	splitVersions: many(splitVersions),
-	workStatusHistories: many(workStatusHistory),
-	workConflicts_conflictingWorkId: many(workConflicts, {
-		relationName: "workConflicts_conflictingWorkId_works_id"
-	}),
-	workConflicts_workId: many(workConflicts, {
-		relationName: "workConflicts_workId_works_id"
-	}),
-	collaborations: many(collaborations),
-	arInterests: many(arInterests),
-	credits: many(credits),
-	user: one(users, {
-		fields: [works.createdBy],
-		references: [users.id]
-	}),
-	publisher: one(publishers, {
-		fields: [works.publisherId],
-		references: [publishers.id]
-	}),
-	disputes: many(disputes),
-	statementLines: many(statementLines),
-	holds: many(holds),
-	licenseRequests: many(licenseRequests),
-	briefSubmissions: many(briefSubmissions),
-	writerStatements: many(writerStatements),
-	matchSuggestions: many(matchSuggestions),
-	workAliases: many(workAliases),
-}));
-
-export const recordingsRelations = relations(recordings, ({one}) => ({
-	work: one(works, {
-		fields: [recordings.workId],
-		references: [works.id]
-	}),
 }));
 
 export const splitVersionsRelations = relations(splitVersions, ({one, many}) => ({
@@ -305,17 +337,24 @@ export const workConflictsRelations = relations(workConflicts, ({one}) => ({
 	}),
 }));
 
-export const publisherSubmissionsRelations = relations(publisherSubmissions, ({one}) => ({
-	user: one(users, {
-		fields: [publisherSubmissions.createdBy],
-		references: [users.id]
+export const disputesRelations = relations(disputes, ({one}) => ({
+	user_raisedByUserId: one(users, {
+		fields: [disputes.raisedByUserId],
+		references: [users.id],
+		relationName: "disputes_raisedByUserId_users_id"
 	}),
-}));
-
-export const writerTerminationsRelations = relations(writerTerminations, ({one}) => ({
-	user: one(users, {
-		fields: [writerTerminations.userId],
-		references: [users.id]
+	user_resolvedBy: one(users, {
+		fields: [disputes.resolvedBy],
+		references: [users.id],
+		relationName: "disputes_resolvedBy_users_id"
+	}),
+	splitVersion: one(splitVersions, {
+		fields: [disputes.splitVersionId],
+		references: [splitVersions.id]
+	}),
+	work: one(works, {
+		fields: [disputes.workId],
+		references: [works.id]
 	}),
 }));
 
@@ -332,11 +371,58 @@ export const beneficiaryChangesRelations = relations(beneficiaryChanges, ({one})
 	}),
 }));
 
-export const publishersRelations = relations(publishers, ({many}) => ({
-	statementPeriods: many(statementPeriods),
-	writerProfiles: many(writerProfiles),
-	works: many(works),
-	plans: many(plans),
+export const statementPeriodsRelations = relations(statementPeriods, ({one, many}) => ({
+	publisher: one(publishers, {
+		fields: [statementPeriods.publisherId],
+		references: [publishers.id]
+	}),
+	writerStatements: many(writerStatements),
+	distributionRuns: many(distributionRuns),
+	statementFiles: many(statementFiles),
+}));
+
+export const statementLinesRelations = relations(statementLines, ({one, many}) => ({
+	statementFile: one(statementFiles, {
+		fields: [statementLines.fileId],
+		references: [statementFiles.id]
+	}),
+	user: one(users, {
+		fields: [statementLines.matchedBy],
+		references: [users.id]
+	}),
+	work: one(works, {
+		fields: [statementLines.matchedWorkId],
+		references: [works.id]
+	}),
+	distributions: many(distributions),
+	matchSuggestions: many(matchSuggestions),
+}));
+
+export const statementFilesRelations = relations(statementFiles, ({one, many}) => ({
+	statementLines: many(statementLines),
+	statementPeriod: one(statementPeriods, {
+		fields: [statementFiles.periodId],
+		references: [statementPeriods.id]
+	}),
+	statementFile: one(statementFiles, {
+		fields: [statementFiles.supersedesId],
+		references: [statementFiles.id],
+		relationName: "statementFiles_supersedesId_statementFiles_id"
+	}),
+	statementFiles: many(statementFiles, {
+		relationName: "statementFiles_supersedesId_statementFiles_id"
+	}),
+	user: one(users, {
+		fields: [statementFiles.uploadedBy],
+		references: [users.id]
+	}),
+}));
+
+export const advancesRelations = relations(advances, ({one}) => ({
+	user: one(users, {
+		fields: [advances.writerUserId],
+		references: [users.id]
+	}),
 }));
 
 export const distributionsRelations = relations(distributions, ({one}) => ({
@@ -366,25 +452,10 @@ export const fxRatesRelations = relations(fxRates, ({many}) => ({
 	distributions: many(distributions),
 }));
 
-export const statementLinesRelations = relations(statementLines, ({one, many}) => ({
-	distributions: many(distributions),
-	statementFile: one(statementFiles, {
-		fields: [statementLines.fileId],
-		references: [statementFiles.id]
-	}),
-	user: one(users, {
-		fields: [statementLines.matchedBy],
-		references: [users.id]
-	}),
-	work: one(works, {
-		fields: [statementLines.matchedWorkId],
-		references: [works.id]
-	}),
-	matchSuggestions: many(matchSuggestions),
-}));
-
 export const distributionRunsRelations = relations(distributionRuns, ({one, many}) => ({
 	distributions: many(distributions),
+	reconciliations: many(reconciliations),
+	writerStatements: many(writerStatements),
 	user_approvedBy: one(users, {
 		fields: [distributionRuns.approvedBy],
 		references: [users.id],
@@ -404,45 +475,12 @@ export const distributionRunsRelations = relations(distributionRuns, ({one, many
 		references: [users.id],
 		relationName: "distributionRuns_publishedBy_users_id"
 	}),
-	reconciliations: many(reconciliations),
-	writerStatements: many(writerStatements),
 }));
 
-export const advancesRelations = relations(advances, ({one}) => ({
-	user: one(users, {
-		fields: [advances.writerUserId],
-		references: [users.id]
-	}),
-}));
-
-export const writerLedgerEntriesRelations = relations(writerLedgerEntries, ({one}) => ({
-	writerStatement: one(writerStatements, {
-		fields: [writerLedgerEntries.writerStatementId],
-		references: [writerStatements.id]
-	}),
-	user: one(users, {
-		fields: [writerLedgerEntries.writerUserId],
-		references: [users.id]
-	}),
-}));
-
-export const writerStatementsRelations = relations(writerStatements, ({one, many}) => ({
-	writerLedgerEntries: many(writerLedgerEntries),
-	statementPeriod: one(statementPeriods, {
-		fields: [writerStatements.periodId],
-		references: [statementPeriods.id]
-	}),
+export const reconciliationsRelations = relations(reconciliations, ({one}) => ({
 	distributionRun: one(distributionRuns, {
-		fields: [writerStatements.runId],
+		fields: [reconciliations.runId],
 		references: [distributionRuns.id]
-	}),
-	work: one(works, {
-		fields: [writerStatements.topWorkId],
-		references: [works.id]
-	}),
-	user: one(users, {
-		fields: [writerStatements.writerUserId],
-		references: [users.id]
 	}),
 }));
 
@@ -527,17 +565,6 @@ export const collaborationsRelations = relations(collaborations, ({one}) => ({
 	}),
 }));
 
-export const arInterestsRelations = relations(arInterests, ({one}) => ({
-	user: one(users, {
-		fields: [arInterests.arUserId],
-		references: [users.id]
-	}),
-	work: one(works, {
-		fields: [arInterests.workId],
-		references: [works.id]
-	}),
-}));
-
 export const creditsRelations = relations(credits, ({one}) => ({
 	user: one(users, {
 		fields: [credits.userId],
@@ -546,17 +573,6 @@ export const creditsRelations = relations(credits, ({one}) => ({
 	work: one(works, {
 		fields: [credits.workId],
 		references: [works.id]
-	}),
-}));
-
-export const audioPlaysRelations = relations(audioPlays, ({one}) => ({
-	workFile: one(workFiles, {
-		fields: [audioPlays.fileId],
-		references: [workFiles.id]
-	}),
-	user: one(users, {
-		fields: [audioPlays.listenerUserId],
-		references: [users.id]
 	}),
 }));
 
@@ -573,64 +589,13 @@ export const arInvitationsRelations = relations(arInvitations, ({one}) => ({
 	}),
 }));
 
-export const writerProfilesRelations = relations(writerProfiles, ({one, many}) => ({
-	publisher: one(publishers, {
-		fields: [writerProfiles.publisherId],
-		references: [publishers.id]
-	}),
-	proSociety: one(proSocieties, {
-		fields: [writerProfiles.societyCode],
-		references: [proSocieties.code]
-	}),
+export const arInterestsRelations = relations(arInterests, ({one}) => ({
 	user: one(users, {
-		fields: [writerProfiles.userId],
+		fields: [arInterests.arUserId],
 		references: [users.id]
-	}),
-	guardians: many(guardians),
-}));
-
-export const proSocietiesRelations = relations(proSocieties, ({many}) => ({
-	writerProfiles: many(writerProfiles),
-}));
-
-export const guardiansRelations = relations(guardians, ({one}) => ({
-	writerProfile: one(writerProfiles, {
-		fields: [guardians.writerUserId],
-		references: [writerProfiles.userId]
-	}),
-}));
-
-export const taxProfilesRelations = relations(taxProfiles, ({one}) => ({
-	user: one(users, {
-		fields: [taxProfiles.userId],
-		references: [users.id]
-	}),
-}));
-
-export const kycChecksRelations = relations(kycChecks, ({one}) => ({
-	user: one(users, {
-		fields: [kycChecks.userId],
-		references: [users.id]
-	}),
-}));
-
-export const disputesRelations = relations(disputes, ({one}) => ({
-	user_raisedByUserId: one(users, {
-		fields: [disputes.raisedByUserId],
-		references: [users.id],
-		relationName: "disputes_raisedByUserId_users_id"
-	}),
-	user_resolvedBy: one(users, {
-		fields: [disputes.resolvedBy],
-		references: [users.id],
-		relationName: "disputes_resolvedBy_users_id"
-	}),
-	splitVersion: one(splitVersions, {
-		fields: [disputes.splitVersionId],
-		references: [splitVersions.id]
 	}),
 	work: one(works, {
-		fields: [disputes.workId],
+		fields: [arInterests.workId],
 		references: [works.id]
 	}),
 }));
@@ -648,6 +613,37 @@ export const holdsRelations = relations(holds, ({one}) => ({
 	}),
 	work: one(works, {
 		fields: [holds.workId],
+		references: [works.id]
+	}),
+}));
+
+export const syncBuyersRelations = relations(syncBuyers, ({one}) => ({
+	user: one(users, {
+		fields: [syncBuyers.userId],
+		references: [users.id]
+	}),
+}));
+
+export const syncBriefsRelations = relations(syncBriefs, ({one, many}) => ({
+	user: one(users, {
+		fields: [syncBriefs.buyerUserId],
+		references: [users.id]
+	}),
+	briefSubmissions: many(briefSubmissions),
+	licenseRequests: many(licenseRequests),
+}));
+
+export const briefSubmissionsRelations = relations(briefSubmissions, ({one}) => ({
+	syncBrief: one(syncBriefs, {
+		fields: [briefSubmissions.briefId],
+		references: [syncBriefs.id]
+	}),
+	user: one(users, {
+		fields: [briefSubmissions.submittedBy],
+		references: [users.id]
+	}),
+	work: one(works, {
+		fields: [briefSubmissions.workId],
 		references: [works.id]
 	}),
 }));
@@ -678,60 +674,8 @@ export const licenseRequestsRelations = relations(licenseRequests, ({one, many})
 	licenseApprovals: many(licenseApprovals),
 }));
 
-export const syncBriefsRelations = relations(syncBriefs, ({one, many}) => ({
-	licenseRequests: many(licenseRequests),
-	briefSubmissions: many(briefSubmissions),
-	user: one(users, {
-		fields: [syncBriefs.buyerUserId],
-		references: [users.id]
-	}),
-}));
-
 export const syncRateCardRelations = relations(syncRateCard, ({many}) => ({
 	licenseRequests: many(licenseRequests),
-}));
-
-export const briefSubmissionsRelations = relations(briefSubmissions, ({one}) => ({
-	syncBrief: one(syncBriefs, {
-		fields: [briefSubmissions.briefId],
-		references: [syncBriefs.id]
-	}),
-	user: one(users, {
-		fields: [briefSubmissions.submittedBy],
-		references: [users.id]
-	}),
-	work: one(works, {
-		fields: [briefSubmissions.workId],
-		references: [works.id]
-	}),
-}));
-
-export const pushSubscriptionsRelations = relations(pushSubscriptions, ({one}) => ({
-	user: one(users, {
-		fields: [pushSubscriptions.userId],
-		references: [users.id]
-	}),
-}));
-
-export const dataSubjectRequestsRelations = relations(dataSubjectRequests, ({one}) => ({
-	user: one(users, {
-		fields: [dataSubjectRequests.userId],
-		references: [users.id]
-	}),
-}));
-
-export const reconciliationsRelations = relations(reconciliations, ({one}) => ({
-	distributionRun: one(distributionRuns, {
-		fields: [reconciliations.runId],
-		references: [distributionRuns.id]
-	}),
-}));
-
-export const syncBuyersRelations = relations(syncBuyers, ({one}) => ({
-	user: one(users, {
-		fields: [syncBuyers.userId],
-		references: [users.id]
-	}),
 }));
 
 export const notificationsRelations = relations(notifications, ({one, many}) => ({
@@ -757,6 +701,62 @@ export const notificationDeliveriesRelations = relations(notificationDeliveries,
 	}),
 }));
 
+export const writerTerminationsRelations = relations(writerTerminations, ({one}) => ({
+	user: one(users, {
+		fields: [writerTerminations.userId],
+		references: [users.id]
+	}),
+}));
+
+export const writerStatementsRelations = relations(writerStatements, ({one, many}) => ({
+	statementPeriod: one(statementPeriods, {
+		fields: [writerStatements.periodId],
+		references: [statementPeriods.id]
+	}),
+	distributionRun: one(distributionRuns, {
+		fields: [writerStatements.runId],
+		references: [distributionRuns.id]
+	}),
+	work: one(works, {
+		fields: [writerStatements.topWorkId],
+		references: [works.id]
+	}),
+	user: one(users, {
+		fields: [writerStatements.writerUserId],
+		references: [users.id]
+	}),
+	writerLedgerEntries: many(writerLedgerEntries),
+}));
+
+export const writerLedgerEntriesRelations = relations(writerLedgerEntries, ({one}) => ({
+	writerStatement: one(writerStatements, {
+		fields: [writerLedgerEntries.writerStatementId],
+		references: [writerStatements.id]
+	}),
+	user: one(users, {
+		fields: [writerLedgerEntries.writerUserId],
+		references: [users.id]
+	}),
+}));
+
+export const audioPlaysRelations = relations(audioPlays, ({one}) => ({
+	workFile: one(workFiles, {
+		fields: [audioPlays.fileId],
+		references: [workFiles.id]
+	}),
+	user: one(users, {
+		fields: [audioPlays.listenerUserId],
+		references: [users.id]
+	}),
+}));
+
+export const pushSubscriptionsRelations = relations(pushSubscriptions, ({one}) => ({
+	user: one(users, {
+		fields: [pushSubscriptions.userId],
+		references: [users.id]
+	}),
+}));
+
 export const planPricesRelations = relations(planPrices, ({one}) => ({
 	plan: one(plans, {
 		fields: [planPrices.planCode],
@@ -771,17 +771,6 @@ export const matchSuggestionsRelations = relations(matchSuggestions, ({one}) => 
 	}),
 	work: one(works, {
 		fields: [matchSuggestions.workId],
-		references: [works.id]
-	}),
-}));
-
-export const workAliasesRelations = relations(workAliases, ({one}) => ({
-	user: one(users, {
-		fields: [workAliases.createdBy],
-		references: [users.id]
-	}),
-	work: one(works, {
-		fields: [workAliases.workId],
 		references: [works.id]
 	}),
 }));
@@ -807,6 +796,17 @@ export const licenseApprovalsRelations = relations(licenseApprovals, ({one}) => 
 	user: one(users, {
 		fields: [licenseApprovals.writerUserId],
 		references: [users.id]
+	}),
+}));
+
+export const workAliasesRelations = relations(workAliases, ({one}) => ({
+	user: one(users, {
+		fields: [workAliases.createdBy],
+		references: [users.id]
+	}),
+	work: one(works, {
+		fields: [workAliases.workId],
+		references: [works.id]
 	}),
 }));
 

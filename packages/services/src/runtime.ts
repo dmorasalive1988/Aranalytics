@@ -2,6 +2,10 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import {
   DevMailbox,
+  DevPush,
+  DevWhatsApp,
+  MetaWhatsApp,
+  WebPushSender,
   DisabledTsa,
   FakePayments,
   LocalStorage,
@@ -12,6 +16,8 @@ import {
   type EmailSender,
   type ObjectStorage,
   type PaymentProvider,
+  type PushSender,
+  type WhatsAppSender,
 } from '@pluma/adapters';
 import { createDb, type DbHandle } from '@pluma/db';
 import type { Deps } from './deps';
@@ -75,9 +81,23 @@ export function depsFromEnv(): Deps {
       ? new SupabaseStorage(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'))
       : localStorageAdapter();
 
+  // Push: Web Push con VAPID si hay claves; si no, carpeta de desarrollo (en producción son obligatorias).
+  const vapidPublic = process.env.PLUMA_VAPID_PUBLIC ?? null;
+  if (isProd() && !vapidPublic) throw new Error('Falta PLUMA_VAPID_PUBLIC');
+  const push: PushSender = vapidPublic
+    ? new WebPushSender(vapidPublic, env('PLUMA_VAPID_PRIVATE'), env('PLUMA_VAPID_SUBJECT', 'mailto:soporte@pluma.mu'))
+    : new DevPush(process.env.PLUMA_DEV_PUSH_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-push'));
+
+  // WhatsApp: apagado salvo que se configure ("meta" o "dev").
+  const waKind = process.env.PLUMA_WHATSAPP ?? 'off';
+  const whatsapp: WhatsAppSender | null =
+    waKind === 'meta' ? new MetaWhatsApp(env('WHATSAPP_PHONE_NUMBER_ID'), env('WHATSAPP_TOKEN')) : waKind === 'dev' ? new DevWhatsApp(resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-whatsapp')) : null;
+
   g.__plumaDeps = {
     db: g.__plumaDb.db,
     mail,
+    push,
+    whatsapp,
     payments,
     storage,
     tsa: process.env.PLUMA_TSA_URL ? new Rfc3161Tsa(process.env.PLUMA_TSA_URL) : new DisabledTsa(),

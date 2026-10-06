@@ -170,6 +170,21 @@ describe('aprobación y publicación (criterio 4)', () => {
     expect(keys).toHaveLength(0);
   });
 
+  it('avisa a Diego de regalías sin reclamar con su IPI, una sola vez por período', async () => {
+    const unclaimed = h.mails().filter((m) => m.tag === 'royalties_unclaimed');
+    expect(unclaimed).toHaveLength(1);
+    expect(unclaimed[0]!.text).toContain('CANCION QUE NO EXISTE');
+    const [diego] = await deps.db.select().from(t.users).where(eq(t.users.id, W.diego!));
+    expect(unclaimed[0]!.to).toBe(diego!.email);
+    // Volver a detectar no repite el aviso
+    await deps.db.transaction((tx) => S.statements.detectUnclaimed(tx, periodId));
+    await S.dispatchPending(deps, { limit: 500 });
+    expect(h.mails().filter((m) => m.tag === 'royalties_unclaimed')).toHaveLength(1);
+    // Seguimiento del envío del período en el back-office
+    const stats = await S.notifications.deliveryStats(deps, ops, { periodId });
+    expect(stats.email?.sent).toBeGreaterThanOrEqual(3);
+  });
+
   it('publicar de nuevo no duplica nada', async () => {
     expect(await S.statements.publishRun(deps, ops, runId, ctx)).toEqual({ published: 0 });
     const n = await deps.db.execute<{ n: number }>(sql`select count(*)::int as n from writer_statements where period_id = ${periodId}`);

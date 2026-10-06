@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdtempSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { DevMailbox, DisabledTsa, FakePayments, LocalStorage } from '@pluma/adapters';
+import { DevMailbox, DevPush, DevWhatsApp, DisabledTsa, FakePayments, LocalStorage } from '@pluma/adapters';
 import { createDb } from '@pluma/db';
 import * as S from '../src';
 import type { Deps } from '../src';
@@ -12,11 +12,15 @@ export const TEST_URL = process.env.SERVICES_TEST_DATABASE_URL ?? 'postgres://po
 export function makeHarness() {
   const handle = createDb(TEST_URL, { max: 4 });
   const mailDir = mkdtempSync(join(tmpdir(), 'pluma-mail-'));
+  const pushDir = mkdtempSync(join(tmpdir(), 'pluma-push-'));
+  const waDir = mkdtempSync(join(tmpdir(), 'pluma-wa-'));
   const clock = { now: new Date('2026-10-05T15:00:00Z') };
   const payments = new FakePayments('http://app.test', 'secret');
   const deps: Deps = {
     db: handle.db,
     mail: new DevMailbox(mailDir),
+    push: new DevPush(pushDir, 'BTestVapidPublicKey'),
+    whatsapp: new DevWhatsApp(waDir),
     payments,
     storage: new LocalStorage(mkdtempSync(join(tmpdir(), 'pluma-st-')), 'http://app.test/api/dev-storage', 'secret'),
     tsa: new DisabledTsa(),
@@ -33,6 +37,13 @@ export function makeHarness() {
       .filter((f) => f.endsWith('.json'))
       .sort()
       .map((f) => JSON.parse(readFileSync(join(mailDir, f), 'utf8')) as { to: string; subject: string; text: string; tag: string });
+  const readDir = <T>(dir: string) =>
+    readdirSync(dir)
+      .filter((f) => f.endsWith('.json'))
+      .sort()
+      .map((f) => JSON.parse(readFileSync(join(dir, f), 'utf8')) as T);
+  const pushes = () => readDir<{ endpoint: string; title: string; body: string; url: string; tag: string }>(pushDir);
+  const whatsapps = () => readDir<{ to: string; template: string; language: string; params: string[] }>(waDir);
   const lastCodeFor = (email: string) => {
     const m = mails().filter((x) => x.to === email && /code/.test(x.tag)).pop();
     return (m?.subject.match(/\b(\d{6})\b/) ?? m?.text.match(/\b(\d{6})\b/))?.[1] ?? '';
@@ -52,5 +63,5 @@ export function makeHarness() {
     return { id, email };
   }
 
-  return { deps, ctx, clock, payments, mails, lastCodeFor, onboardWriter, close: handle.close, S };
+  return { deps, ctx, clock, payments, mails, pushes, whatsapps, lastCodeFor, onboardWriter, close: handle.close, S };
 }

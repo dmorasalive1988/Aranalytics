@@ -14,7 +14,7 @@ Archivos para probar el pipeline de statements con los datos de ejemplo (`pnpm d
 | 9 | *Midnight* solo con ISWC | Match automático (ISWC) |
 | 10 | *Corrido del Desvelo* por IPI + título | Match automático; la obra está en disputa → **retenido** |
 | 11 | *LUNA DE MEDELLIN (EN VIVO)* con código desconocido | Cola de revisión con sugerencia (*Luna de Medellín*) |
-| 12 | *CANCION QUE NO EXISTE* | Cola de revisión sin sugerencia → suspenso |
+| 12 | *CANCION QUE NO EXISTE* con el IPI de Diego | Cola de revisión sin sugerencia → suspenso. Al publicar, Diego recibe el aviso de **regalías sin reclamar** |
 | 13 | Reverso de −15,00 del período 2026-Q1 | Ajuste negativo que descuenta a los autores de *Luna* |
 | 14–15 | Totales de control | USD 1.398,77 y EUR 40,00 |
 

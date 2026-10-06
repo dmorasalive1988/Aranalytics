@@ -1,6 +1,6 @@
-import { eq, inArray, t, withSystem, sql } from '@pluma/db';
+import { and, eq, inArray, lt, t, withSystem, sql } from '@pluma/db';
 import { formatBps } from '@pluma/domain';
-import { renderEmail, type TemplateData, type TemplateName } from '@pluma/emails';
+import { MANDATORY_EMAIL, TEMPLATE_CATEGORY, renderEmail, renderPush, whatsappTemplate, type NotificationCategory, type TemplateData, type TemplateName } from '@pluma/emails';
 import { guestSignToken } from './crypto';
 import type { Deps } from './deps';
 import { formatDate, formatMoney, intlLocale, type AppLocale } from './format';
@@ -153,6 +153,12 @@ async function messagesFor(deps: Deps, ev: Event): Promise<Outgoing[]> {
       const [m] = await deps.db.select({ label: t.payoutMethods.label }).from(t.payoutMethods).where(eq(t.payoutMethods.id, p.payoutMethodId));
       return [out({ userId: p.writerUserId, email: u.email, locale: u.locale, template: 'payout_sent', data: { amount: formatMoney(Number(p.amountCents), p.currency, u.locale, u.country), method: m?.label ?? '', paymentsUrl: `${deps.appUrl}/pagos` }, key: `payout.sent:${p.id}` })];
     }
+    case 'royalties.unclaimed_detected': {
+      const u = await userInfo(deps, ev.aggregateId);
+      if (!u) return [];
+      const titles = (payload.titles as string[]) ?? [];
+      return [out({ userId: ev.aggregateId, email: u.email, locale: u.locale, template: 'royalties_unclaimed', data: { count: Number(payload.count), works: titles.slice(0, 3).map((x) => `“${x}”`).join(', '), paymentsUrl: `${deps.appUrl}/obras` }, key: `royalties.unclaimed:${ev.aggregateId}:${String(payload.periodId)}` })];
+    }
     default:
       return [];
   }
@@ -196,7 +202,7 @@ async function deliver(deps: Deps, eventId: string, msg: Outgoing): Promise<bool
   const [n] = await withSystem(deps.db, { actorId: null, actorRole: 'system', command: 'notification.create' }, (tx) =>
     tx
       .insert(t.notifications)
-      .values({ eventId, recipientUserId: msg.userId, recipientEmail: msg.email, locale: msg.locale, template: msg.template, idempotencyKey: msg.key, data: msg.data as Record<string, unknown> })
+      .values({ eventId, recipientUserId: msg.userId, recipientEmail: msg.email, locale: msg.locale, template: msg.template, category: TEMPLATE_CATEGORY[msg.template], idempotencyKey: msg.key, data: msg.data as Record<string, unknown> })
       .onConflictDoNothing({ target: t.notifications.idempotencyKey })
       .returning({ id: t.notifications.id }),
   );
@@ -204,34 +210,114 @@ async function deliver(deps: Deps, eventId: string, msg: Outgoing): Promise<bool
   return sendNotification(deps, n.id);
 }
 
-export async function sendNotification(deps: Deps, notificationId: string): Promise<boolean> {
-  const [n] = await deps.db.select().from(t.notifications).where(eq(t.notifications.id, notificationId));
-  if (!n) return false;
+type Channel = 'email' | 'push' | 'whatsapp';
+type Notification = typeof t.notifications.$inferSelect;
+
+/**
+ * Canales de una notificación. El centro in-app siempre la muestra (es la fila misma).
+ * Correo: obligatorio para dinero, splits y membresía; lo demás según preferencia.
+ * Push y WhatsApp: opcionales; WhatsApp solo con número y consentimiento, y solo para plantillas aprobadas.
+ */
+export async function channelsFor(deps: Deps, n: Notification): Promise<Channel[]> {
+  if (!n.recipientUserId) return ['email']; // coautor invitado sin cuenta
+  const category = n.category as NotificationCategory;
+  const prefs = await deps.db.select().from(t.notificationPreferences).where(and(eq(t.notificationPreferences.userId, n.recipientUserId), eq(t.notificationPreferences.category, category)));
+  const on = (c: Channel) => prefs.find((p) => p.channel === c)?.enabled ?? defaultPreference(category, c);
+  const channels: Channel[] = [];
+  if (MANDATORY_EMAIL.includes(category) || on('email')) channels.push('email');
+  if (on('push')) {
+    const [sub] = await deps.db.select({ id: t.pushSubscriptions.id }).from(t.pushSubscriptions).where(eq(t.pushSubscriptions.userId, n.recipientUserId)).limit(1);
+    if (sub) channels.push('push');
+  }
+  if (deps.whatsapp && on('whatsapp') && whatsappTemplate(n.template as TemplateName, n.locale as AppLocale, n.data as never)) {
+    const [u] = await deps.db.select({ phone: t.users.phoneE164, optIn: t.users.whatsappOptInAt }).from(t.users).where(eq(t.users.id, n.recipientUserId));
+    if (u?.phone && u.optIn) channels.push('whatsapp');
+  }
+  return channels;
+}
+
+/** Sin preferencia guardada: correo y push encendidos; WhatsApp solo para dinero. */
+export function defaultPreference(category: NotificationCategory, channel: Channel): boolean {
+  if (channel === 'whatsapp') return category === 'money';
+  return true;
+}
+
+async function recordDelivery(deps: Deps, notificationId: string, channel: Channel, r: { status: 'sent' | 'failed' | 'suppressed'; providerMessageId?: string | null; error?: string | null }) {
+  const now = deps.now().toISOString();
+  const values = { status: r.status, providerMessageId: r.providerMessageId ?? null, sentAt: r.status === 'sent' ? now : null, error: r.error?.slice(0, 500) ?? null };
+  await deps.db
+    .insert(t.notificationDeliveries)
+    .values({ notificationId, channel, attempts: 1, ...values })
+    .onConflictDoUpdate({ target: [t.notificationDeliveries.notificationId, t.notificationDeliveries.channel], set: { ...values, attempts: sql`${t.notificationDeliveries.attempts} + 1` } });
+}
+
+async function sendEmail(deps: Deps, n: Notification) {
+  const [suppressed] = await deps.db.select().from(t.emailSuppressions).where(eq(t.emailSuppressions.email, n.recipientEmail!));
+  if (suppressed) return recordDelivery(deps, n.id, 'email', { status: 'suppressed', error: suppressed.reason }).then(() => true);
   const email = renderEmail(n.template as TemplateName, n.locale as AppLocale, n.data as never);
   try {
     const r = await deps.mail.send({ to: n.recipientEmail!, ...email, tag: n.template, idempotencyKey: n.idempotencyKey });
-    await deps.db
-      .insert(t.notificationDeliveries)
-      .values({ notificationId: n.id, channel: 'email', status: 'sent', providerMessageId: r.providerMessageId, sentAt: deps.now().toISOString() })
-      .onConflictDoUpdate({ target: [t.notificationDeliveries.notificationId, t.notificationDeliveries.channel], set: { status: 'sent', providerMessageId: r.providerMessageId, sentAt: deps.now().toISOString(), error: null } });
+    await recordDelivery(deps, n.id, 'email', { status: 'sent', providerMessageId: r.providerMessageId });
     return true;
   } catch (e) {
-    await deps.db
-      .insert(t.notificationDeliveries)
-      .values({ notificationId: n.id, channel: 'email', status: 'failed', error: String((e as Error).message).slice(0, 500) })
-      .onConflictDoUpdate({ target: [t.notificationDeliveries.notificationId, t.notificationDeliveries.channel], set: { status: 'failed', error: String((e as Error).message).slice(0, 500) } });
+    await recordDelivery(deps, n.id, 'email', { status: 'failed', error: String((e as Error).message) });
     return false;
   }
 }
 
-/** Reintenta los envíos fallidos (los llama el worker cada hora). */
+async function sendPush(deps: Deps, n: Notification) {
+  const subs = await deps.db.select().from(t.pushSubscriptions).where(eq(t.pushSubscriptions.userId, n.recipientUserId!));
+  const msg = renderPush(n.template as TemplateName, n.locale as AppLocale, n.data as never);
+  let ok = 0;
+  let lastError = '';
+  for (const s of subs) {
+    const r = await deps.push.send({ endpoint: s.endpoint, keys: s.keys as { p256dh: string; auth: string } }, { ...msg, tag: n.idempotencyKey });
+    if (r.ok) ok++;
+    else {
+      lastError = r.error;
+      if (r.gone) await deps.db.delete(t.pushSubscriptions).where(eq(t.pushSubscriptions.id, s.id));
+    }
+  }
+  // Un dispositivo que ya no existe no es un fallo que valga reintentar.
+  const allGone = ok === 0 && !(await deps.db.select({ id: t.pushSubscriptions.id }).from(t.pushSubscriptions).where(eq(t.pushSubscriptions.userId, n.recipientUserId!)).limit(1)).length;
+  await recordDelivery(deps, n.id, 'push', ok > 0 ? { status: 'sent' } : allGone ? { status: 'suppressed', error: 'sin dispositivos' } : { status: 'failed', error: lastError });
+  return ok > 0 || allGone;
+}
+
+async function sendWhatsApp(deps: Deps, n: Notification) {
+  const tpl = whatsappTemplate(n.template as TemplateName, n.locale as AppLocale, n.data as never);
+  const [u] = await deps.db.select({ phone: t.users.phoneE164, optIn: t.users.whatsappOptInAt }).from(t.users).where(eq(t.users.id, n.recipientUserId!));
+  if (!deps.whatsapp || !tpl || !u?.phone || !u.optIn) return recordDelivery(deps, n.id, 'whatsapp', { status: 'suppressed', error: 'sin consentimiento' }).then(() => true);
+  try {
+    const r = await deps.whatsapp.send({ to: u.phone, ...tpl });
+    await recordDelivery(deps, n.id, 'whatsapp', { status: 'sent', providerMessageId: r.providerMessageId });
+    return true;
+  } catch (e) {
+    await recordDelivery(deps, n.id, 'whatsapp', { status: 'failed', error: String((e as Error).message) });
+    return false;
+  }
+}
+
+const SENDERS: Record<Channel, (deps: Deps, n: Notification) => Promise<boolean>> = { email: sendEmail, push: sendPush, whatsapp: sendWhatsApp };
+
+/** Envía una notificación por sus canales (o solo por uno, al reintentar). true si todos salieron. */
+export async function sendNotification(deps: Deps, notificationId: string, only?: Channel): Promise<boolean> {
+  const [n] = await deps.db.select().from(t.notifications).where(eq(t.notifications.id, notificationId));
+  if (!n) return false;
+  const channels = only ? [only] : await channelsFor(deps, n);
+  let all = true;
+  for (const c of channels) if (!(await SENDERS[c](deps, n))) all = false;
+  return all;
+}
+
+/** Reintenta los envíos fallidos (los llama el worker cada hora), hasta 5 intentos por canal. */
 export async function retryFailedDeliveries(deps: Deps) {
   const failed = await deps.db
-    .select({ id: t.notificationDeliveries.notificationId })
+    .select({ id: t.notificationDeliveries.notificationId, channel: t.notificationDeliveries.channel })
     .from(t.notificationDeliveries)
-    .where(eq(t.notificationDeliveries.status, 'failed'))
+    .where(and(eq(t.notificationDeliveries.status, 'failed'), lt(t.notificationDeliveries.attempts, 5)))
     .limit(100);
   let ok = 0;
-  for (const f of failed) if (await sendNotification(deps, f.id)) ok++;
+  for (const f of failed) if (await sendNotification(deps, f.id, f.channel as Channel)) ok++;
   return { retried: failed.length, ok };
 }

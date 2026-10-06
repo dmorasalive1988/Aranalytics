@@ -1,9 +1,12 @@
-import type { EmailSender, ObjectStorage, PaymentProvider, TimestampAuthority } from '@pluma/adapters';
+import type { EmailSender, ObjectStorage, PaymentProvider, PushSender, TimestampAuthority, WhatsAppSender } from '@pluma/adapters';
 import type { Db } from '@pluma/db';
 
 export interface Deps {
   db: Db;
   mail: EmailSender;
+  push: PushSender;
+  /** null = WhatsApp apagado (por defecto). */
+  whatsapp: WhatsAppSender | null;
   payments: PaymentProvider;
   storage: ObjectStorage;
   tsa: TimestampAuthority;
