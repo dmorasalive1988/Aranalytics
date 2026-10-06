@@ -6,7 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import { run, str, type ActionState } from '@/lib/actions';
 import { deps, requestCtx, requireUser } from '@/lib/server';
 
-const appUrl = () => process.env.PLUMA_APP_URL ?? 'http://localhost:3000';
+const appUrl = () => deps().appUrl;
 
 export async function profileAction(_: ActionState, fd: FormData): Promise<ActionState> {
   return run(async () => {

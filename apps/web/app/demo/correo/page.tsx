@@ -28,7 +28,7 @@ export default async function DemoMail({ searchParams }: { searchParams: Promise
       <form className="flex flex-wrap items-end gap-3" role="search">
         <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm font-medium text-fg-2">
           {t('filter')}
-          <input name="para" type="email" defaultValue={para} placeholder="valentina@pluma.test" className="h-11 rounded-xl border border-[#6B6E8C] bg-surface px-3 text-[15px] text-fg" />
+          <input name="para" type="email" defaultValue={para} className="h-11 rounded-xl border border-[#6B6E8C] bg-surface px-3 text-[15px] text-fg" />
         </label>
         <button className="h-11 rounded-xl bg-ambar px-4 text-sm font-bold text-tinta">{t('search')}</button>
         {para && <Link href="/demo/correo" className="min-h-11 content-center text-sm font-bold">{t('all')}</Link>}

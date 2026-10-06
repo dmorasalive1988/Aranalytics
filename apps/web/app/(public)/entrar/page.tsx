@@ -3,8 +3,6 @@ import { getTranslations } from 'next-intl/server';
 import { Field, Input, ScreenTitle, buttonClass } from '@pluma/ui';
 import { ActionForm } from '@/components/action-form';
 import { BackLink } from '@/components/back-link';
-import { isDemoMode } from '@pluma/db/env';
-import { Notice } from '@pluma/ui';
 import { authMode } from '@/lib/server';
 import { oauthAction, signInAction } from '../actions';
 
@@ -20,7 +18,6 @@ export default async function SignIn() {
     <div className="flex flex-col gap-7">
       <BackLink href="/bienvenida" label={tc('back')} />
       <ScreenTitle title={t('loginTitle')} />
-      {isDemoMode() && <Notice tone="info" title={(await getTranslations('demo'))('accounts')}>valentina@pluma.test · diego@pluma.test · sam@pluma.test · camila@pluma.test — pluma-dev-2026</Notice>}
       {authMode() === 'supabase' && (
         <div className="flex flex-col gap-3">
           <form action={oauthAction.bind(null, 'google')}>
@@ -40,6 +37,7 @@ export default async function SignIn() {
         <Field id="password" label={t('password')}>
           <Input id="password" name="password" type="password" autoComplete="current-password" required />
         </Field>
+        <Link href="/olvide" className="-mt-2 self-end text-sm font-bold">{t('forgot')}</Link>
       </ActionForm>
     </div>
   );

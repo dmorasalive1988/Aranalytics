@@ -20,8 +20,11 @@ test('centro de notificaciones y preferencias por canal', async ({ browser }) =>
   await page.waitForURL(/\/notificaciones$/);
   await expect(page.getByRole('heading', { name: 'Notificaciones', level: 1 })).toBeVisible();
   await expect(page.getByRole('list', { name: 'Notificaciones' }).getByRole('link').first()).toContainText('Socio');
-  await page.getByRole('button', { name: 'Marcar todo como leído' }).click();
+  // Al abrir el centro, la campana se apaga sin recargar; y sigue apagada al salir y volver.
   await expect(page.getByRole('link', { name: 'Notificaciones', exact: true })).toBeVisible();
+  await page.goto('/inicio');
+  await expect(page.getByRole('link', { name: 'Notificaciones', exact: true })).toBeVisible();
+  await page.goto('/notificaciones');
 
   await page.getByRole('link', { name: 'Preferencias' }).click();
   await page.waitForURL(/cuenta\/notificaciones/);

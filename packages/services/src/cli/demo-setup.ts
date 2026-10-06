@@ -30,7 +30,7 @@ await applyDemoSchema(direct);
 
 const deps = S.depsFromEnv();
 if (process.env.PLUMA_APP_KIND !== 'admin') {
-  const url = process.env.PLUMA_APP_URL || vercelUrl();
+  const url = S.explicitAppUrl() || vercelUrl();
   if (url) {
     await deps.db.execute(sql`insert into pluma_demo.settings (key, value) values ('app_url', ${url}) on conflict (key) do update set value = excluded.value`);
     console.log(`[demo] app del autor: ${url}`);

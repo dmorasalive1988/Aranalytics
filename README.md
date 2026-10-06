@@ -113,7 +113,7 @@ La demo es accesible para cualquiera con el enlace y su buzón muestra todos los
 ## Desplegar en producción
 
 1. **Supabase**: crea el proyecto y aplica las migraciones con `DATABASE_URL=<conexión directa> pnpm db:migrate`. En el entorno local la capa de compatibilidad solo se aplica si no existe el esquema `auth`; en Supabase no se aplica.
-   - Auth: activa correo con código (en la plantilla de confirmación usa `{{ .Token }}`), Google, Apple y MFA TOTP.
+   - Auth: activa correo con código (en las plantillas "Confirm signup" y "Reset password" usa `{{ .Token }}`), Google, Apple y MFA TOTP.
    - Storage: crea los buckets privados `audio-originals`, `audio-previews`, `documents`, `statements-raw` y `kyc`.
 2. **Stripe**: crea dos precios anuales (Socio USD 20 y Pro USD 50). Pon sus IDs en `STRIPE_PRICE_SOCIO`, `STRIPE_PRICE_PRO` y en `plan_prices.stripe_price_id` (desde Configuración en el back-office). Crea un webhook hacia `https://app.<dominio>/api/webhooks/stripe` con los eventos `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` y `customer.subscription.deleted`.
 3. **Postmark**: verifica el dominio de envío y configura `POSTMARK_TOKEN` y `PLUMA_EMAIL_FROM`. Crea un webhook hacia `https://pluma:<POSTMARK_WEBHOOK_SECRET>@app.<dominio>/api/webhooks/postmark` con los eventos Delivery, Open, Bounce y Spam Complaint: actualizan el seguimiento de envíos y suprimen las direcciones con rebote permanente.

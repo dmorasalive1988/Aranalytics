@@ -27,7 +27,12 @@ export default async function DevCheckout({ searchParams }: { searchParams: Prom
     if (!p) return;
     for (const ev of (dd.payments as FakePayments).completeCheckout(p.userId, p.plan, amount)) await applyPaymentEvent(dd, ev);
     await kickDispatch();
-    const target = next.startsWith((process.env.PLUMA_APP_URL ?? 'http://localhost:3000')) || next.startsWith('/') ? next : '/';
+    // Solo rutas internas: el dominio puede no coincidir con el de la URL de retorno (p. ej. otro despliegue).
+    let target = '/';
+    try {
+      const u = new URL(next, 'http://pluma.local');
+      if (u.pathname.startsWith('/') && !u.pathname.startsWith('//')) target = `${u.pathname}${u.search}`;
+    } catch {}
     redirect(target);
   }
 

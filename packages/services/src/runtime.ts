@@ -60,7 +60,15 @@ function dataKeyFromEnv(): Buffer {
 
 /** URL pública de la app del autor. En Vercel (web) se toma del despliegue; el admin la necesita en PLUMA_APP_URL. */
 export function appUrlFromEnv(): string {
-  return process.env.PLUMA_APP_URL || (process.env.PLUMA_APP_KIND !== 'admin' ? vercelUrl() : undefined) || 'http://localhost:3000';
+  return explicitAppUrl() || (process.env.PLUMA_APP_KIND !== 'admin' ? vercelUrl() : undefined) || 'http://localhost:3000';
+}
+
+/** PLUMA_APP_URL, salvo que en Vercel apunte a localhost (copiada de .env.example). */
+export function explicitAppUrl(): string | undefined {
+  const v = process.env.PLUMA_APP_URL?.trim();
+  if (!v) return undefined;
+  if (onVercel() && /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(v)) return undefined;
+  return v.replace(/\/+$/, '');
 }
 
 export function supabaseStorage(): SupabaseStorage {
@@ -132,7 +140,7 @@ export function depsFromEnv(): Deps {
     storage,
     tsa: process.env.PLUMA_TSA_URL ? new Rfc3161Tsa(process.env.PLUMA_TSA_URL) : new DisabledTsa(),
     appUrl,
-    signUrl: env('PLUMA_SIGN_URL', `${appUrl}/firmar`),
+    signUrl: (onVercel() && /localhost/.test(process.env.PLUMA_SIGN_URL ?? '') ? undefined : process.env.PLUMA_SIGN_URL) || `${appUrl}/firmar`,
     signingSecret: devSecret('PLUMA_SIGNING_SECRET'),
     dataKey: dataKeyFromEnv(),
     now: () => new Date(),
@@ -145,7 +153,7 @@ export function depsFromEnv(): Deps {
  * Con PLUMA_APP_URL definida no hace nada.
  */
 export async function ensureDemoAppUrl(deps: Deps) {
-  if (process.env.PLUMA_APP_URL || !isDemoMode() || process.env.PLUMA_APP_KIND !== 'admin' || g.__plumaAppUrlResolved) return;
+  if (explicitAppUrl() || !isDemoMode() || process.env.PLUMA_APP_KIND !== 'admin' || g.__plumaAppUrlResolved) return;
   try {
     const [row] = await deps.db.execute<{ value: string }>(sql`select value from pluma_demo.settings where key = 'app_url'`);
     if (row) {

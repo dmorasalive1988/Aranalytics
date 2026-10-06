@@ -37,6 +37,10 @@ export interface AuthProvider {
   verifyEmail(email: string, code: string): Promise<AuthUser>;
   resendVerification(email: string, locale: string): Promise<void>;
   signIn(email: string, password: string): Promise<AuthUser>;
+  /** Envía un código para restablecer la contraseña. No revela si la cuenta existe. */
+  requestPasswordReset(email: string, locale: string): Promise<void>;
+  /** Cambia la contraseña con el código y deja la sesión iniciada. */
+  resetPassword(email: string, code: string, newPassword: string): Promise<AuthUser>;
   oauthUrl(provider: 'google' | 'apple', redirectTo: string): Promise<string>;
   exchangeOAuthCode(code: string): Promise<AuthUser>;
   getUser(): Promise<AuthUser | null>;
@@ -84,6 +88,19 @@ export class SupabaseAuth implements AuthProvider {
     if (error) throw new AuthError(/confirm/i.test(error.message) ? 'EMAIL_NOT_VERIFIED' : 'INVALID_CREDENTIALS');
     return (await this.toUser(data.user))!;
   }
+  async requestPasswordReset(email: string) {
+    // Plantilla "Reset password" de Supabase con {{ .Token }} (código de 6 dígitos).
+    await this.client().auth.resetPasswordForEmail(email);
+  }
+  async resetPassword(email: string, code: string, newPassword: string): Promise<AuthUser> {
+    if (newPassword.length < MIN_PASSWORD) throw new AuthError('WEAK_PASSWORD');
+    const client = this.client();
+    const { data, error } = await client.auth.verifyOtp({ email, token: code.trim(), type: 'recovery' });
+    if (error || !data.user) throw new AuthError('INVALID_CODE');
+    const updated = await client.auth.updateUser({ password: newPassword });
+    if (updated.error) throw new AuthError('WEAK_PASSWORD');
+    return (await this.toUser(data.user))!;
+  }
   async oauthUrl(provider: 'google' | 'apple', redirectTo: string) {
     const { data, error } = await this.client().auth.signInWithOAuth({ provider, options: { redirectTo, skipBrowserRedirect: true } });
     if (error || !data.url) throw new AuthError('OAUTH_UNAVAILABLE');
@@ -104,6 +121,12 @@ export class SupabaseAuth implements AuthProvider {
 }
 
 const SESSION_COOKIE = 'pluma_dev_session';
+const RESET_TTL_MS = 15 * 60 * 1000;
+const RESET_COPY = {
+  es: { subject: 'Código para restablecer tu contraseña', body: 'Usa este código para crear una contraseña nueva en Pluma. Vence en 15 minutos.', ignore: 'Si no lo pediste, ignora este correo: tu contraseña no cambia.' },
+  en: { subject: 'Your Pluma password reset code', body: 'Use this code to set a new Pluma password. It expires in 15 minutes.', ignore: 'If you didn’t ask for this, ignore this email — your password stays the same.' },
+  'pt-BR': { subject: 'Código para redefinir sua senha', body: 'Use este código para criar uma nova senha na Pluma. Ele vence em 15 minutos.', ignore: 'Se você não pediu, ignore este e-mail: sua senha continua a mesma.' },
+} as const;
 
 /** Hash scrypt de contraseñas del modo de desarrollo (también lo usa el seed). */
 export async function hashDevPassword(password: string) {
@@ -194,6 +217,37 @@ export class DevAuth implements AuthProvider {
     const r = await this.row(email);
     if (!r?.encrypted_password || !(await this.check(password, r.encrypted_password))) throw new AuthError('INVALID_CREDENTIALS');
     if (!r.email_confirmed_at) throw new AuthError('EMAIL_NOT_VERIFIED');
+    this.setSession(r.id);
+    return { id: r.id, email: r.email, emailVerified: true, aal: 'aal2' };
+  }
+
+  async requestPasswordReset(email: string, locale: string) {
+    const r = await this.row(email);
+    if (!r?.email_confirmed_at) return; // sin cuenta confirmada: misma respuesta, sin correo
+    const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
+    const codeHash = createHash('sha256').update(code).digest('hex');
+    await this.db.execute(sql`update ${this.table} set raw_user_meta_data = raw_user_meta_data || ${JSON.stringify({ reset_hash: codeHash, reset_exp: Date.now() + RESET_TTL_MS, reset_tries: 0 })}::jsonb where id = ${r.id}`);
+    const L = (locale in RESET_COPY ? locale : 'es') as keyof typeof RESET_COPY;
+    const c = RESET_COPY[L];
+    await this.mail.send({ to: email, subject: `${c.subject}: ${code}`, html: `<p>${c.body}</p><p style="font-size:28px;font-weight:700;letter-spacing:6px">${code}</p><p>${c.ignore}</p>`, text: `${c.body}\n\n${code}\n\n${c.ignore}`, tag: 'password_reset', idempotencyKey: `reset:${email}:${codeHash}` });
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string): Promise<AuthUser> {
+    if (newPassword.length < MIN_PASSWORD) throw new AuthError('WEAK_PASSWORD');
+    const r = await this.row(email);
+    const meta = r?.raw_user_meta_data as { reset_hash?: string; reset_exp?: number; reset_tries?: number } | undefined;
+    if (!r || !meta?.reset_hash || (meta.reset_exp ?? 0) < Date.now()) throw new AuthError('INVALID_CODE');
+    if (createHash('sha256').update(code.trim()).digest('hex') !== meta.reset_hash) {
+      // Máximo 5 intentos por código: después hay que pedir otro.
+      const tries = (meta.reset_tries ?? 0) + 1;
+      await this.db.execute(
+        tries >= 5
+          ? sql`update ${this.table} set raw_user_meta_data = raw_user_meta_data - 'reset_hash' - 'reset_exp' - 'reset_tries' where id = ${r.id}`
+          : sql`update ${this.table} set raw_user_meta_data = raw_user_meta_data || ${JSON.stringify({ reset_tries: tries })}::jsonb where id = ${r.id}`,
+      );
+      throw new AuthError('INVALID_CODE');
+    }
+    await this.db.execute(sql`update ${this.table} set encrypted_password = ${await this.hash(newPassword)}, raw_user_meta_data = raw_user_meta_data - 'reset_hash' - 'reset_exp' - 'reset_tries' where id = ${r.id}`);
     this.setSession(r.id);
     return { id: r.id, email: r.email, emailVerified: true, aal: 'aal2' };
   }

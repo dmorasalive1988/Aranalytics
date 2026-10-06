@@ -4,7 +4,8 @@ import { Card, ScreenTitle, buttonClass } from '@pluma/ui';
 import { Banknote, BellOff, FileSignature, Music2, Settings2, UserRound } from 'lucide-react';
 import { notifications } from '@pluma/services';
 import { deps, requireMember } from '@/lib/server';
-import { markAllReadAction } from './actions';
+import { MarkSeen } from '@/components/notification-bell';
+import { markSeenAction } from './actions';
 
 export async function generateMetadata() {
   return { title: (await getTranslations('common'))('notifications') };
@@ -31,12 +32,8 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<{ 
   return (
     <>
       <ScreenTitle title={t('title')} />
+      {unread && <MarkSeen action={markSeenAction} />}
       <div className="flex flex-wrap gap-2.5">
-        {unread && (
-          <form action={markAllReadAction}>
-            <button className={buttonClass({ variant: 'secondary', size: 'md' })}>{t('markAll')}</button>
-          </form>
-        )}
         <Link href="/cuenta/notificaciones" className={buttonClass({ variant: 'ghost', size: 'md' })}>
           <Settings2 size={18} strokeWidth={2} aria-hidden /> {t('settings')}
         </Link>

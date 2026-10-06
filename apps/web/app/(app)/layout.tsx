@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { Bell, CircleUserRound } from 'lucide-react';
+import { CircleUserRound } from 'lucide-react';
 import { notifications } from '@pluma/services';
 import { PlumaLogo } from '@pluma/ui';
 import { BottomNav } from '@/components/bottom-nav';
+import { NotificationBell } from '@/components/notification-bell';
 import { deps, requireMember } from '@/lib/server';
 
 /** App del autor (solo socios con plan activo): cabecera + contenido + navegación inferior. */
@@ -18,14 +19,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <PlumaLogo size={22} />
         </Link>
         <div className="flex items-center gap-2">
-          <Link href="/notificaciones" aria-label={unread ? t('inbox.bellUnread', { count: unread }) : t('common.notifications')} className="relative inline-flex h-11 w-11 items-center justify-center rounded-full bg-surface text-fg">
-            <Bell size={22} strokeWidth={2} aria-hidden />
-            {unread > 0 && (
-              <span aria-hidden className="tabular absolute -top-0.5 -right-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-coral px-1 text-[11px] font-bold text-tinta">
-                {unread > 9 ? '9+' : unread}
-              </span>
-            )}
-          </Link>
+          <NotificationBell count={unread} labels={{ none: t('common.notifications'), some: t('inbox.bellUnread', { count: '{count}' }) }} />
           <Link href="/cuenta" aria-label={t('common.account')} className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-surface text-fg">
             <CircleUserRound size={22} strokeWidth={2} aria-hidden />
           </Link>

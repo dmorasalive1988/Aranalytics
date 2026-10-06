@@ -67,7 +67,16 @@
       "EMAIL_NOT_VERIFIED": "Confirm your email first with the code we sent you.",
       "WEAK_PASSWORD": "Use at least 10 characters.",
       "OAUTH_UNAVAILABLE": "This option isn’t available right now. Use your email instead."
-    }
+    },
+    "forgot": "Forgot your password?",
+    "forgotTitle": "Reset your password",
+    "forgotSub": "Enter your account email and we’ll send you a code.",
+    "sendCode": "Send code",
+    "resetTitle": "Create a new password",
+    "resetSub": "If there’s an account for {email}, we sent a 6-digit code. It expires in 15 minutes.",
+    "newPassword": "New password",
+    "resetCta": "Save and sign in",
+    "resetResent": "If the account exists, we sent a new code."
   },
   "onboarding": {
     "profile": {
@@ -614,7 +623,6 @@
     "all": "See all",
     "empty": "No emails yet.",
     "to": "To",
-    "code": "Demo: your code is {code}",
-    "accounts": "Sample accounts (password at the end)"
+    "code": "Demo: your code is {code}"
   }
 }
