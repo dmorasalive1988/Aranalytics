@@ -98,7 +98,7 @@ describe('pipeline de statements con el archivo ficticio (criterio 3)', () => {
 
   it('match manual (aprende un alias), recálculo y conciliación exacta', async () => {
     const queue = await S.statements.matchingQueue(deps, periodId);
-    await S.statements.manualMatch(deps, ops, queue.find((q) => q.line_no === 11)!.id, W.luna, ctx);
+    await S.statements.manualMatch(deps, ops, queue.find((q) => q.line_no === 11)!.id, W.luna!, ctx);
     await S.statements.sendToSuspense(deps, ops, queue.find((q) => q.line_no === 12)!.id, ctx);
     const r = await S.statements.calculateRun(deps, ops, periodId, '1442.17', ctx);
     const rec = r.reconciliation;

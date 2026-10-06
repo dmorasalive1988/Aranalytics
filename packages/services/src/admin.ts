@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, inArray, isNull, or, t, withSystem, sql, type Tx } from '@pluma/db';
+import { and, desc, eq, ilike, inArray, isNull, ne, or, t, withSystem, sql, type Tx } from '@pluma/db';
 import { DomainError, isValidIswc, normalizeIswc, type PlanCode, type WorkStatus } from '@pluma/domain';
 import { sha256 } from './crypto';
 import type { Deps, RequestCtx } from './deps';
@@ -137,6 +137,9 @@ export async function registerWork(deps: Deps, staffId: string, workId: string, 
     const [w] = await tx.select().from(t.works).where(eq(t.works.id, workId));
     if (!w) throw new DomainError('WORK_NOT_FOUND');
     if (w.status !== 'sent_to_publisher' && w.status !== 'registered') throw new DomainError('WORK_NOT_SENT');
+    const iswc = input.iswc ? normalizeIswc(input.iswc) : null;
+    const [taken] = await tx.select({ id: t.works.id }).from(t.works).where(and(ne(t.works.id, workId), or(eq(t.works.publisherWorkCode, code), iswc ? eq(t.works.iswc, iswc) : sql`false`)));
+    if (taken) throw new DomainError('WORK_CODE_TAKEN');
     await tx.update(t.works).set({ publisherWorkCode: code, iswc: input.iswc ? normalizeIswc(input.iswc) : w.iswc }).where(eq(t.works.id, workId));
     await setWorkStatus(tx, workId, 'registered', staffId, `código de obra ${code}`);
   });

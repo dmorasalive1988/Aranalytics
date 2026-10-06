@@ -95,7 +95,7 @@ describe('obra con 4 coautores (criterio 2)', () => {
     const exp = (await S.admin.exportNewWorks(deps, ops.id, ctx))!;
     expect(exp.csv.split('\n').filter((l) => l.includes(workId))).toHaveLength(4);
     expect(exp.csv).toContain('Carla Gómez');
-    await S.admin.registerWork(deps, ops.id, workId, { publisherWorkCode: 'PLM-000123', iswc: 'T-034.524.680-1' }, ctx);
+    await S.admin.registerWork(deps, ops.id, workId, { publisherWorkCode: 'PLM-000123', iswc: 'T-345.246.801-4' }, ctx);
     detail = (await S.getWorkDetail(deps, bruno.id, workId))!;
     expect(detail.work.status).toBe('registered');
     expect(detail.history.map((x) => x.toStatus)).toEqual(['draft', 'awaiting_signatures', 'splits_signed', 'sent_to_publisher', 'registered']);
