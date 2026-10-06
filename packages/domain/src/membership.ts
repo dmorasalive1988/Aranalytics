@@ -135,3 +135,15 @@ export function addOneYear(d: Date): Date {
   r.setUTCFullYear(r.getUTCFullYear() + 1);
   return r;
 }
+
+/** Calculadora del sitio: neto = recaudo × (1 − comisión) − membresía (en centavos; puede ser negativo). */
+export function annualNetCents(grossCents: number, plan: Pick<PlanConfig, 'priceCents' | 'commissionBps'>) {
+  return grossCents - Math.round((grossCents * plan.commissionBps) / 10_000) - plan.priceCents;
+}
+
+/** Recaudo anual desde el cual el plan con menor comisión deja igual o más neto que el otro. */
+export function breakEvenCents(cheap: Pick<PlanConfig, 'priceCents' | 'commissionBps'>, premium: Pick<PlanConfig, 'priceCents' | 'commissionBps'>) {
+  const bpsDiff = cheap.commissionBps - premium.commissionBps;
+  if (bpsDiff <= 0) return null;
+  return Math.ceil(((premium.priceCents - cheap.priceCents) * 10_000) / bpsDiff);
+}

@@ -1,0 +1,331 @@
+{
+  "meta": {
+    "title": "Pluma · Editora musical digital para compositores latinos",
+    "description": "Registra tus obras, firma tus splits con tus coautores y cobra tus regalías en todo el mundo. Conservas el 100% de tus canciones. Desde USD 20 al año.",
+    "keywords": "editora musical digital, administración de regalías para compositores, cobrar regalías de mis canciones, splits de canciones, sync música latina, songwriter royalties, publishing administration, editora musical, royalties de compositor",
+    "ogAlt": "Pluma · Donde nacen las canciones.",
+    "legalTitle": {
+      "terms": "Términos y condiciones",
+      "privacy": "Política de privacidad",
+      "contract": "Contrato de administración modelo"
+    },
+    "legalDescription": "Texto legal de Pluma."
+  },
+  "nav": {
+    "skip": "Saltar al contenido",
+    "main": "Secciones",
+    "how": "Cómo funciona",
+    "network": "Red",
+    "sync": "Sync",
+    "pricing": "Precios",
+    "faq": "FAQ",
+    "login": "Iniciar sesión",
+    "join": "Hazte socio",
+    "menu": "Abrir menú",
+    "close": "Cerrar menú",
+    "language": "Idioma",
+    "home": "Inicio de Pluma"
+  },
+  "languages": { "es": "Español", "en": "English", "pt": "Português" },
+  "example": "Datos de ejemplo",
+  "hero": {
+    "title": "Donde nacen las canciones.",
+    "sub": "Pluma registra tus obras, firma tus splits con tus coautores y cobra tus regalías en todo el mundo. Además te conecta con otros creadores y con oportunidades de sync.",
+    "join": "Hazte socio",
+    "plans": "Ver planes",
+    "facts": ["Conservas el 100% de tus obras", "Desde USD 20 al año", "Español, English, Português"]
+  },
+  "problem": {
+    "eyebrow": "El problema",
+    "title": "Escribir es lo tuyo. Cobrar no debería ser un misterio.",
+    "cards": [
+      { "title": "Regalías que nunca llegan", "body": "Hay regalías que se generan y nunca llegan, porque las obras no están bien registradas o los splits no coinciden." },
+      { "title": "Splits de palabra", "body": "Los splits se acuerdan por WhatsApp y terminan en disputas." },
+      { "title": "Puertas cerradas", "body": "Las editoras grandes solo firman a quien ya tiene éxito, y las plataformas de administración no hablan tu idioma ni conocen tu mercado." }
+    ]
+  },
+  "how": {
+    "eyebrow": "Cómo funciona",
+    "title": "Escribe. Firma. Cobra.",
+    "steps": [
+      { "title": "Escribe", "body": "Registra tus obras o créalas con otros en la Red Pluma." },
+      { "title": "Firma", "body": "Cada coautor firma su porcentaje en un clic; la obra entra a registro con la información correcta desde el primer día." },
+      { "title": "Cobra", "body": "Registramos tus obras ante sociedades y plataformas de todo el mundo, y ves cada centavo en tu dashboard con statements oficiales." }
+    ]
+  },
+  "network": {
+    "eyebrow": "Red Pluma",
+    "title": "Encuentra con quién escribir tu próxima canción.",
+    "body": "Un tablero de solicitudes hecho para creadores: un productor sube un beat y busca coro, una compositora busca productor, un artista necesita un verso en portugués, un writing camp abre cupos. Te postulas, te eligen y empiezan a escribir.",
+    "differentiator": "Cuando la canción está terminada, los splits ya están acordados y firmados, y la obra entra directo a registro.",
+    "protectionTitle": "Tus ideas, protegidas",
+    "protection": [
+      { "title": "Demos con marca de agua", "body": "Tus demos se escuchan solo dentro de Pluma, con una marca de audio que identifica cada copia." },
+      { "title": "Registro de cada escucha", "body": "Sabes quién escuchó tu demo y cuándo." },
+      { "title": "Prueba de autoría con fecha", "body": "Cada obra queda con una prueba de autoría con sello de tiempo. [verificar: activar sello de tiempo]" }
+    ],
+    "cardsLabel": "Solicitudes de ejemplo en la Red Pluma",
+    "cards": [
+      { "type": "Beat busca topliner", "title": "Beat de reguetón a 94 BPM, falta el coro", "by": "Productor · Medellín", "details": "Reguetón · 94 BPM · Remoto · Español", "offered": "Ofrece 40% del split", "applications": "6 postulaciones" },
+      { "type": "Busca productor", "title": "Balada pop terminada en guitarra y voz", "by": "Compositora · Ciudad de México", "details": "Pop · Remoto · Español", "offered": "Ofrece 30% del split", "applications": "3 postulaciones" },
+      { "type": "Busca verso o coro", "title": "Necesito un verso en portugués para un dembow", "by": "Artista · Miami", "details": "Dembow · 120 BPM · Remoto · Português", "offered": "Ofrece 25% del split", "applications": "2 postulaciones" }
+    ]
+  },
+  "sync": {
+    "eyebrow": "Sync",
+    "title": "Tu música en cine, series, publicidad y videojuegos.",
+    "points": [
+      { "title": "Catálogo y briefs", "body": "Con el plan Pro activas tus obras en el catálogo de sync y respondes a briefs de agencias y productoras." },
+      { "title": "One-stop", "body": "Si controlas también el máster, el cliente licencia composición y grabación en una sola firma. Eso hace tu canción mucho más fácil de elegir." },
+      { "title": "Tú decides", "body": "Apruebas cada licencia antes de que se firme. Nadie usa tu canción sin tu permiso." }
+    ],
+    "mock": {
+      "title": "Solicitud de licencia",
+      "work": "Calle Luna",
+      "pills": ["One-stop", "Pro"],
+      "rows": [["Uso", "Publicidad digital"], ["Territorio", "Latinoamérica"], ["Plazo", "12 meses"]],
+      "question": "¿Apruebas esta licencia?",
+      "approve": "Aprobar",
+      "decline": "Rechazar"
+    },
+    "buyerTitle": "¿Buscas música latina original para tu proyecto?",
+    "buyerBody": "Supervisores musicales, agencias y productoras encuentran canciones con derechos claros y licencias en una sola firma.",
+    "buyerCta": "Ir a Pluma Sync"
+  },
+  "transparency": {
+    "eyebrow": "Administración global",
+    "title": "Cobra en todo el mundo. Mira cada centavo.",
+    "body": "Pluma registra y cobra tus obras en todo el mundo a través de alianzas con editoras administradoras internacionales y, progresivamente, de forma directa con las sociedades de gestión colectiva.",
+    "points": [
+      { "title": "Dashboard al detalle", "body": "Por obra, fuente, territorio y tipo de ingreso." },
+      { "title": "Statements oficiales", "body": "En PDF y CSV, para tu contador y para ti." },
+      { "title": "Alertas de regalías sin reclamar", "body": "Te avisamos cuando hay dinero que no está llegando y qué hacer." }
+    ],
+    "dashboard": {
+      "label": "Analítica de regalías",
+      "title": "Analítica",
+      "byWork": "Por obra",
+      "bySource": "Por fuente",
+      "byTerritory": "Por territorio",
+      "works": [["Calle Luna", 46], ["Lo que no dije", 31], ["Marea", 23]],
+      "sources": [["Streaming", 58], ["Radio y TV", 22], ["Ejecución en vivo", 12], ["Sincronización", 8]],
+      "territories": [["México", 38], ["Estados Unidos", 27], ["Colombia", 21], ["España", 14]],
+      "alertTitle": "Regalías sin reclamar detectadas",
+      "alertBody": "“Marea” tiene ingresos sin asignar en un territorio."
+    },
+    "statement": {
+      "label": "Statement oficial",
+      "code": "Statement 2026-T2",
+      "period": "Abril – junio 2026",
+      "gross": "Recaudado",
+      "commission": "Comisión Pluma (15%)",
+      "net": "Neto para ti",
+      "grossValue": "USD 412,80",
+      "commissionValue": "−USD 61,92",
+      "netValue": "USD 350,88",
+      "pdf": "PDF",
+      "csv": "CSV"
+    }
+  },
+  "splits": {
+    "eyebrow": "Splits, explicados",
+    "title": "Un split es la parte de la canción que te toca.",
+    "body": "Define cuánto cobra cada autor. En Pluma se acuerda y se firma antes de registrar la obra, así nadie discute después.",
+    "songLabel": "Una canción, cuatro autores",
+    "song": "Canción de ejemplo",
+    "incomeLabel": "Si la parte de autor genera USD 1.000",
+    "authors": [
+      { "name": "Ana", "role": "Letra y melodía", "pct": 40, "amount": "USD 400" },
+      { "name": "Diego", "role": "Producción", "pct": 30, "amount": "USD 300" },
+      { "name": "Lucía", "role": "Coro", "pct": 20, "amount": "USD 200" },
+      { "name": "Tomás", "role": "Verso", "pct": 10, "amount": "USD 100" }
+    ],
+    "note": "Antes de comisiones e impuestos. Cada autor cobra según su propio plan y su país.",
+    "points": [
+      { "title": "Firma digital", "body": "Cada coautor recibe el split y firma su porcentaje en un clic, desde el celular. La obra entra a registro cuando todos firmaron." },
+      { "title": "Coautores fuera de Pluma", "body": "Pueden firmar desde un enlace sin suscribirse. Pluma administra solo la parte de los autores que son miembros." },
+      { "title": "Si hay desacuerdo", "body": "La obra se pausa y los pagos de esa obra se retienen hasta que se resuelva. Te ayudamos a mediar." }
+    ]
+  },
+  "compare": {
+    "eyebrow": "Por qué Pluma",
+    "title": "Lo mejor de una editora, sin cerrarte la puerta.",
+    "criterion": "Criterio",
+    "columns": ["Pluma", "Editora tradicional", "Plataforma de administración digital"],
+    "rows": [
+      ["Acceso para autores emergentes", "Sí", "Solo con trayectoria", "Sí"],
+      ["Conservas la propiedad de tus obras", "100%", "Normalmente la cedes en parte [verificar]", "100%"],
+      ["Español, inglés y portugués nativos", "Sí", "Varía", "Mayormente en inglés [verificar]"],
+      ["Splits firmados digitalmente al crear la obra", "Sí", "No", "No [verificar]"],
+      ["Red para colaborar con otros creadores", "Sí", "Informal", "No"],
+      ["Oportunidades de sync y briefs", "Sí (Pro)", "Sí, para su roster", "Limitado"],
+      ["Catálogo para A&Rs", "Sí (Pro)", "Sí, para su roster", "No"],
+      ["Dashboard detallado y alertas", "Sí", "Varía", "Básico [verificar]"]
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Precios",
+    "title": "Dos planes. Sin letra pequeña.",
+    "sub": "Pago anual por adelantado. Sin plan gratuito: todos los miembros tienen un plan activo.",
+    "perYear": "/ año",
+    "commission": "{pct}% de comisión sobre lo que recaudamos",
+    "recommended": "Recomendado",
+    "plans": {
+      "socio": {
+        "name": "Socio",
+        "cta": "Elegir Socio",
+        "features": ["Registro mundial de tus obras", "Statements oficiales y dashboard", "Splits firmados con tus coautores", "Acceso a la Red Pluma"]
+      },
+      "pro": {
+        "name": "Pro",
+        "cta": "Elegir Pro",
+        "features": ["Todo lo del plan Socio", "Catálogo de sync y briefs", "Catálogo A&R para obras sin grabar", "Analítica avanzada y perfil destacado", "Comisión menor: 15% en vez de 20%"]
+      }
+    },
+    "calc": {
+      "title": "¿Cuánto recibirías?",
+      "label": "¿Cuánto recaudan tus obras al año?",
+      "socio": "Recibes con Socio",
+      "pro": "Recibes con Pro",
+      "formula": "Neto = recaudo × (1 − comisión) − membresía.",
+      "breakEven": "Pro te conviene desde {amount} al año.",
+      "betterPro": "Con este monto, Pro te deja {diff} más al año.",
+      "betterSocio": "Con este monto, Socio te deja {diff} más al año.",
+      "even": "Con este monto, los dos planes te dejan lo mismo.",
+      "disclaimer": "Cálculo ilustrativo. No es una promesa de ingresos."
+    },
+    "note": "Conservas el 100% de la propiedad de tus obras. Puedes mejorar a Pro en cualquier momento."
+  },
+  "faq": {
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Lo que todo autor pregunta.",
+    "groups": [
+      {
+        "id": "pagos",
+        "label": "Pagos",
+        "items": [
+          ["¿Cuándo pago la membresía?", "Al suscribirte, por un año por adelantado. Se renueva automáticamente y te avisamos 15 días antes."],
+          ["¿Cuándo recibo mis regalías?", "Cada vez que publicamos un statement oficial, según el calendario de pago de las sociedades y socios administradores. Te avisamos por correo y en la app."],
+          ["¿Por qué las regalías tardan meses en llegar?", "Las plataformas y sociedades reportan y pagan con retraso; es normal en toda la industria. En Pluma ves en qué etapa está cada pago."],
+          ["¿Cómo me pagan y en qué moneda?", "Por transferencia a través de Wise o Payoneer, en dólares estadounidenses (USD). El retiro mínimo es de USD 20."],
+          ["¿Sobre qué se calcula la comisión?", "Sobre las regalías que Pluma recauda por tus obras: 20% en Socio y 15% en Pro. No hay otros cobros escondidos."],
+          ["¿Me retienen impuestos?", "Depende de tu país y del origen del ingreso. Te entregamos certificados de retención para tu declaración. [verificar]"]
+        ]
+      },
+      {
+        "id": "splits",
+        "label": "Splits",
+        "items": [
+          ["¿Qué es un split?", "El porcentaje de una canción que le corresponde a cada autor. Define cuánto cobra cada uno."],
+          ["¿Mis coautores tienen que estar en Pluma?", "No. Pueden firmar su porcentaje desde un enlace sin suscribirse. Pluma administra solo la parte de los autores que son miembros."],
+          ["¿Qué pasa si un coautor no firma o no está de acuerdo?", "La obra queda pausada y los pagos de esa obra se retienen hasta que se resuelva. Te ayudamos a mediar."],
+          ["¿Puedo cambiar un split después?", "Sí, pero todos los coautores deben firmar la nueva versión."]
+        ]
+      },
+      {
+        "id": "contrato",
+        "label": "Contrato y propiedad",
+        "items": [
+          ["¿Pluma se queda con mis canciones?", "No. Conservas el 100% de la propiedad. Pluma solo administra y cobra por ti."],
+          ["¿Cuánto dura el contrato y cómo me salgo?", "[Duración y condiciones de salida a definir]. Al salir, te entregamos tu catálogo y liquidamos las regalías en curso."],
+          ["Ya estoy en una sociedad de gestión. ¿Puedo unirme?", "Sí. Pluma trabaja junto a tu sociedad; seguirás cobrando tu parte como autor."],
+          ["¿Y si tengo menos de 18 años?", "Puedes unirte con la firma de tu padre, madre o tutor legal."]
+        ]
+      },
+      {
+        "id": "red",
+        "label": "Red",
+        "items": [
+          ["¿Pueden robarme una idea si subo un demo?", "Tus demos se escuchan solo dentro de Pluma, con marca de agua de audio y registro de cada escucha, y cada obra tiene prueba de autoría con fecha."],
+          ["¿Cómo funciona una colaboración?", "Publicas lo que necesitas o te postulas a una solicitud. Al aceptarse, el split queda acordado y, cuando la canción está lista, ambos firman en un clic."]
+        ]
+      },
+      {
+        "id": "sync",
+        "label": "Sync",
+        "items": [
+          ["¿Cómo llega mi música a una película o un comercial?", "Activas tus obras en el catálogo de sync (plan Pro). Supervisores y agencias las encuentran o tú las envías a briefs abiertos."],
+          ["¿Pueden usar mi canción sin mi permiso?", "No. Tú apruebas cada licencia antes de que se firme."],
+          ["¿Cuánto cobra Pluma en sync?", "El 30% de la licencia."],
+          ["¿Qué es one-stop?", "Cuando también controlas la grabación (el máster), el cliente licencia composición y máster en una sola firma."]
+        ]
+      },
+      {
+        "id": "planes",
+        "label": "Planes",
+        "items": [
+          ["¿Cuál es la diferencia entre Socio y Pro?", "Pro incluye sync, catálogo A&R, analítica avanzada, perfil destacado y una comisión menor (15% en vez de 20%)."],
+          ["¿Puedo cambiar de plan?", "Puedes mejorar a Pro en cualquier momento pagando la diferencia. Si bajas a Socio, el cambio aplica al terminar tu año."],
+          ["¿Hay plan gratuito?", "No. Todos los miembros de Pluma tienen un plan activo, lo que mantiene una comunidad seria y profesional."]
+        ]
+      },
+      {
+        "id": "ia",
+        "label": "Inteligencia artificial",
+        "items": [
+          ["¿Puedo registrar canciones hechas con IA?", "Debes declarar si usaste IA al registrar la obra. [Política a definir]."],
+          ["¿Pluma usa mis canciones para entrenar IA?", "No, sin tu autorización expresa."]
+        ]
+      }
+    ]
+  },
+  "audience": {
+    "label": "Para supervisores y A&Rs",
+    "sync": { "eyebrow": "Supervisores, agencias y productoras", "title": "Licencia música latina original", "cta": "Ir a Pluma Sync" },
+    "ar": { "eyebrow": "A&Rs de sellos y equipos de artistas", "title": "Encuentra tu próximo hit sin grabar", "cta": "Solicitar acceso como A&R" }
+  },
+  "closing": {
+    "title": "Tu canción. Tu firma. Tu plata.",
+    "tagline": "Escribe. Firma. Cobra.",
+    "join": "Hazte socio"
+  },
+  "footer": {
+    "sections": "Secciones",
+    "legal": "Legal",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "contract": "Contrato de administración modelo",
+    "contact": "Contacto",
+    "contactValue": "[correo del equipo]",
+    "social": "Redes",
+    "socialValue": "[redes sociales]",
+    "company": "[razón social]",
+    "rights": "Todos los derechos reservados.",
+    "forBuyers": "Para compradores",
+    "plumaSync": "Pluma Sync",
+    "arAccess": "Acceso A&R"
+  },
+  "legal": {
+    "placeholder": "[texto legal a definir]",
+    "back": "Volver al inicio"
+  },
+  "cookies": {
+    "text": "Medimos las visitas con analítica sin cookies para saber qué partes del sitio sirven. No usamos cookies de publicidad ni de rastreo.",
+    "more": "Privacidad",
+    "ok": "Entendido"
+  },
+  "waitlist": {
+    "title": "Pluma abre pronto.",
+    "body": "Déjanos tu correo y te avisamos apenas abramos el registro.",
+    "email": "Tu correo",
+    "plan": "Plan que te interesa",
+    "submit": "Avísame",
+    "sending": "Enviando…",
+    "ok": "Listo. Te escribiremos apenas abramos.",
+    "error": "No pudimos guardar tu correo. Intenta de nuevo."
+  },
+  "mock": {
+    "hello": "Hola,",
+    "name": "Valentina",
+    "plan": "Plan Pro",
+    "balance": "Saldo disponible",
+    "balanceValue": "USD 1.284,50",
+    "nextStatement": "Próximo statement: 2026-T3",
+    "withdraw": "Retirar",
+    "history": "Ingresos por período",
+    "periods": [["T4", 38], ["T1", 52], ["T2", 61], ["T3", 74]],
+    "works": "Tus obras",
+    "workRows": [["Calle Luna", "Registrada"], ["Lo que no dije", "Firmas pendientes"]],
+    "nav": ["Inicio", "Obras", "Red", "Sync", "Pagos"]
+  }
+}

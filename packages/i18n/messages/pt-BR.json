@@ -76,7 +76,8 @@
     "resetSub": "Se houver uma conta com {email}, enviamos um código de 6 dígitos. Ele vence em 15 minutos.",
     "newPassword": "Nova senha",
     "resetCta": "Salvar e entrar",
-    "resetResent": "Se a conta existir, enviamos um novo código."
+    "resetResent": "Se a conta existir, enviamos um novo código.",
+    "planChosen": "Você escolheu o plano {plan}. Você confirma depois de criar sua conta."
   },
   "onboarding": {
     "profile": {

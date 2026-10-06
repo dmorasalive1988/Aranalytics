@@ -76,7 +76,8 @@
     "resetSub": "If there’s an account for {email}, we sent a 6-digit code. It expires in 15 minutes.",
     "newPassword": "New password",
     "resetCta": "Save and sign in",
-    "resetResent": "If the account exists, we sent a new code."
+    "resetResent": "If the account exists, we sent a new code.",
+    "planChosen": "You picked the {plan} plan. You'll confirm it after you create your account."
   },
   "onboarding": {
     "profile": {

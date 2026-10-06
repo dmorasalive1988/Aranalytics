@@ -5,8 +5,16 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./messages/*": "./messages/*"
+    "./messages/*": "./messages/*",
+    "./site/*": "./site/*"
   },
-  "scripts": { "test": "vitest run", "typecheck": "tsc -p tsconfig.json" },
-  "devDependencies": { "@types/node": "^22.20.5", "typescript": "^5.9.3", "vitest": "^4.1.11" }
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
 }

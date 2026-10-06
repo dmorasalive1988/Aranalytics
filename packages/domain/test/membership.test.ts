@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canUseFeature, commissionAt, effectiveStatus, upgradeProrationCents, isRenewalNoticeDue, assertFeature, type MembershipSnapshot } from '../src';
+import { annualNetCents, breakEvenCents, DEFAULT_PLANS, canUseFeature, commissionAt, effectiveStatus, upgradeProrationCents, isRenewalNoticeDue, assertFeature, type MembershipSnapshot } from '../src';
 
 const d = (s: string) => new Date(s + 'T00:00:00Z');
 
@@ -54,5 +54,22 @@ describe('membresía', () => {
     expect(isRenewalNoticeDue(d('2027-01-01'), d('2026-12-17'))).toBe(true);
     expect(isRenewalNoticeDue(d('2027-01-01'), d('2026-12-15'))).toBe(false);
     expect(isRenewalNoticeDue(d('2027-01-01'), d('2027-01-02'))).toBe(false);
+  });
+});
+
+describe('calculadora del sitio', () => {
+  const { socio, pro } = DEFAULT_PLANS;
+  it('neto = recaudo × (1 − comisión) − membresía', () => {
+    expect(annualNetCents(100_000, socio)).toBe(78_000); // 1.000 × 0,80 − 20
+    expect(annualNetCents(100_000, pro)).toBe(80_000); // 1.000 × 0,85 − 50
+    expect(annualNetCents(0, socio)).toBe(-2_000);
+    expect(annualNetCents(2_000_000, pro)).toBe(1_695_000); // 20.000 × 0,85 − 50
+  });
+  it('Pro conviene desde USD 600 al año', () => {
+    expect(breakEvenCents(socio, pro)).toBe(60_000);
+    expect(annualNetCents(60_000, pro)).toBe(annualNetCents(60_000, socio));
+    expect(annualNetCents(59_950, pro)).toBeLessThan(annualNetCents(59_950, socio));
+    expect(annualNetCents(60_050, pro)).toBeGreaterThan(annualNetCents(60_050, socio));
+    expect(breakEvenCents(pro, socio)).toBeNull();
   });
 });

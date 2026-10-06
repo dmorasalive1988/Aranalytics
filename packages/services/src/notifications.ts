@@ -7,6 +7,7 @@ import { formatDate, formatMoney, intlLocale, type AppLocale } from './format';
 import { loadPlans } from './membership';
 import { sealAuthorship, partiesFor } from './works';
 import { renderStatementFiles } from './statements';
+import { teamEmail } from './leads';
 
 type Event = typeof t.domainEvents.$inferSelect;
 
@@ -266,6 +267,21 @@ async function messagesFor(deps: Deps, ev: Event): Promise<Outgoing[]> {
         msgs.push(out({ userId: u.id, email: u.email, locale: u.locale, template: 'license_update', data: { workTitle: w!.title, status: LSTATUS[u.locale][status] ?? status, fee: status === 'issued' && r.finalFeeCents ? formatMoney(Number(r.finalFeeCents), 'USD', u.locale) : '', requestsUrl: url }, key: `license.${status}:${r.id}:${id}` }));
       }
       return msgs;
+    }
+    case 'lead.created': {
+      const to = teamEmail();
+      const [l] = await deps.db.select().from(t.marketingLeads).where(eq(t.marketingLeads.id, ev.aggregateId));
+      if (!to || !l) return [];
+      const KIND: Record<string, string> = { waitlist: 'lista de espera', sync: 'comprador de sync', ar: 'A&R' };
+      const details: [string, string][] = [
+        ['Nombre', l.name],
+        ['Empresa', l.company],
+        ['Cargo', l.role],
+        ['Plan', l.plan],
+        ['Idioma', l.lang],
+      ].filter((x): x is [string, string] => !!x[1]);
+      const adminUrl = `${(process.env.PLUMA_ADMIN_URL || deps.appUrl).replace(/\/$/, '')}/contactos`;
+      return [out({ userId: null, email: to, locale: 'es', template: 'lead_received', data: { kind: KIND[l.kind] ?? l.kind, email: l.email, details, message: l.message ?? '', adminUrl }, key: `lead.created:${l.id}` })];
     }
     default:
       return [];

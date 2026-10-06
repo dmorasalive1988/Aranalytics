@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import { chipClass } from '@pluma/ui';
-import { changeLocale } from '@/app/locale-action';
+import { changeLocale } from '@/app/(main)/locale-action';
 
 const LOCALES = [
   { code: 'es', short: 'ES' },

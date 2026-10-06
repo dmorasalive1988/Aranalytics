@@ -43,6 +43,7 @@ export interface TemplateData {
   hold_decided: { workTitle: string; approved: boolean; endsOn: string; portalUrl: string };
   license_requested: { company: string; workTitle: string; usage: string; territory: string; term: string; quote: string; project: string; licensesUrl: string };
   license_update: { workTitle: string; status: string; fee: string; requestsUrl: string };
+  lead_received: { kind: string; email: string; details: [string, string][]; message: string; adminUrl: string };
   application_accepted: { otherName: string; otherEmail: string; otherPhone: string; requestTitle: string; myShare: string; otherShare: string; sessionUrl: string; collaborationUrl: string };
 }
 export type TemplateName = keyof TemplateData;
@@ -408,6 +409,20 @@ const T: { [K in TemplateName]: L<Builder<K>> } = {
       { kind: 'p', text: 'Quando a música estiver pronta, feche na Pluma: criamos a obra com este split, os dois assinam e ela vai para registro.' },
       { kind: 'button', text: 'Abrir a colaboração', href: d.collaborationUrl }] }),
   },
+  lead_received: {
+    es: (d) => ({ subject: `Nuevo contacto del sitio: ${d.kind}`, title: `Nuevo contacto: ${d.kind}`, blocks: [
+      { kind: 'facts', facts: [['Correo', d.email], ...d.details] },
+      ...(d.message ? [{ kind: 'p' as const, text: d.message }] : []),
+      { kind: 'button', text: 'Ver contactos', href: d.adminUrl }] }),
+    en: (d) => ({ subject: `New website lead: ${d.kind}`, title: `New lead: ${d.kind}`, blocks: [
+      { kind: 'facts', facts: [['Email', d.email], ...d.details] },
+      ...(d.message ? [{ kind: 'p' as const, text: d.message }] : []),
+      { kind: 'button', text: 'View leads', href: d.adminUrl }] }),
+    'pt-BR': (d) => ({ subject: `Novo contato do site: ${d.kind}`, title: `Novo contato: ${d.kind}`, blocks: [
+      { kind: 'facts', facts: [['E-mail', d.email], ...d.details] },
+      ...(d.message ? [{ kind: 'p' as const, text: d.message }] : []),
+      { kind: 'button', text: 'Ver contatos', href: d.adminUrl }] }),
+  },
 };
 
 export function renderEmail<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]) {
@@ -429,13 +444,15 @@ export const TEMPLATE_CATEGORY: Record<TemplateName, NotificationCategory> = {
   membership_activated: 'membership', renewal_upcoming: 'membership', payment_failed: 'membership', membership_suspended: 'membership',
   statement_published: 'money', statement_published_zero: 'money', payout_sent: 'money', royalties_unclaimed: 'money',
   ar_invitation: 'sync', ar_interest: 'sync', hold_requested: 'sync', hold_decided: 'sync', license_requested: 'sync', license_update: 'sync',
+  // Aviso interno al equipo (sin cuenta de destinatario: siempre por correo).
+  lead_received: 'sync',
   application_received: 'network', application_sent: 'network', application_reminder: 'network', application_expired: 'network', application_declined: 'network', application_accepted: 'network',
 };
 
 /** Categorías cuyo correo no se puede apagar: dinero, firmas y membresía (son avisos contractuales). */
 export const MANDATORY_EMAIL: readonly NotificationCategory[] = ['money', 'splits', 'membership'];
 
-const URL_KEYS = ['signUrl', 'workUrl', 'statementUrl', 'paymentsUrl', 'manageUrl', 'requestUrl', 'collaborationUrl', 'applicationsUrl', 'boardUrl', 'inviteUrl', 'holdsUrl', 'licensesUrl', 'requestsUrl', 'portalUrl', 'appUrl'] as const;
+const URL_KEYS = ['signUrl', 'workUrl', 'statementUrl', 'paymentsUrl', 'manageUrl', 'requestUrl', 'collaborationUrl', 'applicationsUrl', 'boardUrl', 'inviteUrl', 'holdsUrl', 'licensesUrl', 'requestsUrl', 'portalUrl', 'appUrl', 'adminUrl'] as const;
 
 /** Push: título y cuerpo cortos, en el idioma de la persona, con el enlace de la notificación. */
 export function renderPush<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]) {

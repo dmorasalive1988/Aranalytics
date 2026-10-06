@@ -28,7 +28,8 @@ export type EventType =
   | 'hold.requested'
   | 'hold.decided'
   | 'license.requested'
-  | 'license.decided';
+  | 'license.decided'
+  | 'lead.created';
 
 /** Outbox transaccional: el evento se guarda en la misma transacción que el cambio. */
 export async function emit(tx: Tx, type: EventType, aggregateType: string, aggregateId: string, payload: Record<string, unknown> = {}) {

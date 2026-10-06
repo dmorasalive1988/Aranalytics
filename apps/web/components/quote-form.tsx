@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import { Button } from '@pluma/ui';
-import type { QuoteState } from '@/app/pluma-sync/actions';
+import type { QuoteState } from '@/app/(main)/pluma-sync/actions';
 
 /** D5 · Cotizador: uso, territorio y plazo → rango referencial, sin recargar la página. */
 export function QuoteForm({

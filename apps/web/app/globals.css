@@ -1,3 +1,24 @@
 @import "@pluma/ui/styles.css";
 @source "../app";
 @source "../components";
+@source "../site";
+
+/* Sitio público: aparición suave al hacer scroll (solo con JavaScript y sin preferencia de movimiento reducido). */
+.js [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.js [data-reveal].is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  .js [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+/* Control deslizante de la calculadora de precios. */
+.pluma-range { appearance: none; background: transparent; }
+.pluma-range::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(to right, var(--pl-ambar) var(--fill), #3A3D57 var(--fill)); }
+.pluma-range::-moz-range-track { height: 8px; border-radius: 999px; background: #3A3D57; }
+.pluma-range::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--pl-ambar); }
+.pluma-range::-webkit-slider-thumb { appearance: none; width: 28px; height: 28px; margin-top: -10px; border-radius: 999px; background: var(--pl-papel); border: 4px solid var(--pl-ambar); }
+.pluma-range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 999px; background: var(--pl-papel); border: 4px solid var(--pl-ambar); }
+
+/* Sitio público: fuentes servidas con next/font (precargadas), mismas familias que la app. */
+html.site body, html.site .font-sans { font-family: var(--font-site-sans), system-ui, sans-serif; }
+html.site .font-display { font-family: var(--font-site-display), system-ui, sans-serif; }
