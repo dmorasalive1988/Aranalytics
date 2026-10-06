@@ -105,7 +105,7 @@ No hace falta definir secretos: en la demo se derivan de la clave de servicio de
 | Avisos y tareas | Se despachan al responder cada acción | Worker (`apps/worker`) |
 | Publicación programada, recordatorios y renovaciones | No corren (no hay worker): publica con "ahora" | Worker |
 | Push y WhatsApp | Apagados | VAPID y Meta, si se configuran |
-| Demos de la red | Se escuchan sin marca de agua (Vercel no tiene ffmpeg) | El worker genera la versión de escucha con marca de agua (requiere `ffmpeg` o `PLUMA_FFMPEG`) |
+| Demos de la red | Sin marca de agua (Vercel no tiene ffmpeg) | La marca de agua se aplica al subir si el servidor tiene `ffmpeg` (o `PLUMA_FFMPEG`). En Vercel hay que mover ese paso al worker: **pendiente** |
 
 Cuentas de ejemplo (contraseña `pluma-dev-2026`): `valentina@pluma.test`, `diego@pluma.test`, `sam@pluma.test`, `camila@pluma.test` en la app; `operaciones@pluma.test`, `aprobaciones@pluma.test` y `admin@pluma.test` en el back-office. Las pantallas de entrada las muestran.
 
@@ -125,6 +125,6 @@ La demo es accesible para cualquiera con el enlace y su buzón muestra todos los
    - `DATABASE_URL` debe apuntar al pooler de Supabase (puerto 6543).
    - En producción la app se niega a arrancar con pagos simulados, correo local o autenticación de desarrollo.
 5. **Clave de datos**: `PLUMA_DATA_KEY` (32 bytes en base64, `openssl rand -base64 32`) cifra el ID fiscal y los datos bancarios. Guárdala en el gestor de secretos: sin ella esos datos no se pueden leer.
-6. **Worker**: despliega `apps/worker` con `ffmpeg` instalado (marca de agua de los demos de la red) como proceso permanente (Fly.io o Railway; `pnpm --filter @pluma/worker start`) con las mismas variables. Despacha las notificaciones cada 5 s, reintenta cada hora los envíos fallidos (hasta 5 intentos), corre las tareas diarias (recordatorios de firma, vencimientos, renovaciones, suspensiones, verificación de la auditoría), publica los statements programados y genera los PDF. Necesita acceso a `packages/pdf/fonts` (o `PLUMA_PDF_FONTS_DIR`).
+6. **Worker**: despliega `apps/worker` como proceso permanente (Fly.io o Railway; `pnpm --filter @pluma/worker start`) con las mismas variables. Despacha las notificaciones cada 5 s, reintenta cada hora los envíos fallidos (hasta 5 intentos), corre las tareas diarias (recordatorios de firma, vencimientos, renovaciones, suspensiones, verificación de la auditoría), publica los statements programados y genera los PDF. Necesita acceso a `packages/pdf/fonts` (o `PLUMA_PDF_FONTS_DIR`).
 7. **Sello de tiempo**: define `PLUMA_TSA_URL` (por ejemplo, la de un proveedor RFC 3161 calificado) para sellar la prueba de autoría.
 8. **Personal interno**: crea la cuenta desde la app y asígnale el rol con SQL la primera vez (`insert into user_roles (user_id, role) values ('<id>', 'super_admin')`); después, desde Usuarios internos.
