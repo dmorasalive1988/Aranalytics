@@ -135,5 +135,8 @@ test('sitio: el formulario de A&R guarda la solicitud de acceso y avisa al equip
   await page.getByLabel('Gravadora ou equipe de artista').fill('Selo Andino');
   await page.getByRole('button', { name: 'Enviar' }).click();
   await expect(page.getByText('Recebido. A equipe vai te escrever em breve.')).toBeVisible();
+  // "Já tem convite?" lleva al portal A&R (pide sesión), no a un 404.
+  await page.getByRole('link', { name: 'Já tem convite? Entre no portal A&R' }).click();
+  await page.waitForURL(/\/entrar\?next=%2Far%2Fcatalogo/);
   await expect.poll(() => mailsTo('equipo@e2e.test').filter((m) => m.subject.includes('A&R') && m.text.includes(email.toLowerCase())).length, { timeout: 15_000 }).toBe(1);
 });
