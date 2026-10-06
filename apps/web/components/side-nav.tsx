@@ -14,8 +14,8 @@ const ITEMS = [
   { href: '/analitica', key: 'analytics', Icon: BarChart3 },
 ] as const;
 
-/** Barra lateral de escritorio (≥ 1024 px): mismas secciones que la navegación inferior, más Analítica. */
-export function SideNav({ labels, footer }: { labels: Record<(typeof ITEMS)[number]['key'] | 'main', string>; footer: React.ReactNode }) {
+/** Barra lateral de escritorio (≥ 1024 px): mismas secciones que la navegación inferior, más Analítica (solo Pro). */
+export function SideNav({ labels, footer, analytics }: { labels: Record<(typeof ITEMS)[number]['key'] | 'main', string>; footer: React.ReactNode; analytics: boolean }) {
   const path = usePathname();
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-8 border-r border-line bg-nav px-4 py-6 lg:flex">
@@ -24,7 +24,7 @@ export function SideNav({ labels, footer }: { labels: Record<(typeof ITEMS)[numb
       </Link>
       <nav aria-label={labels.main}>
         <ul className="flex flex-col gap-1">
-          {ITEMS.map(({ href, key, Icon }) => {
+          {ITEMS.filter((i) => analytics || i.key !== 'analytics').map(({ href, key, Icon }) => {
             const active = path === href || path.startsWith(`${href}/`);
             return (
               <li key={href}>

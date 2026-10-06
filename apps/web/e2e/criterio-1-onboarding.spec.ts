@@ -38,8 +38,22 @@ test('Socio no puede activar sync ni A&R hasta mejorar a Pro', async ({ browser 
   await expect(page.getByRole('switch', { name: 'Catálogo A&R (obra sin grabar)' })).toBeDisabled();
 
   await page.getByRole('link', { name: 'Mejorar a Pro' }).click();
+  // La analítica es solo de Pro: Socio no ve la pestaña en escritorio y la página invita a mejorar.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/inicio');
+  await expect(page.getByRole('link', { name: 'Obras', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Analítica', exact: true })).toHaveCount(0);
+  await page.goto('/analitica');
+  await expect(page.getByText('La analítica avanzada es del plan Pro')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/cuenta/plan');
+
   await page.getByRole('button', { name: /Mejorar a Pro por/ }).click();
   await expect(page.getByText(/Ya eres Pro/)).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/inicio');
+  await expect(page.getByRole('link', { name: 'Analítica', exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
 
   await page.goto(workUrl);
   const sync = page.getByRole('switch', { name: 'Catálogo de sync' });

@@ -132,8 +132,7 @@
         "allSocio": "Tudo do plano Sócio",
         "sync": "Catálogo de sync e briefs",
         "ar": "Catálogo A&R para obras inéditas",
-        "analytics": "Perfil em destaque na Rede",
-        "insights": "Análises dos seus royalties"
+        "analytics": "Análises avançadas e perfil em destaque"
       },
       "ownership": "Nos dois planos você mantém 100% da propriedade das suas canções."
     },
@@ -615,7 +614,8 @@
     "projection": "Projeção do próximo período",
     "projectionNote": "É uma estimativa com a média dos seus últimos períodos. Não é um valor oficial.",
     "noData": "Você precisa de pelo menos um statement publicado.",
-    "change": "{pct} vs. período anterior"
+    "change": "{pct} vs. período anterior",
+    "locked": "As análises avançadas são do plano Pro: tendências por obra, comparação entre períodos e projeção."
   },
   "inbox": {
     "title": "Notificações",

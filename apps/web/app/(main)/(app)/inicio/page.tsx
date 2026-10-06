@@ -6,6 +6,7 @@ import { listMyWorks, network, statements } from '@pluma/services';
 import { PeriodBars } from '@/components/period-bars';
 import { StatusBadge, WorkRow } from '@/components/work-row';
 import { date, money, pct, planName } from '@/lib/format';
+import { hasAnalytics } from '@/lib/plan-features';
 import { deps, requireMember } from '@/lib/server';
 import { pendingForMe } from '@/lib/queries';
 
@@ -119,7 +120,7 @@ export default async function Home() {
             <span className="text-xs text-fg-2">USD</span>
           </div>
           {chart.length ? <PeriodBars data={chart} label={tp('chartLabel')} format={m} /> : <p className="text-sm text-fg-2">{t('noStatementYet')}</p>}
-          <Link href="/analitica" className="inline-flex items-center gap-1.5 self-start text-sm font-bold"><BarChart3 size={16} strokeWidth={2} aria-hidden />{t('seeAnalytics')}</Link>
+          {hasAnalytics(ms) && <Link href="/analitica" className="inline-flex items-center gap-1.5 self-start text-sm font-bold"><BarChart3 size={16} strokeWidth={2} aria-hidden />{t('seeAnalytics')}</Link>}
         </Card>
         <section aria-labelledby="todo-title" className="flex flex-col gap-3">
           <h2 id="todo-title" className="text-[17px] font-bold">{t('todo')}</h2>

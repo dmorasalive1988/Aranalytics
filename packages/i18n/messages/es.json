@@ -132,8 +132,7 @@
         "allSocio": "Todo lo del plan Socio",
         "sync": "Catálogo de sync y briefs",
         "ar": "Catálogo A&R para obras sin grabar",
-        "analytics": "Perfil destacado en la Red",
-        "insights": "Analítica de tus regalías"
+        "analytics": "Analítica avanzada y perfil destacado"
       },
       "ownership": "En los dos planes conservas el 100% de la propiedad de tus canciones."
     },
@@ -615,7 +614,8 @@
     "projection": "Proyección del próximo período",
     "projectionNote": "Es un estimado con el promedio de tus últimos períodos. No es un monto oficial.",
     "noData": "Necesitas al menos un statement publicado.",
-    "change": "{pct} vs. período anterior"
+    "change": "{pct} vs. período anterior",
+    "locked": "La analítica avanzada es del plan Pro: tendencias por obra, comparación entre períodos y proyección."
   },
   "inbox": {
     "title": "Notificaciones",

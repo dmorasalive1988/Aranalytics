@@ -132,8 +132,7 @@
         "allSocio": "Everything in Socio",
         "sync": "Sync catalog and briefs",
         "ar": "A&R catalog for unreleased songs",
-        "analytics": "Featured profile on the Network",
-        "insights": "Royalty analytics"
+        "analytics": "Advanced analytics and featured profile"
       },
       "ownership": "On both plans you keep 100% ownership of your songs."
     },
@@ -615,7 +614,8 @@
     "projection": "Next-period projection",
     "projectionNote": "This is an estimate based on the average of your recent periods. It’s not an official amount.",
     "noData": "You need at least one published statement.",
-    "change": "{pct} vs. previous period"
+    "change": "{pct} vs. previous period",
+    "locked": "Advanced analytics is a Pro feature: trends by song, period comparison and projection."
   },
   "inbox": {
     "title": "Notifications",

@@ -28,7 +28,7 @@ export const DEFAULT_PLANS: Record<PlanCode, PlanConfig> = {
     priceCents: 2000,
     currency: 'USD',
     commissionBps: 2000,
-    features: { network: true, sync: false, ar: false, analytics: true, featuredProfile: false, campsPriority: false, dailyApplications: 3 },
+    features: { network: true, sync: false, ar: false, analytics: false, featuredProfile: false, campsPriority: false, dailyApplications: 3 },
   },
   pro: {
     code: 'pro',
@@ -83,7 +83,7 @@ export function canUseFeature(
 
 export function assertFeature(m: MembershipSnapshot | null, feature: GatedFeature, now: Date, plans?: Record<PlanCode, PlanConfig>) {
   if (!canUseFeature(m, feature, now, plans)) {
-    throw new DomainError(feature === 'sync' || feature === 'ar' ? 'PLAN_REQUIRES_PRO' : 'MEMBERSHIP_INACTIVE', { feature });
+    throw new DomainError(feature === 'sync' || feature === 'ar' || feature === 'analytics' ? 'PLAN_REQUIRES_PRO' : 'MEMBERSHIP_INACTIVE', { feature });
   }
 }
 

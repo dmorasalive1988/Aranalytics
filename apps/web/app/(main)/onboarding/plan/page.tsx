@@ -33,7 +33,7 @@ export default async function PlanStep() {
       example: t('example', { net }),
       recommended: code === 'pro' ? t('recommended') : undefined,
       features: code === 'socio'
-        ? [t('features.registration'), t('features.statements'), t('features.insights'), t('features.splits'), t('features.network')]
+        ? [t('features.registration'), t('features.statements'), t('features.splits'), t('features.network')]
         : [t('features.allSocio'), t('features.sync'), t('features.ar'), t('features.analytics')],
     };
   };

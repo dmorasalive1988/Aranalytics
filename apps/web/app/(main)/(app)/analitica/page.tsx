@@ -1,13 +1,15 @@
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Card, ScreenTitle, cn } from '@pluma/ui';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+import { Card, Notice, ScreenTitle, buttonClass, cn } from '@pluma/ui';
+import { Lock, TrendingDown, TrendingUp } from 'lucide-react';
 import { statements } from '@pluma/services';
 import { BackLink } from '@/components/back-link';
 import { PeriodBars } from '@/components/period-bars';
 import { money, pct } from '@/lib/format';
+import { hasAnalytics } from '@/lib/plan-features';
 import { deps, requireMember } from '@/lib/server';
 
-/** A19 · Analítica de regalías (todos los planes): tendencia por obra, comparación entre períodos y proyección marcada como estimado. */
+/** A19 · Analítica avanzada (solo Pro): tendencia por obra, comparación entre períodos y proyección marcada como estimado. */
 export async function generateMetadata() {
   return { title: (await getTranslations('analytics'))('title') };
 }
@@ -19,6 +21,17 @@ export default async function Analytics() {
   const locale = await getLocale();
   const country = s.profile?.country;
   const m = (c: number) => money(c, locale, country);
+  if (!hasAnalytics(s.membership!)) {
+    return (
+      <>
+        <div className="lg:hidden"><BackLink href="/pagos" label={tc('back')} /></div>
+        <ScreenTitle title={t('title')} />
+        <Notice tone="info" icon={<Lock size={20} strokeWidth={2} />} title={t('locked')}>
+          <Link href="/cuenta/plan" className={buttonClass({ variant: 'outline-ambar', size: 'md' }) + ' mt-2'}>{(await getTranslations('workDetail'))('upgrade')}</Link>
+        </Notice>
+      </>
+    );
+  }
   const rows = await statements.writerIncomeByWork(deps(), s.userId);
   const periods = [...new Map(rows.map((r) => [r.period, r.pay_date])).keys()];
   if (!periods.length) return (<><div className="lg:hidden"><BackLink href="/pagos" label={tc('back')} /></div><ScreenTitle title={t('title')} /><p className="text-sm text-fg-2">{t('noData')}</p></>);
@@ -63,3 +76,4 @@ export default async function Analytics() {
     </>
   );
 }
+

@@ -8,6 +8,7 @@ import { InstallApp } from '@/components/install-app';
 import { NotificationBell } from '@/components/notification-bell';
 import { SideNav } from '@/components/side-nav';
 import { planName } from '@/lib/format';
+import { hasAnalytics } from '@/lib/plan-features';
 import { deps, requireMember } from '@/lib/server';
 
 /**
@@ -27,6 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-dvh pb-28 lg:flex lg:pb-0">
       <SideNav
         labels={nav}
+        analytics={hasAnalytics(s.membership!)}
         footer={
           <>
             <InstallApp labels={install} />
