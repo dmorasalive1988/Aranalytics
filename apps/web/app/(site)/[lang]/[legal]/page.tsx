@@ -35,7 +35,7 @@ export default async function LegalPage({ params }: { params: Promise<{ lang: st
   const d = dict(lang);
   return (
     <>
-      <SiteHeader d={d} lang={lang} home={false} />
+      <SiteHeader d={d} lang={lang} home={false} pathFor={(l) => `/${LEGAL_SLUGS[l][kind]}`} />
       <main id="contenido" className="mx-auto flex min-h-[60vh] w-full max-w-[760px] flex-col gap-8 px-5 py-16 sm:px-8 lg:py-24">
         <h1 className="font-display text-[40px] leading-[1.05] font-extrabold tracking-[-0.03em] sm:text-[56px]">{d.meta.legalTitle[kind]}</h1>
         <p className="text-lg text-fg-3">
@@ -45,7 +45,7 @@ export default async function LegalPage({ params }: { params: Promise<{ lang: st
           {d.legal.back}
         </a>
       </main>
-      <SiteFooter d={d} lang={lang} home={false} />
+      <SiteFooter d={d} lang={lang} home={false} pathFor={(l) => `/${LEGAL_SLUGS[l][kind]}`} />
     </>
   );
 }

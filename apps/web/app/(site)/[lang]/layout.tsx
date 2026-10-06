@@ -37,7 +37,7 @@ export default async function SiteLayout({ children, params }: { children: React
   if (!isSiteLang(lang)) notFound();
   const d = dict(lang);
   return (
-    <html lang={HTML_LANG[lang]} className={`scroll-smooth site ${display.variable} ${sans.variable}`}>
+    <html lang={HTML_LANG[lang]} className={`scroll-smooth site ${display.variable} ${sans.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh bg-tinta text-papel antialiased">
         {/* Las animaciones de aparición solo se activan con JavaScript: sin él, todo el contenido está visible. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />

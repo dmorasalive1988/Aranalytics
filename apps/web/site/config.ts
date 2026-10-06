@@ -1,6 +1,6 @@
 /** Constantes del sitio sin textos: se pueden usar en componentes de cliente sin cargar el diccionario. */
-/** Idiomas del sitio público (segmento de la URL). Inglés y portugués se agregan tras revisar el español. */
-export const SITE_LANGS = ['es'] as const;
+/** Idiomas del sitio público (segmento de la URL). */
+export const SITE_LANGS = ['es', 'en', 'pt'] as const;
 export type SiteLang = 'es' | 'en' | 'pt';
 
 /** Formato de números: miles con punto en español y portugués, con coma en inglés. */

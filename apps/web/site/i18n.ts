@@ -1,12 +1,14 @@
 import type { Locale } from '@pluma/i18n';
+import en from '@pluma/i18n/site/en.json';
 import es from '@pluma/i18n/site/es.json';
+import pt from '@pluma/i18n/site/pt.json';
 import { SITE_LANGS, type SiteLang } from './config';
 
 export { SITE_LANGS, NUMBER_LOCALE, LEGAL_SLUGS, fmt, type SiteLang } from './config';
 
 export type SiteDict = typeof es;
 
-const DICTS: Partial<Record<SiteLang, SiteDict>> = { es };
+const DICTS: Record<SiteLang, SiteDict> = { es, en, pt };
 
 /** Idioma de la app (cookie PLUMA_LOCALE) que corresponde a cada idioma del sitio. */
 export const APP_LOCALE: Record<SiteLang, Locale> = { es: 'es', en: 'en', pt: 'pt-BR' };
@@ -20,7 +22,7 @@ export function siteLangFor(locale: string | null | undefined): SiteLang {
 }
 
 export function dict(lang: SiteLang): SiteDict {
-  return DICTS[lang] ?? es;
+  return DICTS[lang];
 }
 
 /** Lanzamiento con lista de espera (PLUMA_WAITLIST=1 al construir): los botones de registro llevan al formulario de correo. */

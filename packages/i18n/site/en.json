@@ -1,0 +1,393 @@
+{
+  "meta": {
+    "title": "Pluma · Digital music publishing for Latin songwriters",
+    "description": "Register your songs, sign splits with your co-writers and collect your royalties worldwide. You keep 100% of your songs. From USD 20 a year.",
+    "keywords": "songwriter royalties, publishing administration, collect songwriter royalties, song splits, Latin music sync, digital music publisher, music publishing for Latin songwriters, songwriter royalty collection",
+    "ogAlt": "Pluma · Where songs are born.",
+    "legalTitle": {
+      "terms": "Terms and conditions",
+      "privacy": "Privacy policy",
+      "contract": "Model administration agreement"
+    },
+    "legalDescription": "Pluma legal text.",
+    "syncTitle": "Pluma Sync · Original Latin music to license",
+    "syncDescription": "Music supervisors, agencies and production companies: find original Latin songs with clear rights and one-stop licenses.",
+    "arTitle": "Pluma for A&Rs · Unreleased Latin songs",
+    "arDescription": "Invite-only access to a catalog of unrecorded songs by Latin songwriters. Request access."
+  },
+  "nav": {
+    "skip": "Skip to content",
+    "main": "Sections",
+    "how": "How it works",
+    "network": "Network",
+    "sync": "Sync",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "login": "Log in",
+    "join": "Join Pluma",
+    "menu": "Open menu",
+    "close": "Close menu",
+    "language": "Language",
+    "home": "Pluma home"
+  },
+  "languages": { "es": "Español", "en": "English", "pt": "Português" },
+  "example": "Sample data",
+  "hero": {
+    "title": "Where songs are born.",
+    "sub": "Pluma registers your songs, gets your splits signed by your co-writers and collects your royalties worldwide. Plus, it connects you with other creators and sync opportunities.",
+    "join": "Join Pluma",
+    "plans": "See plans",
+    "facts": ["You keep 100% of your songs", "From USD 20 a year", "Español, English, Português"]
+  },
+  "problem": {
+    "eyebrow": "The problem",
+    "title": "Writing is your thing. Getting paid shouldn’t be a mystery.",
+    "cards": [
+      { "title": "Royalties that never show up", "body": "Some royalties are generated but never reach you, because the songs aren’t registered right or the splits don’t match." },
+      { "title": "Handshake splits", "body": "Splits get agreed over WhatsApp and end up in disputes." },
+      { "title": "Closed doors", "body": "Big publishers only sign writers who already have hits, and admin platforms don’t speak your language or know your market." }
+    ]
+  },
+  "how": {
+    "eyebrow": "How it works",
+    "title": "Write it. Own it. Get paid.",
+    "steps": [
+      { "title": "Write it", "body": "Register your songs, or write new ones with others on the Pluma Network." },
+      { "title": "Own it", "body": "Every co-writer signs their share in one tap, so the song goes to registration with the right info from day one." },
+      { "title": "Get paid", "body": "We register your songs with societies and platforms worldwide, and you see every cent on your dashboard with official statements." }
+    ]
+  },
+  "network": {
+    "eyebrow": "Pluma Network",
+    "title": "Find who to write your next song with.",
+    "body": "A request board built for creators: a producer drops a beat and needs a hook, a songwriter needs a producer, an artist needs a verse in Portuguese, a writing camp opens spots. You apply, they pick you, you start writing.",
+    "differentiator": "When the song is done, the splits are already agreed and signed, and the song goes straight to registration.",
+    "protectionTitle": "Your ideas, protected",
+    "protection": [
+      { "title": "Watermarked demos", "body": "Your demos only play inside Pluma, with an audio watermark that identifies every copy." },
+      { "title": "Every play logged", "body": "You know who listened to your demo and when." },
+      { "title": "Dated proof of authorship", "body": "Every song gets a time-stamped proof of authorship. [verificar: activar sello de tiempo]" }
+    ],
+    "cardsLabel": "Sample requests on the Pluma Network",
+    "cards": [
+      { "type": "Beat needs a topliner", "title": "94 BPM reggaeton beat, hook needed", "by": "Producer · Medellín", "details": "Reggaeton · 94 BPM · Remote · Spanish", "offered": "Offering 40% of the split", "applications": "6 applications" },
+      { "type": "Looking for a producer", "title": "Finished pop ballad, guitar and vocals", "by": "Songwriter · Mexico City", "details": "Pop · Remote · Spanish", "offered": "Offering 30% of the split", "applications": "3 applications" },
+      { "type": "Needs a verse or hook", "title": "Need a Portuguese verse for a dembow track", "by": "Artist · Miami", "details": "Dembow · 120 BPM · Remote · Portuguese", "offered": "Offering 25% of the split", "applications": "2 applications" }
+    ]
+  },
+  "sync": {
+    "eyebrow": "Sync",
+    "title": "Your music in film, TV, ads and video games.",
+    "points": [
+      { "title": "Catalog and briefs", "body": "On Pro, you add your songs to the sync catalog and pitch them to briefs from agencies and production companies." },
+      { "title": "One-stop", "body": "If you also control the master, the client licenses the song and the recording with one signature. That makes your song much easier to pick." },
+      { "title": "You decide", "body": "You approve every license before it’s signed. Nobody uses your song without your OK." }
+    ],
+    "mock": {
+      "title": "License request",
+      "work": "Calle Luna",
+      "pills": ["One-stop", "Pro"],
+      "rows": [["Use", "Digital ads"], ["Territory", "Latin America"], ["Term", "12 months"]],
+      "question": "Do you approve this license?",
+      "approve": "Approve",
+      "decline": "Decline"
+    },
+    "buyerTitle": "Looking for original Latin music for your project?",
+    "buyerBody": "Music supervisors, agencies and production companies find songs with clear rights and one-signature licenses.",
+    "buyerCta": "Go to Pluma Sync"
+  },
+  "transparency": {
+    "eyebrow": "Global administration",
+    "title": "Get paid worldwide. See every cent.",
+    "body": "Pluma registers your songs and collects your royalties worldwide through partnerships with international administration publishers and, increasingly, directly with collecting societies.",
+    "points": [
+      { "title": "Detailed dashboard", "body": "By song, source, territory and income type." },
+      { "title": "Official statements", "body": "In PDF and CSV, for you and your accountant." },
+      { "title": "Unclaimed royalty alerts", "body": "We let you know when money isn’t reaching you, and what to do about it." }
+    ],
+    "dashboard": {
+      "label": "Royalty analytics",
+      "title": "Analytics",
+      "byWork": "By song",
+      "bySource": "By source",
+      "byTerritory": "By territory",
+      "works": [["Calle Luna", 46], ["Lo que no dije", 31], ["Marea", 23]],
+      "sources": [["Streaming", 58], ["Radio & TV", 22], ["Live performance", 12], ["Sync", 8]],
+      "territories": [["Mexico", 38], ["United States", 27], ["Colombia", 21], ["Spain", 14]],
+      "alertTitle": "Unclaimed royalties detected",
+      "alertBody": "“Marea” has unassigned income in one territory."
+    },
+    "statement": {
+      "label": "Official statement",
+      "code": "Statement 2026-Q2",
+      "period": "April – June 2026",
+      "gross": "Collected",
+      "commission": "Pluma commission (15%)",
+      "net": "Your net",
+      "grossValue": "USD 412.80",
+      "commissionValue": "−USD 61.92",
+      "netValue": "USD 350.88",
+      "pdf": "PDF",
+      "csv": "CSV"
+    }
+  },
+  "splits": {
+    "eyebrow": "Splits, explained",
+    "title": "A split is your share of the song.",
+    "body": "It sets how much each writer gets paid. On Pluma, splits are agreed and signed before the song is registered, so nobody argues later.",
+    "songLabel": "One song, four writers",
+    "song": "Sample song",
+    "incomeLabel": "If the writer’s share earns USD 1,000",
+    "authors": [
+      { "name": "Ana", "role": "Lyrics and melody", "pct": 40, "amount": "USD 400" },
+      { "name": "Diego", "role": "Production", "pct": 30, "amount": "USD 300" },
+      { "name": "Lucía", "role": "Hook", "pct": 20, "amount": "USD 200" },
+      { "name": "Tomás", "role": "Verse", "pct": 10, "amount": "USD 100" }
+    ],
+    "note": "Before commissions and taxes. Each writer is paid according to their own plan and country.",
+    "points": [
+      { "title": "Digital signature", "body": "Every co-writer gets the split and signs their share in one tap, from their phone. The song goes to registration once everyone has signed." },
+      { "title": "Co-writers outside Pluma", "body": "They can sign from a link without subscribing. Pluma only administers the share of writers who are members." },
+      { "title": "If there’s a disagreement", "body": "The song is paused and its payments are held until it’s resolved. We help you mediate." }
+    ]
+  },
+  "compare": {
+    "eyebrow": "Why Pluma",
+    "title": "The best of a publisher, with the door open.",
+    "criterion": "Criteria",
+    "columns": ["Pluma", "Traditional publisher", "Digital admin platform"],
+    "rows": [
+      ["Open to emerging writers", "Yes", "Only with a track record", "Yes"],
+      ["You keep ownership of your songs", "100%", "You usually give up part of it [verificar]", "100%"],
+      ["Native Spanish, English and Portuguese", "Yes", "Varies", "Mostly English [verificar]"],
+      ["Splits signed digitally when the song is created", "Yes", "No", "No [verificar]"],
+      ["Network to collaborate with other creators", "Yes", "Informal", "No"],
+      ["Sync opportunities and briefs", "Yes (Pro)", "Yes, for their roster", "Limited"],
+      ["Catalog for A&Rs", "Yes (Pro)", "Yes, for their roster", "No"],
+      ["Detailed dashboard and alerts", "Yes", "Varies", "Basic [verificar]"]
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "title": "Two plans. No fine print.",
+    "sub": "Paid yearly, up front. No free plan: every member has an active plan.",
+    "perYear": "/ year",
+    "commission": "{pct}% commission on what we collect",
+    "recommended": "Recommended",
+    "plans": {
+      "socio": {
+        "name": "Socio",
+        "cta": "Choose Socio",
+        "features": ["Worldwide registration of your songs", "Official statements and dashboard", "Splits signed with your co-writers", "Access to the Pluma Network"]
+      },
+      "pro": {
+        "name": "Pro",
+        "cta": "Choose Pro",
+        "features": ["Everything in Socio", "Sync catalog and briefs", "A&R catalog for unrecorded songs", "Advanced analytics and featured profile", "Lower commission: 15% instead of 20%"]
+      }
+    },
+    "calc": {
+      "title": "How much would you get?",
+      "label": "How much do your songs earn a year?",
+      "socio": "You get with Socio",
+      "pro": "You get with Pro",
+      "formula": "Net = earnings × (1 − commission) − membership.",
+      "breakEven": "Pro pays off from {amount} a year.",
+      "betterPro": "At this amount, Pro leaves you {diff} more a year.",
+      "betterSocio": "At this amount, Socio leaves you {diff} more a year.",
+      "even": "At this amount, both plans leave you the same.",
+      "disclaimer": "Illustrative estimate. Not a promise of income."
+    },
+    "note": "You keep 100% ownership of your songs. You can upgrade to Pro anytime."
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "What every songwriter asks.",
+    "groups": [
+      {
+        "id": "pagos",
+        "label": "Payments",
+        "items": [
+          ["When do I pay the membership?", "When you sign up, for one year up front. It renews automatically and we remind you 15 days before."],
+          ["When do I get my royalties?", "Every time we publish an official statement, following the payment calendar of the societies and administration partners. We let you know by email and in the app."],
+          ["Why do royalties take months to arrive?", "Platforms and societies report and pay late; that’s normal across the industry. On Pluma you can see what stage each payment is at."],
+          ["How do I get paid, and in what currency?", "By transfer through Wise or Payoneer, in US dollars (USD). The minimum withdrawal is USD 20."],
+          ["What is the commission charged on?", "On the royalties Pluma collects for your songs: 20% on Socio and 15% on Pro. No other hidden fees."],
+          ["Do you withhold taxes?", "It depends on your country and where the income comes from. We give you withholding certificates for your tax return. [verificar]"]
+        ]
+      },
+      {
+        "id": "splits",
+        "label": "Splits",
+        "items": [
+          ["What is a split?", "The percentage of a song that belongs to each writer. It sets how much each one gets paid."],
+          ["Do my co-writers have to be on Pluma?", "No. They can sign their share from a link without subscribing. Pluma only administers the share of writers who are members."],
+          ["What if a co-writer doesn’t sign or disagrees?", "The song is paused and its payments are held until it’s resolved. We help you mediate."],
+          ["Can I change a split later?", "Yes, but every co-writer has to sign the new version."]
+        ]
+      },
+      {
+        "id": "contrato",
+        "label": "Agreement and ownership",
+        "items": [
+          ["Does Pluma take my songs?", "No. You keep 100% ownership. Pluma only administers and collects for you."],
+          ["How long is the agreement and how do I leave?", "[Term and exit conditions to be defined]. When you leave, we hand over your catalog and settle the royalties in progress."],
+          ["I’m already with a collecting society. Can I join?", "Yes. Pluma works alongside your society; you’ll keep collecting your writer’s share."],
+          ["What if I’m under 18?", "You can join with your parent’s or legal guardian’s signature."]
+        ]
+      },
+      {
+        "id": "red",
+        "label": "Network",
+        "items": [
+          ["Can someone steal my idea if I upload a demo?", "Your demos only play inside Pluma, with an audio watermark and every play logged, and every song has a dated proof of authorship."],
+          ["How does a collaboration work?", "You post what you need or apply to a request. Once accepted, the split is agreed and, when the song is ready, you both sign in one tap."]
+        ]
+      },
+      {
+        "id": "sync",
+        "label": "Sync",
+        "items": [
+          ["How does my music get into a movie or an ad?", "You add your songs to the sync catalog (Pro plan). Supervisors and agencies find them, or you pitch them to open briefs."],
+          ["Can they use my song without my permission?", "No. You approve every license before it’s signed."],
+          ["How much does Pluma take on sync?", "30% of the license."],
+          ["What does one-stop mean?", "When you also control the recording (the master), the client licenses the song and the master with one signature."]
+        ]
+      },
+      {
+        "id": "planes",
+        "label": "Plans",
+        "items": [
+          ["What’s the difference between Socio and Pro?", "Pro includes sync, the A&R catalog, advanced analytics, a featured profile and a lower commission (15% instead of 20%)."],
+          ["Can I switch plans?", "You can upgrade to Pro anytime by paying the difference. If you move down to Socio, the change applies at the end of your year."],
+          ["Is there a free plan?", "No. Every Pluma member has an active plan, which keeps the community serious and professional."]
+        ]
+      },
+      {
+        "id": "ia",
+        "label": "Artificial intelligence",
+        "items": [
+          ["Can I register songs made with AI?", "You must declare whether you used AI when you register the song. [Policy to be defined]."],
+          ["Does Pluma use my songs to train AI?", "No, not without your express permission."]
+        ]
+      }
+    ]
+  },
+  "audience": {
+    "label": "For supervisors and A&Rs",
+    "sync": { "eyebrow": "Supervisors, agencies and production companies", "title": "License original Latin music", "cta": "Go to Pluma Sync" },
+    "ar": { "eyebrow": "A&Rs at labels and artist teams", "title": "Find your next unrecorded hit", "cta": "Request A&R access" }
+  },
+  "closing": {
+    "title": "Your song. Your signature. Your money.",
+    "tagline": "Write it. Own it. Get paid.",
+    "join": "Join Pluma"
+  },
+  "footer": {
+    "sections": "Sections",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contract": "Model administration agreement",
+    "contact": "Contact",
+    "contactValue": "[correo del equipo]",
+    "social": "Social",
+    "socialValue": "[redes sociales]",
+    "company": "[razón social]",
+    "rights": "All rights reserved.",
+    "forBuyers": "For buyers",
+    "plumaSync": "Pluma Sync for buyers",
+    "arAccess": "A&R access"
+  },
+  "legal": {
+    "placeholder": "[texto legal a definir]",
+    "back": "Back to home"
+  },
+  "cookies": {
+    "text": "We measure visits with cookie-free analytics to learn which parts of the site help. We don’t use advertising or tracking cookies.",
+    "more": "Privacy",
+    "ok": "Got it"
+  },
+  "waitlist": {
+    "title": "Pluma opens soon.",
+    "body": "Leave your email and we’ll let you know as soon as sign-ups open.",
+    "email": "Your email",
+    "plan": "Plan you’re interested in",
+    "submit": "Notify me",
+    "sending": "Sending…",
+    "ok": "Done. We’ll email you as soon as we open.",
+    "error": "We couldn’t save your email. Please try again."
+  },
+  "mock": {
+    "hello": "Hi,",
+    "name": "Valentina",
+    "plan": "Pro plan",
+    "balance": "Available balance",
+    "balanceValue": "USD 1,284.50",
+    "nextStatement": "Next statement: 2026-Q3",
+    "withdraw": "Withdraw",
+    "history": "Income by period",
+    "periods": [["Q4", 38], ["Q1", 52], ["Q2", 61], ["Q3", 74]],
+    "works": "Your songs",
+    "workRows": [["Calle Luna", "Registered"], ["Lo que no dije", "Signatures pending"]],
+    "nav": ["Home", "Songs", "Network", "Sync", "Payments"]
+  },
+  "syncPage": {
+    "eyebrow": "Pluma Sync",
+    "title": "Original Latin music, ready to license.",
+    "sub": "A catalog of songs by Latin songwriters with signed splits and clear rights. Search in your own words, get a quote in minutes and license, often with a single signature.",
+    "portal": "Enter Pluma Sync",
+    "contactCta": "Talk to the team",
+    "searchTitle": "Search the way you’d ask",
+    "searchSub": "Type what you need. Pluma Sync turns it into filters: genre, mood, language, vocals, BPM and one-stop.",
+    "searchLabel": "Describe the music you’re looking for",
+    "searchPlaceholder": "e.g. upbeat cumbia, female vocals, 95-105 bpm, one-stop",
+    "searchExamples": ["sensual reggaeton 90 bpm in spanish", "nostalgic bossa nova instrumental", "dramatic corrido male vocals one-stop"],
+    "searchResult": "How Pluma Sync reads it",
+    "searchEmpty": "Type a search to see the filters.",
+    "searchNote": "Preview. You’ll see the songs once you enter Pluma Sync.",
+    "filters": { "genres": "Genre", "moods": "Mood", "languages": "Language", "vocals": "Vocals", "bpm": "BPM", "oneStop": "One-stop", "instrumental": "Instrumental", "text": "Free text" },
+    "moods": { "happy": "happy", "sad": "sad", "romantic": "romantic", "energetic": "energetic", "chill": "chill", "dark": "dark", "epic": "epic", "nostalgic": "nostalgic", "sensual": "sensual", "uplifting": "uplifting", "party": "party", "dramatic": "dramatic" },
+    "vocals": { "female": "female", "male": "male", "duet": "duet", "choir": "choir", "none": "no vocals" },
+    "langs": { "es": "Spanish", "en": "English", "pt": "Portuguese" },
+    "yes": "yes",
+    "howTitle": "How licensing works",
+    "how": [
+      { "title": "Search and listen", "body": "Find songs by genre, mood, language, vocals or BPM and listen to protected previews." },
+      { "title": "Get a quote and request the license", "body": "Pick the use, territory and term, see a reference quote and send your request with the project details." },
+      { "title": "Writers approve, you sign", "body": "The writers approve the use. A Pluma specialist finalizes the fee and issues the license." }
+    ],
+    "oneStopTitle": "One-stop: song and master in one signature",
+    "oneStopBody": "When the writer also controls the recording, you license the composition and the master together. Fewer people to clear, less time.",
+    "formTitle": "Tell us what you need",
+    "formSub": "We’ll get back to you with options from the catalog for your project."
+  },
+  "arPage": {
+    "eyebrow": "Pluma for A&Rs",
+    "title": "Your next hit hasn’t been recorded yet.",
+    "sub": "Invite-only access to a catalog of unrecorded songs by Latin songwriters: listen, flag your interest and request a 30, 60 or 90-day hold.",
+    "points": [
+      { "title": "Unrecorded songs", "body": "Only songs their writers make available for an artist to record." },
+      { "title": "Holds with a date", "body": "Reserve a song for 30, 60 or 90 days. The writer approves every hold." },
+      { "title": "Splits already signed", "body": "You know who wrote what before you record. No surprises later." }
+    ],
+    "formTitle": "Request access",
+    "formSub": "Access is invite-only. We review every request and send you a personal link.",
+    "haveInvite": "Already invited? Go to the A&R portal"
+  },
+  "forms": {
+    "name": "Name",
+    "email": "Email",
+    "company": "Company",
+    "role": "Role",
+    "labelCompany": "Label or artist team",
+    "message": "Message",
+    "syncMessagePh": "Project, use (ad, series, video game…), territory, dates and rough budget.",
+    "arMessagePh": "Artists you work with and the kind of songs you’re looking for.",
+    "send": "Send",
+    "sending": "Sending…",
+    "ok": "Got it. The team will email you soon.",
+    "error": "We couldn’t send the form. Check your email and try again.",
+    "required": "Required"
+  }
+}

@@ -1,9 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { LABELS, codeIn, uniqueEmail, waitForMail } from './helpers';
+import { LABELS, codeIn, mailsTo, uniqueEmail, waitForMail } from './helpers';
 
 const L = LABELS.es;
 
-test('sitio: las 13 secciones en orden y el hero con "Hazte socio" sin hacer scroll en el celular', async ({ page }) => {
+test('sitio: las 13 secciones en orden y el hero con "Hazte socio" sin hacer scroll en el celular', async ({ page, context }) => {
+  // Primera visita: "/" lleva al idioma del navegador (el de las pruebas está en inglés).
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await page.waitForURL(/\/en$/);
+  // Con el español elegido (cookie que deja el sitio o el perfil), "/" lleva a /es.
+  await context.addCookies([{ name: 'PLUMA_LOCALE', value: 'es', url: 'http://localhost:3100' }]);
   await page.goto('/', { waitUntil: 'networkidle' });
   await page.waitForURL(/\/es$/);
   await expect(page.locator('header').first()).toBeVisible();
@@ -83,4 +88,52 @@ test('sitio: páginas legales con marcador, sin texto inventado', async ({ page 
     await page.goto(`/es/${slug}`);
     await expect(page.getByText('[texto legal a definir]')).toBeVisible();
   }
+});
+
+test('sitio en inglés y portugués: textos nativos, selector de idioma y registro en el idioma elegido', async ({ page }) => {
+  await page.goto('/en', { waitUntil: 'networkidle' });
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Where songs are born.');
+  await expect(page.getByRole('heading', { name: 'Write it. Own it. Get paid.' })).toBeVisible();
+  await page.locator('#precios').scrollIntoViewIfNeeded();
+  await expect(page.getByText('Pro pays off from USD 600 a year.')).toBeVisible();
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('navigation', { name: 'Language' }).first().getByRole('link', { name: 'Português' }).click();
+  await page.waitForURL(/\/pt$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Onde as músicas nascem.');
+  await page.getByRole('link', { name: 'Escolher Sócio' }).click();
+  await page.waitForURL(/\/registro\?lang=pt&plan=socio/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
+  await expect(page.getByText('Você escolheu o plano Sócio.')).toBeVisible();
+});
+
+test('sitio: el formulario de compradores de sync guarda el contacto y avisa al equipo', async ({ page }) => {
+  await page.goto('/en/sync', { waitUntil: 'networkidle' });
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Original Latin music, ready to license.');
+  // Buscador de muestra: convierte el texto en filtros.
+  await page.getByLabel('Describe the music you’re looking for').fill('upbeat cumbia female vocals 95-105 bpm one-stop');
+  await expect(page.getByText('cumbia', { exact: true })).toBeVisible();
+  await expect(page.getByText('95–105')).toBeVisible();
+
+  const email = uniqueEmail('super');
+  await page.getByLabel('Name').fill('Sol Supervisor');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Company').fill('Agencia Faro');
+  await page.getByLabel('Message').fill('Need a cumbia for a summer ad in Miami.');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.getByText('Got it. The team will email you soon.')).toBeVisible();
+  await expect.poll(() => mailsTo('equipo@e2e.test').filter((m) => m.subject.includes('comprador de sync') && m.text.includes(email.toLowerCase())).length, { timeout: 15_000 }).toBe(1);
+});
+
+test('sitio: el formulario de A&R guarda la solicitud de acceso y avisa al equipo', async ({ page }) => {
+  await page.goto('/pt/ar', { waitUntil: 'networkidle' });
+  const email = uniqueEmail('ar');
+  await page.getByLabel('Nome').fill('Ana A&R');
+  await page.getByLabel('E-mail').fill(email);
+  await page.getByLabel('Gravadora ou equipe de artista').fill('Selo Andino');
+  await page.getByRole('button', { name: 'Enviar' }).click();
+  await expect(page.getByText('Recebido. A equipe vai te escrever em breve.')).toBeVisible();
+  await expect.poll(() => mailsTo('equipo@e2e.test').filter((m) => m.subject.includes('A&R') && m.text.includes(email.toLowerCase())).length, { timeout: 15_000 }).toBe(1);
 });

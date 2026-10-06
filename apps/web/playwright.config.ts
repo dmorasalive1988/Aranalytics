@@ -33,6 +33,7 @@ export default defineConfig({
       PLUMA_INLINE_DISPATCH: '1',
       PLUMA_WHATSAPP: 'dev',
       PLUMA_SIGNING_SECRET: 'e2e-secret',
+      PLUMA_TEAM_EMAIL: 'equipo@e2e.test',
       NEXT_DIST_DIR: '.next-e2e',
     },
   },

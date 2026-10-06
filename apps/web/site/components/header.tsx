@@ -11,13 +11,13 @@ export const SECTION_LINKS = [
 ] as const;
 
 /** Selector ES / EN / PT: enlaces a la misma página en cada idioma (el proxy recuerda la elección). */
-export function LangSwitch({ lang, d, path = '' }: { lang: SiteLang; d: SiteDict; path?: string }) {
+export function LangSwitch({ lang, d, pathFor }: { lang: SiteLang; d: SiteDict; pathFor?: (l: SiteLang) => string }) {
   return (
     <nav aria-label={d.nav.language} className="flex items-center gap-1 text-sm">
       {(SITE_LANGS as readonly SiteLang[]).map((l) => (
         <a
           key={l}
-          href={`/${l}${path}`}
+          href={`/${l}${pathFor ? pathFor(l) : ''}`}
           hrefLang={l === 'pt' ? 'pt-BR' : l}
           lang={l === 'pt' ? 'pt-BR' : l}
           aria-current={l === lang ? 'true' : undefined}
@@ -33,7 +33,7 @@ export function LangSwitch({ lang, d, path = '' }: { lang: SiteLang; d: SiteDict
 }
 
 /** Encabezado fijo: logo, secciones, idioma, iniciar sesión y "Hazte socio". */
-export function SiteHeader({ lang, d, home = true }: { lang: SiteLang; d: SiteDict; home?: boolean }) {
+export function SiteHeader({ lang, d, home = true, pathFor }: { lang: SiteLang; d: SiteDict; home?: boolean; pathFor?: (l: SiteLang) => string }) {
   const anchor = (id: string) => (home ? `#${id}` : `/${lang}#${id}`);
   const links = SECTION_LINKS.map(([key, id]) => ({ href: anchor(id), label: d.nav[key] }));
   return (
@@ -58,7 +58,7 @@ export function SiteHeader({ lang, d, home = true }: { lang: SiteLang; d: SiteDi
         </nav>
         <div className="flex items-center gap-2">
           <div className="hidden lg:block">
-            <LangSwitch lang={lang} d={d} />
+            <LangSwitch lang={lang} d={d} pathFor={pathFor} />
           </div>
           <a href="/entrar" className="hidden h-11 items-center rounded-xl px-3 text-[15px] font-bold text-papel no-underline hover:text-ambar sm:inline-flex">
             {d.nav.login}
@@ -67,7 +67,7 @@ export function SiteHeader({ lang, d, home = true }: { lang: SiteLang; d: SiteDi
             {d.nav.join}
           </a>
           <MobileMenu labels={{ open: d.nav.menu, close: d.nav.close, login: d.nav.login, main: d.nav.main }} links={links}>
-            <LangSwitch lang={lang} d={d} />
+            <LangSwitch lang={lang} d={d} pathFor={pathFor} />
           </MobileMenu>
         </div>
       </div>

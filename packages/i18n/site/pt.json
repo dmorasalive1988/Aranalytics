@@ -1,0 +1,393 @@
+{
+  "meta": {
+    "title": "Pluma · Editora musical digital para compositores latinos",
+    "description": "Registre suas obras, assine os splits com seus parceiros e receba seus direitos autorais no mundo todo. Você continua dono de 100% das suas músicas. A partir de USD 20 por ano.",
+    "keywords": "editora musical digital, administração de direitos autorais para compositores, receber direitos autorais das minhas músicas, splits de músicas, sync música latina, songwriter royalties, publishing administration, editora musical, royalties de compositor",
+    "ogAlt": "Pluma · Onde as músicas nascem.",
+    "legalTitle": {
+      "terms": "Termos e condições",
+      "privacy": "Política de privacidade",
+      "contract": "Contrato de administração modelo"
+    },
+    "legalDescription": "Texto legal da Pluma.",
+    "syncTitle": "Pluma Sync · Música latina original para licenciar",
+    "syncDescription": "Supervisores musicais, agências e produtoras: encontre músicas latinas originais com direitos claros e licenças one-stop.",
+    "arTitle": "Pluma para A&Rs · Músicas latinas inéditas",
+    "arDescription": "Acesso por convite ao catálogo de músicas inéditas de compositores latinos. Solicite seu acesso."
+  },
+  "nav": {
+    "skip": "Pular para o conteúdo",
+    "main": "Seções",
+    "how": "Como funciona",
+    "network": "Rede",
+    "sync": "Sync",
+    "pricing": "Preços",
+    "faq": "FAQ",
+    "login": "Entrar",
+    "join": "Seja sócio",
+    "menu": "Abrir menu",
+    "close": "Fechar menu",
+    "language": "Idioma",
+    "home": "Início da Pluma"
+  },
+  "languages": { "es": "Español", "en": "English", "pt": "Português" },
+  "example": "Dados de exemplo",
+  "hero": {
+    "title": "Onde as músicas nascem.",
+    "sub": "A Pluma registra suas obras, assina os splits com seus parceiros e recebe seus direitos autorais no mundo todo. E ainda te conecta com outros criadores e com oportunidades de sync.",
+    "join": "Seja sócio",
+    "plans": "Ver planos",
+    "facts": ["Você continua dono de 100% das suas obras", "A partir de USD 20 por ano", "Español, English, Português"]
+  },
+  "problem": {
+    "eyebrow": "O problema",
+    "title": "Compor é com você. Receber não deveria ser um mistério.",
+    "cards": [
+      { "title": "Direitos que nunca chegam", "body": "Tem direito autoral que é gerado e nunca chega, porque as obras não estão bem registradas ou os splits não batem." },
+      { "title": "Split no fio do bigode", "body": "Os splits são combinados pelo WhatsApp e acabam em briga." },
+      { "title": "Portas fechadas", "body": "As grandes editoras só contratam quem já faz sucesso, e as plataformas de administração não falam a sua língua nem conhecem o seu mercado." }
+    ]
+  },
+  "how": {
+    "eyebrow": "Como funciona",
+    "title": "Escreva. Assine. Receba.",
+    "steps": [
+      { "title": "Escreva", "body": "Registre suas obras ou componha com outros na Rede Pluma." },
+      { "title": "Assine", "body": "Cada parceiro assina a sua porcentagem com um toque; a obra vai para registro com as informações certas desde o primeiro dia." },
+      { "title": "Receba", "body": "Registramos suas obras em sociedades e plataformas do mundo todo, e você vê cada centavo no seu painel, com statements oficiais." }
+    ]
+  },
+  "network": {
+    "eyebrow": "Rede Pluma",
+    "title": "Encontre com quem compor a sua próxima música.",
+    "body": "Um mural de pedidos feito para criadores: um produtor sobe um beat e procura refrão, uma compositora procura produtor, um artista precisa de um verso em espanhol, um camp de composição abre vagas. Você se candidata, te escolhem e vocês começam a compor.",
+    "differentiator": "Quando a música fica pronta, os splits já estão combinados e assinados, e a obra vai direto para registro.",
+    "protectionTitle": "Suas ideias, protegidas",
+    "protection": [
+      { "title": "Demos com marca d’água", "body": "Suas demos só tocam dentro da Pluma, com uma marca de áudio que identifica cada cópia." },
+      { "title": "Registro de cada audição", "body": "Você sabe quem ouviu sua demo e quando." },
+      { "title": "Prova de autoria com data", "body": "Cada obra recebe uma prova de autoria com carimbo de tempo. [verificar: activar sello de tiempo]" }
+    ],
+    "cardsLabel": "Pedidos de exemplo na Rede Pluma",
+    "cards": [
+      { "type": "Beat procura topliner", "title": "Beat de piseiro a 128 BPM, falta o refrão", "by": "Produtor · Recife", "details": "Piseiro · 128 BPM · Remoto · Português", "offered": "Oferece 40% do split", "applications": "6 candidaturas" },
+      { "type": "Procura produtor", "title": "Balada pop pronta no violão e voz", "by": "Compositora · São Paulo", "details": "Pop · Remoto · Português", "offered": "Oferece 30% do split", "applications": "3 candidaturas" },
+      { "type": "Procura verso ou refrão", "title": "Preciso de um verso em espanhol para um reggaeton", "by": "Artista · Rio de Janeiro", "details": "Reggaeton · 94 BPM · Remoto · Español", "offered": "Oferece 25% do split", "applications": "2 candidaturas" }
+    ]
+  },
+  "sync": {
+    "eyebrow": "Sync",
+    "title": "Sua música no cinema, em séries, publicidade e games.",
+    "points": [
+      { "title": "Catálogo e briefs", "body": "No plano Pro, você ativa suas obras no catálogo de sync e responde a briefs de agências e produtoras." },
+      { "title": "One-stop", "body": "Se você também controla o máster, o cliente licencia composição e gravação com uma única assinatura. Isso deixa sua música muito mais fácil de escolher." },
+      { "title": "Você decide", "body": "Você aprova cada licença antes da assinatura. Ninguém usa sua música sem a sua permissão." }
+    ],
+    "mock": {
+      "title": "Pedido de licença",
+      "work": "Calle Luna",
+      "pills": ["One-stop", "Pro"],
+      "rows": [["Uso", "Publicidade digital"], ["Território", "América Latina"], ["Prazo", "12 meses"]],
+      "question": "Você aprova esta licença?",
+      "approve": "Aprovar",
+      "decline": "Recusar"
+    },
+    "buyerTitle": "Procurando música latina original para o seu projeto?",
+    "buyerBody": "Supervisores musicais, agências e produtoras encontram músicas com direitos claros e licenças com uma só assinatura.",
+    "buyerCta": "Ir para o Pluma Sync"
+  },
+  "transparency": {
+    "eyebrow": "Administração global",
+    "title": "Receba no mundo todo. Veja cada centavo.",
+    "body": "A Pluma registra e recebe pelas suas obras no mundo todo, por meio de parcerias com editoras administradoras internacionais e, cada vez mais, diretamente com as sociedades de gestão coletiva.",
+    "points": [
+      { "title": "Painel detalhado", "body": "Por obra, fonte, território e tipo de receita." },
+      { "title": "Statements oficiais", "body": "Em PDF e CSV, para você e para o seu contador." },
+      { "title": "Alertas de direitos não reclamados", "body": "Avisamos quando tem dinheiro que não está chegando e o que fazer." }
+    ],
+    "dashboard": {
+      "label": "Análises de direitos autorais",
+      "title": "Análises",
+      "byWork": "Por obra",
+      "bySource": "Por fonte",
+      "byTerritory": "Por território",
+      "works": [["Calle Luna", 46], ["Lo que no dije", 31], ["Marea", 23]],
+      "sources": [["Streaming", 58], ["Rádio e TV", 22], ["Shows ao vivo", 12], ["Sincronização", 8]],
+      "territories": [["Brasil", 38], ["Estados Unidos", 27], ["México", 21], ["Portugal", 14]],
+      "alertTitle": "Direitos não reclamados detectados",
+      "alertBody": "“Marea” tem receita não atribuída em um território."
+    },
+    "statement": {
+      "label": "Statement oficial",
+      "code": "Statement 2026-T2",
+      "period": "Abril – junho 2026",
+      "gross": "Arrecadado",
+      "commission": "Comissão Pluma (15%)",
+      "net": "Líquido para você",
+      "grossValue": "USD 412,80",
+      "commissionValue": "−USD 61,92",
+      "netValue": "USD 350,88",
+      "pdf": "PDF",
+      "csv": "CSV"
+    }
+  },
+  "splits": {
+    "eyebrow": "Splits, explicados",
+    "title": "Split é a parte da música que é sua.",
+    "body": "Ele define quanto cada autor recebe. Na Pluma, o split é combinado e assinado antes do registro da obra, então ninguém briga depois.",
+    "songLabel": "Uma música, quatro autores",
+    "song": "Música de exemplo",
+    "incomeLabel": "Se a parte autoral render USD 1.000",
+    "authors": [
+      { "name": "Ana", "role": "Letra e melodia", "pct": 40, "amount": "USD 400" },
+      { "name": "Diego", "role": "Produção", "pct": 30, "amount": "USD 300" },
+      { "name": "Lucía", "role": "Refrão", "pct": 20, "amount": "USD 200" },
+      { "name": "Tomás", "role": "Verso", "pct": 10, "amount": "USD 100" }
+    ],
+    "note": "Antes de comissões e impostos. Cada autor recebe de acordo com o seu plano e o seu país.",
+    "points": [
+      { "title": "Assinatura digital", "body": "Cada parceiro recebe o split e assina a sua porcentagem com um toque, pelo celular. A obra vai para registro quando todos assinam." },
+      { "title": "Parceiros fora da Pluma", "body": "Eles podem assinar por um link, sem assinar plano. A Pluma administra só a parte dos autores que são membros." },
+      { "title": "Se houver desacordo", "body": "A obra fica pausada e os pagamentos dela ficam retidos até resolver. A gente ajuda a mediar." }
+    ]
+  },
+  "compare": {
+    "eyebrow": "Por que a Pluma",
+    "title": "O melhor de uma editora, de portas abertas.",
+    "criterion": "Critério",
+    "columns": ["Pluma", "Editora tradicional", "Plataforma de administração digital"],
+    "rows": [
+      ["Acesso para compositores em início de carreira", "Sim", "Só com trajetória", "Sim"],
+      ["Você continua dono das suas obras", "100%", "Normalmente você cede uma parte [verificar]", "100%"],
+      ["Espanhol, inglês e português nativos", "Sim", "Varia", "Principalmente em inglês [verificar]"],
+      ["Splits assinados digitalmente ao criar a obra", "Sim", "Não", "Não [verificar]"],
+      ["Rede para compor com outros criadores", "Sim", "Informal", "Não"],
+      ["Oportunidades de sync e briefs", "Sim (Pro)", "Sim, para o seu elenco", "Limitado"],
+      ["Catálogo para A&Rs", "Sim (Pro)", "Sim, para o seu elenco", "Não"],
+      ["Painel detalhado e alertas", "Sim", "Varia", "Básico [verificar]"]
+    ]
+  },
+  "pricing": {
+    "eyebrow": "Preços",
+    "title": "Dois planos. Sem letra miúda.",
+    "sub": "Pagamento anual adiantado. Sem plano gratuito: todos os membros têm um plano ativo.",
+    "perYear": "/ ano",
+    "commission": "{pct}% de comissão sobre o que arrecadamos",
+    "recommended": "Recomendado",
+    "plans": {
+      "socio": {
+        "name": "Sócio",
+        "cta": "Escolher Sócio",
+        "features": ["Registro mundial das suas obras", "Statements oficiais e painel", "Splits assinados com seus parceiros", "Acesso à Rede Pluma"]
+      },
+      "pro": {
+        "name": "Pro",
+        "cta": "Escolher Pro",
+        "features": ["Tudo do plano Sócio", "Catálogo de sync e briefs", "Catálogo A&R para obras inéditas", "Análises avançadas e perfil em destaque", "Comissão menor: 15% em vez de 20%"]
+      }
+    },
+    "calc": {
+      "title": "Quanto você receberia?",
+      "label": "Quanto as suas obras arrecadam por ano?",
+      "socio": "Você recebe com Sócio",
+      "pro": "Você recebe com Pro",
+      "formula": "Líquido = arrecadação × (1 − comissão) − anuidade.",
+      "breakEven": "O Pro compensa a partir de {amount} por ano.",
+      "betterPro": "Com esse valor, o Pro te deixa {diff} a mais por ano.",
+      "betterSocio": "Com esse valor, o Sócio te deixa {diff} a mais por ano.",
+      "even": "Com esse valor, os dois planos te deixam o mesmo.",
+      "disclaimer": "Cálculo ilustrativo. Não é uma promessa de renda."
+    },
+    "note": "Você continua dono de 100% das suas obras. Pode mudar para o Pro quando quiser."
+  },
+  "faq": {
+    "eyebrow": "Perguntas frequentes",
+    "title": "O que todo compositor pergunta.",
+    "groups": [
+      {
+        "id": "pagos",
+        "label": "Pagamentos",
+        "items": [
+          ["Quando eu pago a anuidade?", "Ao se cadastrar, por um ano adiantado. Ela renova automaticamente e avisamos 15 dias antes."],
+          ["Quando eu recebo meus direitos autorais?", "Toda vez que publicamos um statement oficial, conforme o calendário de pagamento das sociedades e dos parceiros administradores. Avisamos por e-mail e no app."],
+          ["Por que os direitos autorais demoram meses para chegar?", "Plataformas e sociedades reportam e pagam com atraso; é normal em toda a indústria. Na Pluma você vê em que etapa está cada pagamento."],
+          ["Como eu recebo e em que moeda?", "Por transferência via Wise ou Payoneer, em dólares americanos (USD). O saque mínimo é de USD 20."],
+          ["Sobre o que a comissão é calculada?", "Sobre os direitos autorais que a Pluma arrecada pelas suas obras: 20% no Sócio e 15% no Pro. Sem outras cobranças escondidas."],
+          ["Vocês retêm impostos?", "Depende do seu país e da origem da receita. Entregamos comprovantes de retenção para a sua declaração. [verificar]"]
+        ]
+      },
+      {
+        "id": "splits",
+        "label": "Splits",
+        "items": [
+          ["O que é um split?", "A porcentagem de uma música que cabe a cada autor. Define quanto cada um recebe."],
+          ["Meus parceiros precisam estar na Pluma?", "Não. Eles podem assinar a porcentagem por um link, sem assinar plano. A Pluma administra só a parte dos autores que são membros."],
+          ["E se um parceiro não assinar ou não concordar?", "A obra fica pausada e os pagamentos dela ficam retidos até resolver. A gente ajuda a mediar."],
+          ["Posso mudar um split depois?", "Sim, mas todos os parceiros precisam assinar a nova versão."]
+        ]
+      },
+      {
+        "id": "contrato",
+        "label": "Contrato e propriedade",
+        "items": [
+          ["A Pluma fica com as minhas músicas?", "Não. Você continua dono de 100%. A Pluma só administra e recebe por você."],
+          ["Quanto tempo dura o contrato e como eu saio?", "[Duração e condições de saída a definir]. Ao sair, entregamos seu catálogo e acertamos os direitos em andamento."],
+          ["Já sou associado a uma sociedade de gestão. Posso entrar?", "Sim. A Pluma trabalha junto com a sua sociedade; você continua recebendo a sua parte como autor."],
+          ["E se eu tiver menos de 18 anos?", "Você pode entrar com a assinatura do seu pai, mãe ou responsável legal."]
+        ]
+      },
+      {
+        "id": "red",
+        "label": "Rede",
+        "items": [
+          ["Podem roubar minha ideia se eu subir uma demo?", "Suas demos só tocam dentro da Pluma, com marca d’água de áudio e registro de cada audição, e cada obra tem prova de autoria com data."],
+          ["Como funciona uma parceria?", "Você publica o que precisa ou se candidata a um pedido. Quando é aceito, o split fica combinado e, quando a música está pronta, os dois assinam com um toque."]
+        ]
+      },
+      {
+        "id": "sync",
+        "label": "Sync",
+        "items": [
+          ["Como a minha música chega a um filme ou comercial?", "Você ativa suas obras no catálogo de sync (plano Pro). Supervisores e agências encontram, ou você envia para briefs abertos."],
+          ["Podem usar minha música sem a minha permissão?", "Não. Você aprova cada licença antes da assinatura."],
+          ["Quanto a Pluma cobra em sync?", "30% da licença."],
+          ["O que é one-stop?", "Quando você também controla a gravação (o máster), o cliente licencia composição e máster com uma só assinatura."]
+        ]
+      },
+      {
+        "id": "planes",
+        "label": "Planos",
+        "items": [
+          ["Qual é a diferença entre Sócio e Pro?", "O Pro inclui sync, catálogo A&R, análises avançadas, perfil em destaque e uma comissão menor (15% em vez de 20%)."],
+          ["Posso mudar de plano?", "Você pode mudar para o Pro a qualquer momento pagando a diferença. Se voltar para o Sócio, a mudança vale no fim do seu ano."],
+          ["Existe plano gratuito?", "Não. Todos os membros da Pluma têm um plano ativo, o que mantém uma comunidade séria e profissional."]
+        ]
+      },
+      {
+        "id": "ia",
+        "label": "Inteligência artificial",
+        "items": [
+          ["Posso registrar músicas feitas com IA?", "Você precisa declarar se usou IA ao registrar a obra. [Política a definir]."],
+          ["A Pluma usa minhas músicas para treinar IA?", "Não, sem a sua autorização expressa."]
+        ]
+      }
+    ]
+  },
+  "audience": {
+    "label": "Para supervisores e A&Rs",
+    "sync": { "eyebrow": "Supervisores, agências e produtoras", "title": "Licencie música latina original", "cta": "Ir para o Pluma Sync" },
+    "ar": { "eyebrow": "A&Rs de gravadoras e equipes de artistas", "title": "Encontre seu próximo hit inédito", "cta": "Solicitar acesso como A&R" }
+  },
+  "closing": {
+    "title": "Sua música. Sua assinatura. Seu dinheiro.",
+    "tagline": "Escreva. Assine. Receba.",
+    "join": "Seja sócio"
+  },
+  "footer": {
+    "sections": "Seções",
+    "legal": "Legal",
+    "terms": "Termos",
+    "privacy": "Privacidade",
+    "contract": "Contrato de administração modelo",
+    "contact": "Contato",
+    "contactValue": "[correo del equipo]",
+    "social": "Redes",
+    "socialValue": "[redes sociales]",
+    "company": "[razón social]",
+    "rights": "Todos os direitos reservados.",
+    "forBuyers": "Para compradores",
+    "plumaSync": "Pluma Sync para compradores",
+    "arAccess": "Acesso A&R"
+  },
+  "legal": {
+    "placeholder": "[texto legal a definir]",
+    "back": "Voltar ao início"
+  },
+  "cookies": {
+    "text": "Medimos as visitas com análises sem cookies para saber quais partes do site ajudam. Não usamos cookies de publicidade nem de rastreamento.",
+    "more": "Privacidade",
+    "ok": "Entendi"
+  },
+  "waitlist": {
+    "title": "A Pluma abre em breve.",
+    "body": "Deixe seu e-mail e avisamos assim que o cadastro abrir.",
+    "email": "Seu e-mail",
+    "plan": "Plano que te interessa",
+    "submit": "Me avise",
+    "sending": "Enviando…",
+    "ok": "Pronto. Vamos te escrever assim que abrirmos.",
+    "error": "Não conseguimos salvar seu e-mail. Tente de novo."
+  },
+  "mock": {
+    "hello": "Oi,",
+    "name": "Valentina",
+    "plan": "Plano Pro",
+    "balance": "Saldo disponível",
+    "balanceValue": "USD 1.284,50",
+    "nextStatement": "Próximo statement: 2026-T3",
+    "withdraw": "Sacar",
+    "history": "Receita por período",
+    "periods": [["T4", 38], ["T1", 52], ["T2", 61], ["T3", 74]],
+    "works": "Suas obras",
+    "workRows": [["Calle Luna", "Registrada"], ["Lo que no dije", "Assinaturas pendentes"]],
+    "nav": ["Início", "Obras", "Rede", "Sync", "Pagamentos"]
+  },
+  "syncPage": {
+    "eyebrow": "Pluma Sync",
+    "title": "Música latina original, pronta para licenciar.",
+    "sub": "Um catálogo de músicas de compositores latinos com splits assinados e direitos claros. Você busca com as suas palavras, cota em minutos e licencia, muitas vezes com uma só assinatura.",
+    "portal": "Entrar no Pluma Sync",
+    "contactCta": "Falar com a equipe",
+    "searchTitle": "Busque do jeito que você pediria",
+    "searchSub": "Escreva o que você precisa. O Pluma Sync transforma em filtros: gênero, mood, idioma, voz, BPM e one-stop.",
+    "searchLabel": "Descreva a música que você procura",
+    "searchPlaceholder": "Ex.: forró alegre com voz feminina, 120-130 bpm, one-stop",
+    "searchExamples": ["reggaeton sensual 90 bpm em espanhol", "bossa nova nostálgica instrumental", "sertanejo romântico dupla one-stop"],
+    "searchResult": "Como o Pluma Sync entende",
+    "searchEmpty": "Escreva uma busca para ver os filtros.",
+    "searchNote": "Prévia. As músicas aparecem quando você entra no Pluma Sync.",
+    "filters": { "genres": "Gênero", "moods": "Mood", "languages": "Idioma", "vocals": "Voz", "bpm": "BPM", "oneStop": "One-stop", "instrumental": "Instrumental", "text": "Texto livre" },
+    "moods": { "happy": "alegre", "sad": "triste", "romantic": "romântica", "energetic": "enérgica", "chill": "relaxante", "dark": "sombria", "epic": "épica", "nostalgic": "nostálgica", "sensual": "sensual", "uplifting": "inspiradora", "party": "festa", "dramatic": "dramática" },
+    "vocals": { "female": "feminina", "male": "masculina", "duet": "dupla", "choir": "coral", "none": "sem voz" },
+    "langs": { "es": "espanhol", "en": "inglês", "pt": "português" },
+    "yes": "sim",
+    "howTitle": "Como licenciar",
+    "how": [
+      { "title": "Busque e ouça", "body": "Encontre músicas por gênero, mood, idioma, voz ou BPM e ouça em versão protegida." },
+      { "title": "Cote e peça a licença", "body": "Escolha uso, território e prazo, veja uma cotação de referência e envie o pedido com o projeto." },
+      { "title": "Os autores aprovam e você assina", "body": "Os autores aprovam o uso. Um especialista da Pluma fecha o valor e emite a licença." }
+    ],
+    "oneStopTitle": "One-stop: obra e máster com uma só assinatura",
+    "oneStopBody": "Quando o autor também controla a gravação, você licencia composição e máster juntos. Menos pessoas para liberar, menos tempo.",
+    "formTitle": "Conte o que você precisa",
+    "formSub": "Respondemos com opções do catálogo para o seu projeto."
+  },
+  "arPage": {
+    "eyebrow": "Pluma para A&Rs",
+    "title": "Seu próximo hit ainda não foi gravado.",
+    "sub": "Acesso por convite ao catálogo de músicas inéditas de compositores latinos: ouça, marque interesse e peça um hold de 30, 60 ou 90 dias.",
+    "points": [
+      { "title": "Músicas inéditas", "body": "Só obras que os autores disponibilizam para um artista gravar." },
+      { "title": "Holds com data", "body": "Você reserva uma música por 30, 60 ou 90 dias. O autor aprova cada hold." },
+      { "title": "Splits já assinados", "body": "Você sabe quem compôs o quê antes de gravar. Sem surpresas depois." }
+    ],
+    "formTitle": "Solicite seu acesso",
+    "formSub": "O acesso é só por convite. Analisamos cada pedido e enviamos um link pessoal.",
+    "haveInvite": "Já tem convite? Entre no portal A&R"
+  },
+  "forms": {
+    "name": "Nome",
+    "email": "E-mail",
+    "company": "Empresa",
+    "role": "Cargo",
+    "labelCompany": "Gravadora ou equipe de artista",
+    "message": "Mensagem",
+    "syncMessagePh": "Projeto, uso (publicidade, série, game…), território, datas e orçamento aproximado.",
+    "arMessagePh": "Artistas com quem você trabalha e o tipo de música que procura.",
+    "send": "Enviar",
+    "sending": "Enviando…",
+    "ok": "Recebido. A equipe vai te escrever em breve.",
+    "error": "Não conseguimos enviar o formulário. Confira o e-mail e tente de novo.",
+    "required": "Obrigatório"
+  }
+}

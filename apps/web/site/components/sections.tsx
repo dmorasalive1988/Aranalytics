@@ -159,7 +159,7 @@ export function Network({ d }: P) {
 
 /* 5 · Sync */
 const SYNC_ICONS = [Clapperboard, Disc3, BadgeCheck];
-export function Sync({ d }: P) {
+export function Sync({ d, lang }: P) {
   const s = d.sync;
   return (
     <Section id="sync" labelledBy="sync-title">
@@ -194,7 +194,7 @@ export function Sync({ d }: P) {
           <h3 className="font-display text-2xl font-extrabold sm:text-[28px]">{s.buyerTitle}</h3>
           <p className="leading-relaxed text-fg-3">{s.buyerBody}</p>
         </div>
-        <a href="/pluma-sync" data-track="buyer_click:sync" className={cn(buttonClass({ variant: 'outline-ambar' }), 'shrink-0')}>
+        <a href={`/${lang}/sync`} data-track="buyer_click:sync" className={cn(buttonClass({ variant: 'outline-ambar' }), 'shrink-0')}>
           {s.buyerCta}
           <ArrowRight size={18} aria-hidden />
         </a>
@@ -355,11 +355,11 @@ export function Compare({ d }: P) {
 }
 
 /* 11 · Para supervisores y A&Rs */
-export function Audience({ d }: P) {
+export function Audience({ d, lang }: P) {
   const a = d.audience;
   const cols = [
-    { ...a.sync, href: '/pluma-sync', track: 'buyer_click:band', Icon: Clapperboard },
-    { ...a.ar, href: '/ar', track: 'ar_click:band', Icon: Disc3 },
+    { ...a.sync, href: `/${lang}/sync`, track: 'buyer_click:band', Icon: Clapperboard },
+    { ...a.ar, href: `/${lang}/ar`, track: 'ar_click:band', Icon: Disc3 },
   ];
   return (
     <Section tone="noche" labelledBy="audience-title" className="lg:py-24">
@@ -404,7 +404,7 @@ export function Closing({ d, lang }: P) {
 }
 
 /* 13 · Pie de página */
-export function SiteFooter({ d, lang, home = true }: P & { home?: boolean }) {
+export function SiteFooter({ d, lang, home = true, pathFor }: P & { home?: boolean; pathFor?: (l: SiteLang) => string }) {
   const f = d.footer;
   const legal = LEGAL_SLUGS[lang];
   return (
@@ -413,7 +413,7 @@ export function SiteFooter({ d, lang, home = true }: P & { home?: boolean }) {
         <div className="flex flex-col gap-4">
           <PlumaLogo size={26} />
           <p className="font-display text-lg font-semibold text-ambar">{d.closing.tagline}</p>
-          <LangSwitch lang={lang} d={d} />
+          <LangSwitch lang={lang} d={d} pathFor={pathFor} />
         </div>
         <nav aria-label={f.sections} className="flex flex-col gap-2">
           <h2 className="text-sm font-bold text-fg-2">{f.sections}</h2>
@@ -425,8 +425,8 @@ export function SiteFooter({ d, lang, home = true }: P & { home?: boolean }) {
         </nav>
         <nav aria-label={f.forBuyers} className="flex flex-col gap-2">
           <h2 className="text-sm font-bold text-fg-2">{f.forBuyers}</h2>
-          <a href="/pluma-sync" className="inline-flex min-h-8 items-center text-fg-3 no-underline hover:text-papel">{f.plumaSync}</a>
-          <a href="/ar" className="inline-flex min-h-8 items-center text-fg-3 no-underline hover:text-papel">{f.arAccess}</a>
+          <a href={`/${lang}/sync`} className="inline-flex min-h-8 items-center text-fg-3 no-underline hover:text-papel">{f.plumaSync}</a>
+          <a href={`/${lang}/ar`} className="inline-flex min-h-8 items-center text-fg-3 no-underline hover:text-papel">{f.arAccess}</a>
           <a href="/entrar" className="inline-flex min-h-8 items-center text-fg-3 no-underline hover:text-papel">{d.nav.login}</a>
         </nav>
         <nav aria-label={f.legal} className="flex flex-col gap-2">

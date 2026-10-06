@@ -87,14 +87,14 @@ Qué cubren:
 
 | Ruta | Para quién | Notas |
 |---|---|---|
-| `/es` (`/en`, `/pt` en camino) | Visitantes | Sitio público estático. `/` lleva al idioma elegido o del navegador; con sesión, a la app |
+| `/es`, `/en`, `/pt` | Visitantes | Sitio público estático. `/` lleva al idioma elegido o del navegador; con sesión, a la app. `/{idioma}/sync` (compradores) y `/{idioma}/ar` (acceso A&R) con formularios |
 | `/inicio` y demás (app del autor) | Autores con plan | PWA móvil: obras, red, sync, pagos |
 | `/firmar/t/…` | Coautores invitados | Firma sin cuenta |
 | `/ar` | A&R invitados | Solo por invitación (back-office → A&R). Con dominio propio: `ar.<dominio>` |
 | `/pluma-sync` | Compradores de sync | Registro abierto. Con dominio propio: `sync.<dominio>` |
 | `apps/admin` | Equipo de Pluma | Back-office |
 
-**Sitio público.** Vive en `apps/web/app/(site)/[lang]` con su propio layout raíz (la app está en `app/(main)`), se genera estático y sus textos están en `packages/i18n/site/<idioma>.json`. "Hazte socio" y "Elegir Socio/Pro" llevan a `/registro?lang=…&plan=…`; el proxy guarda idioma y plan en cookies y el onboarding deja el plan preseleccionado. Con `PLUMA_WAITLIST=1` los botones llevan a un formulario de lista de espera. Los contactos (lista de espera, sync, A&R) se guardan en `marketing_leads`, avisan a `PLUMA_TEAM_EMAIL` y se ven en el back-office → Contactos del sitio. La analítica es Vercel Web Analytics (sin cookies); se activa en el proyecto de Vercel. Los textos marcados `[verificar]`, `[dato a verificar]` o `[… a definir]` se ven resaltados a propósito hasta confirmarlos.
+**Sitio público.** Vive en `apps/web/app/(site)/[lang]` con su propio layout raíz (la app está en `app/(main)`), se genera estático y sus textos están en `packages/i18n/site/<idioma>.json` (es, en, pt; una prueba verifica que los tres tengan la misma estructura). "Hazte socio" y "Elegir Socio/Pro" llevan a `/registro?lang=…&plan=…`; el proxy guarda idioma y plan en cookies y el onboarding deja el plan preseleccionado. Con `PLUMA_WAITLIST=1` los botones llevan a un formulario de lista de espera. Los contactos (lista de espera, sync, A&R) se guardan en `marketing_leads`, avisan a `PLUMA_TEAM_EMAIL` y se ven en el back-office → Contactos del sitio. La analítica es Vercel Web Analytics (sin cookies); se activa en el proyecto de Vercel. Los textos marcados `[verificar]`, `[dato a verificar]` o `[… a definir]` se ven resaltados a propósito hasta confirmarlos.
 
 **Búsqueda de Pluma Sync.** La consulta en lenguaje natural se traduce a filtros duros (género, mood, idioma, voz, instrumental, one-stop, BPM) que se aplican en SQL, y el resto del texto ordena por texto completo. Sin `ANTHROPIC_API_KEY` la traducción la hacen reglas en español, inglés y portugués; con la clave, la hace un modelo (con las reglas como respaldo si no responde). La búsqueda vectorial con embeddings queda para cuando haya catálogo suficiente: la columna `works.embedding` ya existe donde está pgvector.
 
