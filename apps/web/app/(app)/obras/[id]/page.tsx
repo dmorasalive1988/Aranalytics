@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Card, Field, Notice, Textarea, buttonClass, cn } from '@pluma/ui';
+import { Card, Field, Input, Notice, Select, Textarea, buttonClass, cn } from '@pluma/ui';
 import { AlertTriangle, Fingerprint, Lock, Scale } from 'lucide-react';
 import { getWorkDetail } from '@pluma/services';
 import { ActionForm } from '@/components/action-form';
 import { BackLink } from '@/components/back-link';
 import { CatalogSwitch } from '@/components/catalog-switch';
+import { MOODS, VOCALS } from '@pluma/domain';
+import { catalogMetaAction } from '../../sync/actions';
 import { PartyList } from '@/components/party-list';
 import { StatusBadge } from '@/components/work-row';
 import { date, pct } from '@/lib/format';
@@ -27,6 +29,8 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
   if (!d) notFound();
   const t = await getTranslations('workDetail');
   const tc = await getTranslations('common');
+  const tm = await getTranslations('catalogMeta');
+  const tcat = await getTranslations('catalog');
   const locale = await getLocale();
   const w = d.work;
 
@@ -123,6 +127,42 @@ export default async function WorkPage({ params }: { params: Promise<{ id: strin
             <CatalogSwitch id="sync" label={t('sync')} hint={t('syncHint')} checked={w.syncOptIn} disabled={!pro} onToggle={catalogAction.bind(null, id, 'sync')} />
             <CatalogSwitch id="ar" label={t('ar')} hint={t('arHint')} checked={w.arOptIn} disabled={!pro || d.recordings.length > 0} onToggle={catalogAction.bind(null, id, 'ar')} />
             <CatalogSwitch id="oneStop" label={t('oneStop')} checked={w.oneStop} disabled={!pro} onToggle={catalogAction.bind(null, id, 'oneStop')} />
+            {pro && (
+              <details className="rounded-xl border border-stroke px-4 py-2" open={w.syncOptIn || w.arOptIn}>
+                <summary className="min-h-11 cursor-pointer content-center text-[15px] font-bold">{tm('title')}</summary>
+                <ActionForm action={catalogMetaAction.bind(null, id)} submitLabel={tm('save')} submitVariant="secondary" pendingLabel={tc('sending')}>
+                  <p className="text-sm text-fg-2">{tm('sub')}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field id="bpm" label={tm('bpm')}><Input id="bpm" name="bpm" inputMode="numeric" defaultValue={w.bpm ?? ''} /></Field>
+                    <Field id="key" label={tm('key')}><Input id="key" name="key" maxLength={12} defaultValue={w.musicalKey ?? ''} /></Field>
+                  </div>
+                  <fieldset className="flex flex-col gap-2">
+                    <legend className="mb-2 text-sm font-medium text-fg-2">{tm('moods')}</legend>
+                    <div className="flex flex-wrap gap-2">
+                      {MOODS.map((mo) => (
+                        <label key={mo} className="flex min-h-10 items-center gap-2 rounded-xl bg-surface-2 px-3 text-sm">
+                          <input type="checkbox" name="moods" value={mo} defaultChecked={w.moods.includes(mo)} className="h-4 w-4 accent-[var(--color-ambar)]" />
+                          {tcat(`moods.${mo}`)}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <Field id="vocals" label={tm('vocals')}>
+                    <Select id="vocals" name="vocals" defaultValue={w.vocals ?? ''}>
+                      <option value="">{tm('vocalsNone')}</option>
+                      {VOCALS.map((v) => <option key={v} value={v}>{tcat(`vocals.${v}`)}</option>)}
+                    </Select>
+                  </Field>
+                  <label className="flex min-h-11 items-center gap-3 text-[15px]">
+                    <input type="checkbox" name="instrumental" defaultChecked={w.instrumentalAvailable} className="h-5 w-5 accent-[var(--color-ambar)]" />
+                    {tm('instrumental')}
+                  </label>
+                  <Field id="description" label={tm('description')} hint={tm('descriptionHint')}>
+                    <Textarea id="description" name="description" rows={3} maxLength={600} defaultValue={w.catalogDescription ?? ''} aria-describedby="description-hint" />
+                  </Field>
+                </ActionForm>
+              </details>
+            )}
           </Card>
         </section>
       )}

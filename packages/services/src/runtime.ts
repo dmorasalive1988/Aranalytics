@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import {
+  ClaudeQueryParser,
   DemoMailbox,
   DevMailbox,
   DevPush,
@@ -10,6 +11,7 @@ import {
   WebPushSender,
   DisabledTsa,
   FakePayments,
+  RuleQueryParser,
   LocalStorage,
   PostmarkEmail,
   Rfc3161Tsa,
@@ -138,6 +140,7 @@ export function depsFromEnv(): Deps {
     whatsapp,
     payments,
     storage,
+    queryParser: process.env.ANTHROPIC_API_KEY ? new ClaudeQueryParser() : new RuleQueryParser(),
     tsa: process.env.PLUMA_TSA_URL ? new Rfc3161Tsa(process.env.PLUMA_TSA_URL) : new DisabledTsa(),
     appUrl,
     signUrl: (onVercel() && /localhost/.test(process.env.PLUMA_SIGN_URL ?? '') ? undefined : process.env.PLUMA_SIGN_URL) || `${appUrl}/firmar`,

@@ -8,8 +8,8 @@ import { BackLink } from '@/components/back-link';
 import { resendAction, verifyAction } from '../actions';
 
 /** A3 · Verifica tu correo con el código de 6 dígitos. */
-export default async function Verify({ searchParams }: { searchParams: Promise<{ email?: string }> }) {
-  const { email = '' } = await searchParams;
+export default async function Verify({ searchParams }: { searchParams: Promise<{ email?: string; next?: string }> }) {
+  const { email = '', next } = await searchParams;
   const t = await getTranslations('auth');
   const tc = await getTranslations('common');
   // Demo: no sale correo real, así que el código se muestra aquí.
@@ -22,6 +22,7 @@ export default async function Verify({ searchParams }: { searchParams: Promise<{
       {demoCode && <Notice tone="info" title={td('code', { code: demoCode })} />}
       <ActionForm action={verifyAction} submitLabel={t('verify')} pendingLabel={tc('sending')}>
         <input type="hidden" name="email" value={email} />
+        {next && <input type="hidden" name="next" value={next} />}
         <Field id="code" label={t('code')}>
           <Input id="code" name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required className="text-center text-2xl tracking-[0.4em] tabular" />
         </Field>

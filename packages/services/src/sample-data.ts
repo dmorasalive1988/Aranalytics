@@ -167,6 +167,33 @@ export async function seedSampleData(deps: Deps, opts: { accountsTable: 'auth.us
   await N.acceptApplication(deps, diego, aVale, ctx);
   void rCami;
 
+  log('Catálogo A&R y Pluma Sync…');
+  const C = S.catalog;
+  // Demos y metadatos de las obras en catálogo (la versión de escucha se prepara al activar el opt-in)
+  await S.attachDemo(deps, valentina, w5, { bytes: demoWav(10), mime: 'audio/wav' }, ctx);
+  await C.updateCatalogMetadata(deps, valentina, w5, { bpm: 96, musicalKey: 'Am', moods: ['happy', 'party', 'nostalgic'], vocals: 'female', instrumentalAvailable: true, description: 'Cumbia luminosa con acordeón y guacharaca; ideal para verano, playa y celebraciones.' }, ctx);
+  await S.setCatalogOptIns(deps, valentina, w5, { sync: true, ar: true, oneStop: true }, ctx);
+  await S.attachDemo(deps, valentina, w1, { bytes: demoWav(10), mime: 'audio/wav' }, ctx);
+  await C.updateCatalogMetadata(deps, valentina, w1, { bpm: 92, musicalKey: 'F#m', moods: ['romantic', 'sensual'], vocals: 'female', instrumentalAvailable: false, description: 'Reggaetón romántico de noche en Medellín.' }, ctx);
+  await S.setCatalogOptIns(deps, valentina, w1, { sync: true }, ctx);
+  await S.attachDemo(deps, sam, w2, { bytes: demoWav(10), mime: 'audio/wav' }, ctx);
+  await C.updateCatalogMetadata(deps, sam, w2, { bpm: 104, musicalKey: 'C', moods: ['uplifting', 'chill'], vocals: 'duet', instrumentalAvailable: true, description: 'Latin pop bilingüe, luminoso, con guitarras y sintetizadores. Miami de noche.' }, ctx);
+  await S.setCatalogOptIns(deps, sam, w2, { sync: true }, ctx);
+
+  // Comprador de sync y A&R invitado
+  const buyer = await account('compras@agenciafaro.test', 'es');
+  await C.registerBuyer(deps, buyer, { company: 'Agencia Faro', companyType: 'agency', country: 'MX' }, ctx);
+  const arUser = await account('ar@selloandino.test', 'es');
+  const invId = await C.inviteAr(deps, admin, { email: 'ar@selloandino.test', company: 'Sello Andino' }, ctx);
+  const [inv] = await deps.db.select().from(t.arInvitations).where(eq(t.arInvitations.id, invId));
+  await C.acceptArInvitation(deps, arUser, C.arInviteUrl(deps, inv!.id).split('/').pop()!, ctx);
+  await C.expressInterest(deps, arUser, w5, 'Nos encanta para el próximo sencillo de nuestra artista.', ctx);
+  await C.requestHold(deps, arUser, w5, 60, 'Queremos grabarla en diciembre.', ctx);
+
+  // Solicitud de licencia esperando a los autores y un brief abierto
+  await C.requestLicense(deps, buyer, w2, { usage: 'digital_ads', territory: 'US', termMonths: 12, project: 'Campaña digital de una marca de bebidas para el verano en Miami.', oneStop: false }, ctx);
+  await C.createBrief(deps, buyer, { title: 'Cumbia o reggaetón alegre para campaña de verano', description: 'Spot de 30 s para TV y redes en México. Buscamos energía de playa, voz femenina o instrumental.', moods: ['happy', 'party'], genres: ['cumbia', 'reggaeton'], languages: ['es'], usage: 'digital_ads', territory: 'LATAM', termMonths: 12, budgetMinCents: 200000, budgetMaxCents: 500000, deadline: null }, ctx);
+
   await S.dispatchPending(deps, { limit: 500 });
   return true;
 }

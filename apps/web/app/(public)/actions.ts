@@ -6,13 +6,14 @@ import { DomainError } from '@pluma/domain';
 import { isLocale } from '@pluma/i18n';
 import { ensureAppUser, getSession } from '@pluma/services';
 import { run, str, type ActionState } from '@/lib/actions';
-import { currentLocale, deps, getAuth, setLocaleCookie, STEP_PATH } from '@/lib/server';
+import { currentLocale, deps, getAuth, homeFor, safeNext, setLocaleCookie, STEP_PATH } from '@/lib/server';
 
 export async function signUpAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const email = str(fd, 'email').toLowerCase();
   return run(async () => {
     await (await getAuth()).signUp(email, str(fd, 'password'), await currentLocale());
-    redirect(`/verificar?email=${encodeURIComponent(email)}`);
+    const next = safeNext(str(fd, 'next'));
+    redirect(`/verificar?email=${encodeURIComponent(email)}${next ? `&next=${encodeURIComponent(next)}` : ''}`);
   });
 }
 
@@ -20,7 +21,7 @@ export async function verifyAction(_: ActionState, fd: FormData): Promise<Action
   return run(async () => {
     const user = await (await getAuth()).verifyEmail(str(fd, 'email'), str(fd, 'code'));
     await ensureAppUser(deps(), user, await currentLocale());
-    redirect(STEP_PATH.profile);
+    redirect(safeNext(str(fd, 'next')) ?? STEP_PATH.profile);
   });
 }
 
@@ -37,7 +38,7 @@ export async function signInAction(_: ActionState, fd: FormData): Promise<Action
     await ensureAppUser(deps(), user, await currentLocale());
     const s = await getSession(deps(), user.id);
     if (s && isLocale(s.locale)) await setLocaleCookie(s.locale);
-    redirect(s ? STEP_PATH[s.step] : STEP_PATH.profile);
+    redirect(safeNext(str(fd, 'next')) ?? (s ? homeFor(s) : STEP_PATH.profile));
   });
 }
 
@@ -67,7 +68,7 @@ export async function resetAction(_: ActionState, fd: FormData): Promise<ActionS
     await ensureAppUser(deps(), user, await currentLocale());
     const s = await getSession(deps(), user.id);
     if (s && isLocale(s.locale)) await setLocaleCookie(s.locale);
-    redirect(s ? STEP_PATH[s.step] : STEP_PATH.profile);
+    redirect(s ? homeFor(s) : STEP_PATH.profile);
   });
 }
 

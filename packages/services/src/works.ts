@@ -427,6 +427,11 @@ export async function setCatalogOptIns(deps: Deps, userId: string, workId: strin
       .set({ syncOptIn: opts.sync ?? w.syncOptIn, arOptIn: opts.ar ?? w.arOptIn, oneStop: opts.oneStop ?? w.oneStop })
       .where(eq(t.works.id, workId));
   });
+  // Al entrar a un catálogo se prepara la versión de escucha protegida (marca de agua si hay ffmpeg).
+  if (opts.sync || opts.ar) {
+    const { prepareCatalogAudio } = await import('./catalog');
+    await prepareCatalogAudio(deps, workId);
+  }
 }
 
 /** Alerta si otra persona ya registró una obra con título, grabación, ISWC o audio muy parecidos. */
@@ -470,25 +475,26 @@ export interface WorkListItem {
   authors: number;
   pendingSignatures: number;
   updatedAt: string;
+  syncOptIn: boolean;
 }
 
 /** Lista de obras del autor (A21), leída con RLS. */
 export async function listMyWorks(deps: Deps, userId: string): Promise<WorkListItem[]> {
   return withUser(deps.db, userId, async (tx) => {
-    const rows = await tx.execute<{ id: string; title: string; status: WorkStatus; updated_at: string; my_bps: number | null; authors: number; pending: number }>(sql`
+    const rows = await tx.execute<{ id: string; title: string; status: WorkStatus; updated_at: string; my_bps: number | null; authors: number; pending: number; sync_opt_in: boolean }>(sql`
       with latest as (
         select distinct on (sv.work_id) sv.work_id, sv.id
         from split_versions sv
         order by sv.work_id, (sv.status in ('signed')) desc, sv.version desc
       )
-      select w.id, w.title, w.status, w.updated_at,
+      select w.id, w.title, w.status, w.updated_at, w.sync_opt_in and not w.opt_ins_suspended as sync_opt_in,
         (select ss.share_bps from split_shares ss where ss.split_version_id = l.id and ss.writer_user_id = ${userId} limit 1) as my_bps,
         (select count(*)::int from split_shares ss where ss.split_version_id = l.id) as authors,
         (select count(*)::int from split_versions pv join split_shares ps on ps.split_version_id = pv.id
           where pv.work_id = w.id and pv.status = 'pending_signatures' and ps.status = 'pending') as pending
       from works w left join latest l on l.work_id = w.id
       order by w.updated_at desc`);
-    return rows.map((r) => ({ id: r.id, title: r.title, status: r.status, myBps: r.my_bps, authors: r.authors, pendingSignatures: r.pending, updatedAt: r.updated_at }));
+    return rows.map((r) => ({ id: r.id, title: r.title, status: r.status, myBps: r.my_bps, authors: r.authors, pendingSignatures: r.pending, updatedAt: r.updated_at, syncOptIn: r.sync_opt_in }));
   });
 }
 

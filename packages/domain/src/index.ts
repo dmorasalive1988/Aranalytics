@@ -10,3 +10,4 @@ export * from './split-sheet';
 export * from './money';
 export * from './distribution';
 export * from './network';
+export * from './catalog';

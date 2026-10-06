@@ -11,7 +11,8 @@ export async function generateMetadata() {
 }
 
 /** A2 · Registro con correo o Google/Apple. */
-export default async function SignUp() {
+export default async function SignUp({ searchParams }: { searchParams: Promise<{ next?: string; email?: string }> }) {
+  const sp = await searchParams;
   const t = await getTranslations('auth');
   const tc = await getTranslations('common');
   return (
@@ -30,9 +31,10 @@ export default async function SignUp() {
         </div>
       )}
       <ActionForm action={signUpAction} submitLabel={t('createAccount')} pendingLabel={tc('sending')}
-        footer={<p className="text-center text-sm text-fg-2">{t('haveAccount')} <Link href="/entrar" className="font-bold">{t('login')}</Link></p>}>
+        footer={<p className="text-center text-sm text-fg-2">{t('haveAccount')} <Link href={sp.next ? `/entrar?next=${encodeURIComponent(sp.next)}` : "/entrar"} className="font-bold">{t('login')}</Link></p>}>
+        {sp.next && <input type="hidden" name="next" value={sp.next} />}
         <Field id="email" label={t('email')}>
-          <Input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />
+          <Input id="email" name="email" type="email" autoComplete="email" inputMode="email" required defaultValue={sp.email} />
         </Field>
         <Field id="password" label={t('password')} hint={t('passwordHint')}>
           <Input id="password" name="password" type="password" autoComplete="new-password" minLength={10} required hasHint />

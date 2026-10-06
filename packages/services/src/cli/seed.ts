@@ -24,5 +24,6 @@ const done = await seedSampleData(deps, { accountsTable: table, fixturesDir: res
 console.log(done ? `
 Listo. Contraseña de todas las cuentas: ${SAMPLE_PASSWORD}
   Autores:   valentina@pluma.test (es, Pro) · diego@pluma.test (es, Socio) · sam@pluma.test (en, Pro) · camila@pluma.test (pt-BR, Socio)
-  Back-office: operaciones@pluma.test (operador) · aprobaciones@pluma.test (aprobador) · admin@pluma.test (super admin)` : 'La base ya tiene usuarios; para empezar de cero: pnpm db:reset && pnpm db:seed');
+  Back-office: operaciones@pluma.test (operador) · aprobaciones@pluma.test (aprobador) · admin@pluma.test (super admin)
+  Pluma Sync: compras@agenciafaro.test (comprador) · Portal A&R: ar@selloandino.test` : 'La base ya tiene usuarios; para empezar de cero: pnpm db:reset && pnpm db:seed');
 await S.closeRuntime();

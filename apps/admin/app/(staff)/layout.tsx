@@ -29,6 +29,8 @@ export default async function StaffLayout({ children }: { children: React.ReactN
               { href: '/matching', label: 'Matching' },
               { href: '/pagos', label: 'Retiros' },
               { href: '/red', label: 'Red' },
+              { href: '/sync', label: 'Sync' },
+              { href: '/ar', label: 'A&R' },
               { href: '/notificaciones', label: 'Notificaciones' },
               { href: '/auditoria', label: 'Auditoría' },
               ...(sa ? [{ href: '/configuracion', label: 'Configuración' }, { href: '/usuarios', label: 'Usuarios internos' }] : []),

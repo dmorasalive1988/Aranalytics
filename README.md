@@ -13,7 +13,7 @@ Editora musical digital para compositores, productores y artistas latinos de Lat
 | b | Statements, dashboard y retiros (con archivo ficticio) | ✅ |
 | c | Notificaciones: correo, push, WhatsApp opcional y centro in-app, con preferencias y seguimiento de envíos | ✅ |
 | d | Red Pluma: tablero, solicitudes, postulaciones con cupo diario, contactos al aceptar, cerrar canción, perfiles y créditos verificados, demos con marca de agua | ✅ |
-| e | Catálogo A&R y Sync | Siguiente |
+| e | Catálogo A&R (invitaciones, interés, holds) y Pluma Sync (búsqueda en lenguaje natural, cotizador, licencias con aprobación de los autores, briefs) | ✅ |
 
 Plan, modelo de datos y pantallas en [`docs/`](docs/).
 
@@ -83,6 +83,20 @@ Qué cubren:
 - Distribución y conciliación (entregable 4): reparto por mayor residuo, negativos, retenidos, suspenso, FX, reproducibilidad; retiros con doble aprobación y datos bancarios cifrados.
 - Contraste de todos los pares de color, paridad de textos entre idiomas y ausencia de nombres de proveedores en textos visibles.
 
+## Superficies
+
+| Ruta | Para quién | Notas |
+|---|---|---|
+| `/` (app del autor) | Autores con plan | PWA móvil: obras, red, sync, pagos |
+| `/firmar/t/…` | Coautores invitados | Firma sin cuenta |
+| `/ar` | A&R invitados | Solo por invitación (back-office → A&R). Con dominio propio: `ar.<dominio>` |
+| `/pluma-sync` | Compradores de sync | Registro abierto. Con dominio propio: `sync.<dominio>` |
+| `apps/admin` | Equipo de Pluma | Back-office |
+
+**Búsqueda de Pluma Sync.** La consulta en lenguaje natural se traduce a filtros duros (género, mood, idioma, voz, instrumental, one-stop, BPM) que se aplican en SQL, y el resto del texto ordena por texto completo. Sin `ANTHROPIC_API_KEY` la traducción la hacen reglas en español, inglés y portugués; con la clave, la hace un modelo (con las reglas como respaldo si no responde). La búsqueda vectorial con embeddings queda para cuando haya catálogo suficiente: la columna `works.embedding` ya existe donde está pgvector.
+
+**Licencias.** Todos los autores socios de la obra aprueban; luego un operador negocia y emite con la tarifa final y la comisión de sync (`settings.sync.commission_bps`, 30 %). La tabla de tarifas del cotizador es **referencial** (`sync_rate_card`). El cobro al comprador y la liquidación a los autores quedan fuera del MVP: la licencia emitida registra la tarifa y la comisión.
+
 ## Demo en Vercel
 
 La demo corre en Vercel con Supabase y datos ficticios, sin Stripe, Postmark ni worker. En Vercel el modo demo es el predeterminado; se apaga con `PLUMA_MODE=production` cuando estén los proveedores reales.
@@ -107,7 +121,7 @@ No hace falta definir secretos: en la demo se derivan de la clave de servicio de
 | Push y WhatsApp | Apagados | VAPID y Meta, si se configuran |
 | Demos de la red | Sin marca de agua (Vercel no tiene ffmpeg) | La marca de agua se aplica al subir si el servidor tiene `ffmpeg` (o `PLUMA_FFMPEG`). En Vercel hay que mover ese paso al worker: **pendiente** |
 
-Cuentas de ejemplo (contraseña `pluma-dev-2026`): `valentina@pluma.test`, `diego@pluma.test`, `sam@pluma.test`, `camila@pluma.test` en la app; `operaciones@pluma.test`, `aprobaciones@pluma.test` y `admin@pluma.test` en el back-office. Las pantallas de entrada las muestran.
+Cuentas de ejemplo (contraseña `pluma-dev-2026`): `valentina@pluma.test`, `diego@pluma.test`, `sam@pluma.test`, `camila@pluma.test` en la app; `compras@agenciafaro.test` en Pluma Sync; `ar@selloandino.test` en el portal A&R; `operaciones@pluma.test`, `aprobaciones@pluma.test` y `admin@pluma.test` en el back-office.
 
 La demo es accesible para cualquiera con el enlace y su buzón muestra todos los correos: comparte la URL solo con quien corresponda y no cargues datos reales. Para empezar de cero, borra las tablas desde el panel de Supabase (o crea otro proyecto) y vuelve a desplegar.
 

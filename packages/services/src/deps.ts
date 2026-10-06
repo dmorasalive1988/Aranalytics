@@ -1,4 +1,4 @@
-import type { EmailSender, ObjectStorage, PaymentProvider, PushSender, TimestampAuthority, WhatsAppSender } from '@pluma/adapters';
+import type { EmailSender, ObjectStorage, PaymentProvider, PushSender, QueryParser, TimestampAuthority, WhatsAppSender } from '@pluma/adapters';
 import type { Db } from '@pluma/db';
 
 export interface Deps {
@@ -10,6 +10,8 @@ export interface Deps {
   payments: PaymentProvider;
   storage: ObjectStorage;
   tsa: TimestampAuthority;
+  /** Búsqueda de Pluma Sync: lenguaje natural → filtros (reglas o modelo). */
+  queryParser: QueryParser;
   /** URL pública de la app del autor (https://app.pluma.mu). */
   appUrl: string;
   /** URL pública de la firma de coautores (https://firma.pluma.mu). */

@@ -11,7 +11,8 @@ export async function generateMetadata() {
 }
 
 /** A2 · Entrar. */
-export default async function SignIn() {
+export default async function SignIn({ searchParams }: { searchParams: Promise<{ next?: string; email?: string }> }) {
+  const sp = await searchParams;
   const t = await getTranslations('auth');
   const tc = await getTranslations('common');
   return (
@@ -30,9 +31,10 @@ export default async function SignIn() {
         </div>
       )}
       <ActionForm action={signInAction} submitLabel={t('login')} pendingLabel={tc('sending')}
-        footer={<p className="text-center text-sm text-fg-2">{t('noAccount')} <Link href="/registro" className="font-bold">{t('createAccount')}</Link></p>}>
+        footer={<p className="text-center text-sm text-fg-2">{t('noAccount')} <Link href={sp.next ? `/registro?next=${encodeURIComponent(sp.next)}` : "/registro"} className="font-bold">{t('createAccount')}</Link></p>}>
+        {sp.next && <input type="hidden" name="next" value={sp.next} />}
         <Field id="email" label={t('email')}>
-          <Input id="email" name="email" type="email" autoComplete="email" inputMode="email" required />
+          <Input id="email" name="email" type="email" autoComplete="email" inputMode="email" required defaultValue={sp.email} />
         </Field>
         <Field id="password" label={t('password')}>
           <Input id="password" name="password" type="password" autoComplete="current-password" required />

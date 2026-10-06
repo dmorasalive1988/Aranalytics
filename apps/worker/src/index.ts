@@ -12,7 +12,7 @@ import { PgBoss } from 'pg-boss';
 const rootEnv = resolve(import.meta.dirname, '../../../.env');
 if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 
-const { closeRuntime, depsFromEnv, dispatchPending, network, retryFailedDeliveries, runDailyJobs, statements } = await import('@pluma/services');
+const { catalog, closeRuntime, depsFromEnv, dispatchPending, network, retryFailedDeliveries, runDailyJobs, statements } = await import('@pluma/services');
 
 const deps = depsFromEnv();
 const log = (msg: string, extra?: unknown) => console.log(JSON.stringify({ at: new Date().toISOString(), msg, ...(extra ? { extra } : {}) }));
@@ -45,8 +45,8 @@ await boss.work(JOBS.retry, async () => {
 });
 
 await boss.work(JOBS.network, async () => {
-  const r = await network.runNetworkTimers(deps);
-  if (r.reminded || r.expired || r.requestsExpired) log('network.timers', r);
+  const r = { ...(await network.runNetworkTimers(deps)), ...(await catalog.runCatalogTimers(deps)) };
+  if (r.reminded || r.expired || r.requestsExpired || r.holdsExpired) log('network.timers', r);
 });
 
 await boss.work(JOBS.scheduled, async () => {

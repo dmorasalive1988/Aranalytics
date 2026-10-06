@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdtempSync, readdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { DevMailbox, DevPush, DevWhatsApp, DisabledTsa, FakePayments, LocalStorage } from '@pluma/adapters';
+import { DevMailbox, DevPush, DevWhatsApp, DisabledTsa, FakePayments, LocalStorage, RuleQueryParser } from '@pluma/adapters';
 import { createDb } from '@pluma/db';
 import * as S from '../src';
 import type { Deps } from '../src';
@@ -24,6 +24,7 @@ export function makeHarness() {
     payments,
     storage: new LocalStorage(mkdtempSync(join(tmpdir(), 'pluma-st-')), 'http://app.test/api/dev-storage', 'secret'),
     tsa: new DisabledTsa(),
+    queryParser: new RuleQueryParser(),
     appUrl: 'http://app.test',
     signUrl: 'http://firma.test',
     signingSecret: 'test-signing-secret',

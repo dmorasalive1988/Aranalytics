@@ -49,13 +49,14 @@ export function PlumaAppIcon({ variant = 'ambar', size = 88, className }: { vari
 }
 
 /** Logo completo: símbolo + wordmark "pluma" (Bricolage 800, −0,04 em), con sublogo opcional. */
-export function PlumaLogo({ size = 32, product, className }: { size?: number; product?: 'sync' | 'admin'; className?: string }) {
+export function PlumaLogo({ size = 32, product, className }: { size?: number; product?: 'sync' | 'admin' | 'ar'; className?: string }) {
   return (
     <span className={cn('inline-flex items-center gap-2 text-fg', className)} aria-label={product ? `pluma ${product}` : 'pluma'} role="img">
       <PlumaSymbol size={size * 1.25} />
       <span className="font-display font-extrabold leading-none" style={{ fontSize: size, letterSpacing: '-0.04em' }} aria-hidden>
         pluma
         {product === 'sync' && <span className="text-ambar"> sync</span>}
+        {product === 'ar' && <span className="ml-2 align-middle text-[12px] font-semibold tracking-[0.08em] text-ambar">A&amp;R</span>}
         {product === 'admin' && <span className="ml-2 align-middle text-[12px] font-semibold tracking-[0.08em] text-ambar">ADMIN</span>}
       </span>
     </span>

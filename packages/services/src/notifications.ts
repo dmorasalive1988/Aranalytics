@@ -210,10 +210,97 @@ async function messagesFor(deps: Deps, ev: Event): Promise<Outgoing[]> {
       }
       return msgs;
     }
+    case 'ar.invited': {
+      const [inv] = await deps.db.select().from(t.arInvitations).where(eq(t.arInvitations.id, ev.aggregateId));
+      if (!inv) return [];
+      const { arInviteUrl } = await import('./catalog');
+      return [out({ userId: null, email: inv.email, locale: 'es', template: 'ar_invitation', data: { company: inv.company, inviteUrl: arInviteUrl(deps, inv.id), expiresOn: formatDate(inv.expiresAt, 'es') }, key: `ar.invited:${inv.id}` })];
+    }
+    case 'ar.interest': {
+      const [i] = await deps.db.select().from(t.arInterests).where(eq(t.arInterests.id, ev.aggregateId));
+      if (!i) return [];
+      const [w] = await deps.db.select({ title: t.works.title }).from(t.works).where(eq(t.works.id, i.workId));
+      const { arCompany } = await import('./catalog');
+      const company = (await arCompany(deps, i.arUserId)) ?? 'A&R';
+      const writers = await catalogWriters(deps, i.workId);
+      return writers.map((u) => out({ userId: u.id, email: u.email, locale: u.locale, template: 'ar_interest', data: { company, workTitle: w!.title, message: i.message ?? '', workUrl: workUrl(deps, i.workId) }, key: `ar.interest:${i.id}:${u.id}` }));
+    }
+    case 'hold.requested':
+    case 'hold.decided': {
+      const [h] = await deps.db.select().from(t.holds).where(eq(t.holds.id, ev.aggregateId));
+      if (!h) return [];
+      const [w] = await deps.db.select({ title: t.works.title, owner: t.works.createdBy }).from(t.works).where(eq(t.works.id, h.workId));
+      if (ev.type === 'hold.requested') {
+        const owner = await userInfo(deps, w!.owner);
+        const { arCompany } = await import('./catalog');
+        return owner ? [out({ userId: owner.id, email: owner.email, locale: owner.locale, template: 'hold_requested', data: { company: (await arCompany(deps, h.requesterUserId)) ?? 'A&R', workTitle: w!.title, days: h.durationDays, message: h.message ?? '', holdsUrl: `${deps.appUrl}/sync/holds` }, key: `hold.requested:${h.id}` })] : [];
+      }
+      const ar = await userInfo(deps, h.requesterUserId);
+      return ar ? [out({ userId: ar.id, email: ar.email, locale: ar.locale, template: 'hold_decided', data: { workTitle: w!.title, approved: h.status === 'active', endsOn: h.endsAt ? formatDate(h.endsAt, ar.locale) : '', portalUrl: `${deps.appUrl}/ar/actividad` }, key: `hold.decided:${h.id}` })] : [];
+    }
+    case 'license.requested':
+    case 'license.decided': {
+      const [r] = await deps.db.select().from(t.licenseRequests).where(eq(t.licenseRequests.id, ev.aggregateId));
+      if (!r) return [];
+      const [w] = await deps.db.select({ title: t.works.title }).from(t.works).where(eq(t.works.id, r.workId));
+      if (ev.type === 'license.requested') {
+        const approvals = await deps.db.select({ id: t.licenseApprovals.writerUserId }).from(t.licenseApprovals).where(eq(t.licenseApprovals.licenseRequestId, r.id));
+        const msgs: Outgoing[] = [];
+        for (const a of approvals) {
+          const u = await userInfo(deps, a.id);
+          if (!u) continue;
+          const L = u.locale;
+          msgs.push(out({ userId: u.id, email: u.email, locale: L, template: 'license_requested', data: { company: r.buyerCompany ?? 'Pluma Sync', workTitle: w!.title, usage: USAGE[L][r.usage] ?? r.usage, territory: TERRITORY[L][r.territory] ?? r.territory, term: TERM[L](r.termMonths), quote: `${formatMoney(Number(r.quoteMinCents), 'USD', L)} – ${formatMoney(Number(r.quoteMaxCents), 'USD', L)}`, project: r.projectDescription, licensesUrl: `${deps.appUrl}/sync/licencias` }, key: `license.requested:${r.id}:${u.id}` }));
+        }
+        return msgs;
+      }
+      const status = String(payload.status);
+      const recipients = new Map<string, string>([[r.buyerUserId, `${deps.appUrl}/pluma-sync/solicitudes`]]);
+      if (status === 'issued' || status === 'canceled' || status === 'writers_rejected') {
+        for (const a of await deps.db.select({ id: t.licenseApprovals.writerUserId }).from(t.licenseApprovals).where(eq(t.licenseApprovals.licenseRequestId, r.id))) recipients.set(a.id, `${deps.appUrl}/sync/licencias`);
+      }
+      const msgs: Outgoing[] = [];
+      for (const [id, url] of recipients) {
+        const u = await userInfo(deps, id);
+        if (!u) continue;
+        msgs.push(out({ userId: u.id, email: u.email, locale: u.locale, template: 'license_update', data: { workTitle: w!.title, status: LSTATUS[u.locale][status] ?? status, fee: status === 'issued' && r.finalFeeCents ? formatMoney(Number(r.finalFeeCents), 'USD', u.locale) : '', requestsUrl: url }, key: `license.${status}:${r.id}:${id}` }));
+      }
+      return msgs;
+    }
     default:
       return [];
   }
 }
+
+/** Autores socios del split firmado vigente (reciben avisos del catálogo). */
+async function catalogWriters(deps: Deps, workId: string) {
+  const rows = await deps.db.execute<{ user_id: string }>(sql`
+    select distinct ss.writer_user_id as user_id from split_versions sv join split_shares ss on ss.split_version_id = sv.id
+    where sv.work_id = ${workId} and sv.status = 'signed' and ss.writer_user_id is not null`);
+  const out: NonNullable<Awaited<ReturnType<typeof userInfo>>>[] = [];
+  for (const r of rows) {
+    const u = await userInfo(deps, r.user_id);
+    if (u) out.push(u);
+  }
+  return out;
+}
+
+const USAGE: Record<AppLocale, Record<string, string>> = {
+  es: { social_media: 'Redes sociales', digital_ads: 'Publicidad digital', tv_film: 'TV y cine', videogame: 'Videojuego', other: 'Otro' },
+  en: { social_media: 'Social media', digital_ads: 'Digital ads', tv_film: 'TV & film', videogame: 'Video game', other: 'Other' },
+  'pt-BR': { social_media: 'Redes sociais', digital_ads: 'Publicidade digital', tv_film: 'TV e cinema', videogame: 'Videogame', other: 'Outro' },
+};
+const TERRITORY: Record<AppLocale, Record<string, string>> = {
+  es: { LATAM: 'Latinoamérica', US: 'Estados Unidos', WORLD: 'Mundial' },
+  en: { LATAM: 'Latin America', US: 'United States', WORLD: 'Worldwide' },
+  'pt-BR': { LATAM: 'América Latina', US: 'Estados Unidos', WORLD: 'Mundial' },
+};
+const TERM: Record<AppLocale, (m: number) => string> = { es: (m) => `${m} meses`, en: (m) => `${m} months`, 'pt-BR': (m) => `${m} meses` };
+const LSTATUS: Record<AppLocale, Record<string, string>> = {
+  es: { writers_approved: 'aprobada por los autores', writers_rejected: 'rechazada por los autores', negotiating: 'en negociación', issued: 'emitida', canceled: 'cancelada' },
+  en: { writers_approved: 'approved by the writers', writers_rejected: 'declined by the writers', negotiating: 'in negotiation', issued: 'issued', canceled: 'canceled' },
+  'pt-BR': { writers_approved: 'aprovada pelos autores', writers_rejected: 'recusada pelos autores', negotiating: 'em negociação', issued: 'emitida', canceled: 'cancelada' },
+};
 
 /** Efectos de sistema de algunos eventos (no son correos). */
 async function sideEffects(deps: Deps, ev: Event) {

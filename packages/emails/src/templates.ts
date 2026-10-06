@@ -37,6 +37,12 @@ export interface TemplateData {
   application_reminder: { applicantName: string; requestTitle: string; expiresOn: string; requestUrl: string };
   application_expired: { requestTitle: string; boardUrl: string };
   application_declined: { requestTitle: string; filled: boolean; boardUrl: string };
+  ar_invitation: { company: string; inviteUrl: string; expiresOn: string };
+  ar_interest: { company: string; workTitle: string; message: string; workUrl: string };
+  hold_requested: { company: string; workTitle: string; days: number; message: string; holdsUrl: string };
+  hold_decided: { workTitle: string; approved: boolean; endsOn: string; portalUrl: string };
+  license_requested: { company: string; workTitle: string; usage: string; territory: string; term: string; quote: string; project: string; licensesUrl: string };
+  license_update: { workTitle: string; status: string; fee: string; requestsUrl: string };
   application_accepted: { otherName: string; otherEmail: string; otherPhone: string; requestTitle: string; myShare: string; otherShare: string; sessionUrl: string; collaborationUrl: string };
 }
 export type TemplateName = keyof TemplateData;
@@ -310,6 +316,84 @@ const T: { [K in TemplateName]: L<Builder<K>> } = {
       { kind: 'p', text: d.filled ? 'Quem publicou já escolheu com quem trabalhar. Obrigado por se candidatar.' : 'Quem publicou decidiu seguir com outra proposta. Obrigado por se candidatar.' },
       { kind: 'button', text: 'Ver mais pedidos', href: d.boardUrl }] }),
   },
+  ar_invitation: {
+    es: (d) => ({ subject: `${d.company}: tu acceso al catálogo A&R de Pluma`, title: 'Te invitamos al catálogo A&R', blocks: [
+      { kind: 'p', text: 'Explora obras inéditas de compositores latinos, escúchalas dentro de Pluma y pide grabarlas o reservarlas por 30, 60 o 90 días.' },
+      { kind: 'button', text: 'Aceptar la invitación', href: d.inviteUrl },
+      { kind: 'note', text: `La invitación vence el ${d.expiresOn}. Es personal: usa este mismo correo para crear tu acceso.` }] }),
+    en: (d) => ({ subject: `${d.company}: your access to the Pluma A&R catalog`, title: 'You’re invited to the A&R catalog', blocks: [
+      { kind: 'p', text: 'Explore unreleased songs by Latin writers, listen inside Pluma and ask to record or hold them for 30, 60 or 90 days.' },
+      { kind: 'button', text: 'Accept the invitation', href: d.inviteUrl },
+      { kind: 'note', text: `The invitation expires on ${d.expiresOn}. It’s personal: use this same email to create your access.` }] }),
+    'pt-BR': (d) => ({ subject: `${d.company}: seu acesso ao catálogo A&R da Pluma`, title: 'Convite para o catálogo A&R', blocks: [
+      { kind: 'p', text: 'Explore obras inéditas de compositores latinos, ouça dentro da Pluma e peça para gravá-las ou reservá-las por 30, 60 ou 90 dias.' },
+      { kind: 'button', text: 'Aceitar o convite', href: d.inviteUrl },
+      { kind: 'note', text: `O convite vence em ${d.expiresOn}. É pessoal: use este mesmo e-mail para criar seu acesso.` }] }),
+  },
+  ar_interest: {
+    es: (d) => ({ subject: `${d.company} quiere grabar “${d.workTitle}”`, title: '¡Interés de A&R!', blocks: [
+      { kind: 'p', text: `${d.company} marcó “Me interesa grabarla” en “${d.workTitle}”.` }, ...(d.message ? [{ kind: 'p' as const, text: `“${d.message}”` }] : []),
+      { kind: 'p', text: 'Nuestro equipo te acompaña en la conversación. Si piden reservarla, la verás en Sync para aprobarla.' },
+      { kind: 'button', text: 'Ver la obra', href: d.workUrl }] }),
+    en: (d) => ({ subject: `${d.company} wants to record “${d.workTitle}”`, title: 'A&R interest!', blocks: [
+      { kind: 'p', text: `${d.company} marked “I want to record it” on “${d.workTitle}”.` }, ...(d.message ? [{ kind: 'p' as const, text: `“${d.message}”` }] : []),
+      { kind: 'p', text: 'Our team will support the conversation. If they ask for a hold, you’ll see it in Sync to approve.' },
+      { kind: 'button', text: 'View the work', href: d.workUrl }] }),
+    'pt-BR': (d) => ({ subject: `${d.company} quer gravar “${d.workTitle}”`, title: 'Interesse de A&R!', blocks: [
+      { kind: 'p', text: `${d.company} marcou “Quero gravar” em “${d.workTitle}”.` }, ...(d.message ? [{ kind: 'p' as const, text: `“${d.message}”` }] : []),
+      { kind: 'p', text: 'Nossa equipe acompanha a conversa. Se pedirem uma reserva, você verá em Sync para aprovar.' },
+      { kind: 'button', text: 'Ver a obra', href: d.workUrl }] }),
+  },
+  hold_requested: {
+    es: (d) => ({ subject: `${d.company} pide reservar “${d.workTitle}” por ${d.days} días`, title: 'Solicitud de hold', blocks: [
+      { kind: 'p', text: `${d.company} quiere reservar “${d.workTitle}” por ${d.days} días para grabarla. Mientras dure, nadie más puede reservarla.` }, ...(d.message ? [{ kind: 'p' as const, text: `“${d.message}”` }] : []),
+      { kind: 'button', text: 'Aprobar o rechazar', href: d.holdsUrl }] }),
+    en: (d) => ({ subject: `${d.company} asks to hold “${d.workTitle}” for ${d.days} days`, title: 'Hold request', blocks: [
+      { kind: 'p', text: `${d.company} wants to hold “${d.workTitle}” for ${d.days} days to record it. While it lasts, nobody else can hold it.` }, ...(d.message ? [{ kind: 'p' as const, text: `“${d.message}”` }] : []),
+      { kind: 'button', text: 'Approve or decline', href: d.holdsUrl }] }),
+    'pt-BR': (d) => ({ subject: `${d.company} pede para reservar “${d.workTitle}” por ${d.days} dias`, title: 'Pedido de hold', blocks: [
+      { kind: 'p', text: `${d.company} quer reservar “${d.workTitle}” por ${d.days} dias para gravar. Enquanto durar, ninguém mais pode reservá-la.` }, ...(d.message ? [{ kind: 'p' as const, text: `“${d.message}”` }] : []),
+      { kind: 'button', text: 'Aprovar ou recusar', href: d.holdsUrl }] }),
+  },
+  hold_decided: {
+    es: (d) => ({ subject: d.approved ? `Hold aprobado: “${d.workTitle}”` : `Hold no aprobado: “${d.workTitle}”`, title: d.approved ? 'La obra está reservada para ti' : 'Esta vez no se aprobó', blocks: [
+      { kind: 'p', text: d.approved ? `“${d.workTitle}” queda reservada hasta el ${d.endsOn}.` : `La reserva de “${d.workTitle}” no se aprobó. Hay más obras en el catálogo.` },
+      { kind: 'button', text: 'Ir al catálogo', href: d.portalUrl }] }),
+    en: (d) => ({ subject: d.approved ? `Hold approved: “${d.workTitle}”` : `Hold not approved: “${d.workTitle}”`, title: d.approved ? 'The song is on hold for you' : 'Not approved this time', blocks: [
+      { kind: 'p', text: d.approved ? `“${d.workTitle}” is on hold for you until ${d.endsOn}.` : `The hold on “${d.workTitle}” wasn’t approved. There are more songs in the catalog.` },
+      { kind: 'button', text: 'Go to the catalog', href: d.portalUrl }] }),
+    'pt-BR': (d) => ({ subject: d.approved ? `Hold aprovado: “${d.workTitle}”` : `Hold não aprovado: “${d.workTitle}”`, title: d.approved ? 'A obra está reservada para você' : 'Desta vez não foi aprovado', blocks: [
+      { kind: 'p', text: d.approved ? `“${d.workTitle}” fica reservada até ${d.endsOn}.` : `A reserva de “${d.workTitle}” não foi aprovada. Há mais obras no catálogo.` },
+      { kind: 'button', text: 'Ir ao catálogo', href: d.portalUrl }] }),
+  },
+  license_requested: {
+    es: (d) => ({ subject: `${d.company} quiere licenciar “${d.workTitle}”`, title: 'Solicitud de licencia', blocks: [
+      { kind: 'facts', facts: [['Uso', d.usage], ['Territorio', d.territory], ['Plazo', d.term], ['Cotización referencial', d.quote]] },
+      { kind: 'p', text: `Proyecto: ${d.project}` },
+      { kind: 'p', text: 'Todos los autores socios de la obra deben aprobar. Después, un especialista de Pluma negocia y emite la licencia.' },
+      { kind: 'button', text: 'Aprobar o rechazar', href: d.licensesUrl }] }),
+    en: (d) => ({ subject: `${d.company} wants to license “${d.workTitle}”`, title: 'License request', blocks: [
+      { kind: 'facts', facts: [['Use', d.usage], ['Territory', d.territory], ['Term', d.term], ['Reference quote', d.quote]] },
+      { kind: 'p', text: `Project: ${d.project}` },
+      { kind: 'p', text: 'Every member writer on the work must approve. Then a Pluma specialist negotiates and issues the license.' },
+      { kind: 'button', text: 'Approve or decline', href: d.licensesUrl }] }),
+    'pt-BR': (d) => ({ subject: `${d.company} quer licenciar “${d.workTitle}”`, title: 'Pedido de licença', blocks: [
+      { kind: 'facts', facts: [['Uso', d.usage], ['Território', d.territory], ['Prazo', d.term], ['Cotação de referência', d.quote]] },
+      { kind: 'p', text: `Projeto: ${d.project}` },
+      { kind: 'p', text: 'Todos os autores sócios da obra devem aprovar. Depois, um especialista da Pluma negocia e emite a licença.' },
+      { kind: 'button', text: 'Aprovar ou recusar', href: d.licensesUrl }] }),
+  },
+  license_update: {
+    es: (d) => ({ subject: `Licencia de “${d.workTitle}”: ${d.status}`, title: `Licencia: ${d.status}`, blocks: [
+      ...(d.fee ? [{ kind: 'facts' as const, facts: [['Tarifa', d.fee]] as [string, string][] }] : []),
+      { kind: 'button', text: 'Ver el detalle', href: d.requestsUrl }] }),
+    en: (d) => ({ subject: `License for “${d.workTitle}”: ${d.status}`, title: `License: ${d.status}`, blocks: [
+      ...(d.fee ? [{ kind: 'facts' as const, facts: [['Fee', d.fee]] as [string, string][] }] : []),
+      { kind: 'button', text: 'View details', href: d.requestsUrl }] }),
+    'pt-BR': (d) => ({ subject: `Licença de “${d.workTitle}”: ${d.status}`, title: `Licença: ${d.status}`, blocks: [
+      ...(d.fee ? [{ kind: 'facts' as const, facts: [['Valor', d.fee]] as [string, string][] }] : []),
+      { kind: 'button', text: 'Ver o detalhe', href: d.requestsUrl }] }),
+  },
   application_accepted: {
     es: (d) => ({ subject: `¡A escribir! Colaboración en “${d.requestTitle}”`, title: `Colaboras con ${d.otherName}`, blocks: [
       { kind: 'facts', facts: [['Correo', d.otherEmail], ...(d.otherPhone ? [['Teléfono', d.otherPhone] as [string, string]] : []), ['Tu parte', d.myShare], [`Parte de ${d.otherName}`, d.otherShare], ...(d.sessionUrl ? [['Sesión', d.sessionUrl] as [string, string]] : [])] },
@@ -344,13 +428,14 @@ export const TEMPLATE_CATEGORY: Record<TemplateName, NotificationCategory> = {
   work_status: 'works', work_conflict: 'works',
   membership_activated: 'membership', renewal_upcoming: 'membership', payment_failed: 'membership', membership_suspended: 'membership',
   statement_published: 'money', statement_published_zero: 'money', payout_sent: 'money', royalties_unclaimed: 'money',
+  ar_invitation: 'sync', ar_interest: 'sync', hold_requested: 'sync', hold_decided: 'sync', license_requested: 'sync', license_update: 'sync',
   application_received: 'network', application_sent: 'network', application_reminder: 'network', application_expired: 'network', application_declined: 'network', application_accepted: 'network',
 };
 
 /** Categorías cuyo correo no se puede apagar: dinero, firmas y membresía (son avisos contractuales). */
 export const MANDATORY_EMAIL: readonly NotificationCategory[] = ['money', 'splits', 'membership'];
 
-const URL_KEYS = ['signUrl', 'workUrl', 'statementUrl', 'paymentsUrl', 'manageUrl', 'requestUrl', 'collaborationUrl', 'applicationsUrl', 'boardUrl', 'appUrl'] as const;
+const URL_KEYS = ['signUrl', 'workUrl', 'statementUrl', 'paymentsUrl', 'manageUrl', 'requestUrl', 'collaborationUrl', 'applicationsUrl', 'boardUrl', 'inviteUrl', 'holdsUrl', 'licensesUrl', 'requestsUrl', 'portalUrl', 'appUrl'] as const;
 
 /** Push: título y cuerpo cortos, en el idioma de la persona, con el enlace de la notificación. */
 export function renderPush<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]) {

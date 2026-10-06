@@ -22,7 +22,13 @@ export type EventType =
   | 'application.reminder'
   | 'application.expired'
   | 'application.declined'
-  | 'application.accepted';
+  | 'application.accepted'
+  | 'ar.invited'
+  | 'ar.interest'
+  | 'hold.requested'
+  | 'hold.decided'
+  | 'license.requested'
+  | 'license.decided';
 
 /** Outbox transaccional: el evento se guarda en la misma transacción que el cambio. */
 export async function emit(tx: Tx, type: EventType, aggregateType: string, aggregateId: string, payload: Record<string, unknown> = {}) {

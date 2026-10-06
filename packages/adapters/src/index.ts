@@ -7,3 +7,4 @@ export * from './kyc';
 export * from './push';
 export * from './whatsapp';
 export * from './email-events';
+export * from './search';
