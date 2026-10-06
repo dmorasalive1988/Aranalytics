@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { devAccountsTable, isDemoMode, sql } from '@pluma/db';
 import * as S from '../index';
-import { SAMPLE_PASSWORD, seedSampleData } from '../sample-data';
+import { SAMPLE_PASSWORD, ensureDemoHistory, seedSampleData } from '../sample-data';
 
 const rootEnv = resolve(import.meta.dirname, '../../../../.env');
 if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
@@ -26,4 +26,8 @@ Listo. Contraseña de todas las cuentas: ${SAMPLE_PASSWORD}
   Autores:   valentina@pluma.test (es, Pro) · diego@pluma.test (es, Socio) · sam@pluma.test (en, Pro) · camila@pluma.test (pt-BR, Socio)
   Back-office: operaciones@pluma.test (operador) · aprobaciones@pluma.test (aprobador) · admin@pluma.test (super admin)
   Pluma Sync: compras@agenciafaro.test (comprador) · Portal A&R: ar@selloandino.test` : 'La base ya tiene usuarios; para empezar de cero: pnpm db:reset && pnpm db:seed');
+if (!done) {
+  const added = await ensureDemoHistory(deps, resolve(import.meta.dirname, '../../../../fixtures/statements'));
+  if (added) console.log(`Se agregaron ${added} períodos de historia para la analítica.`);
+}
 await S.closeRuntime();

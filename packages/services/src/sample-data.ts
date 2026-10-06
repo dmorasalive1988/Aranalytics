@@ -5,7 +5,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { FakePayments, hashDevPassword } from '@pluma/adapters';
-import { eq, sql, t } from '@pluma/db';
+import { eq, inArray, sql, t } from '@pluma/db';
 import * as S from './index';
 import type { Deps } from './deps';
 import { createChallengeForSeed } from './cli/seed-helpers';
@@ -134,10 +134,14 @@ export async function seedSampleData(deps: Deps, opts: { accountsTable: 'auth.us
   await S.dispatchPending(deps, { limit: 500 });
 
   log('Procesando statements…');
+  // 2025-Q3 y 2025-Q4: historia con varias plataformas y países (analítica Pro)
+  await publishDemoHistory(deps, ops, approver, opts.fixturesDir);
   // 2026-Q1: procesado y publicado (historia para el dashboard)
   const q1 = await S.statements.createPeriod(deps, ops, { code: '2026-Q1', payDate: '2026-05-15' }, ctx);
-  await S.statements.uploadStatement(deps, ops, { periodId: q1, fileName: '2026-Q1.csv', bytes: readFileSync(join(opts.fixturesDir, '2026-Q1.csv')) }, ctx);
-  const run1 = await S.statements.calculateRun(deps, ops, q1, '650.65', ctx);
+  // Versión del demo: las líneas de 2026-Q1.csv más plataformas y países (la original la usan las pruebas).
+  const q1File = readFileSync(join(opts.fixturesDir, 'demo', '2026-Q1.csv'));
+  await S.statements.uploadStatement(deps, ops, { periodId: q1, fileName: '2026-Q1.csv', bytes: q1File }, ctx);
+  const run1 = await S.statements.calculateRun(deps, ops, q1, controlTotal(q1File), ctx);
   await S.statements.approveRun(deps, approver, run1.runId, ctx);
   await S.statements.publishRun(deps, ops, run1.runId, ctx);
   // 2026-Q2: archivo cargado y normalizado; falta la tasa EUR, el matching manual, el cálculo y la publicación
@@ -224,4 +228,44 @@ function demoWav(seconds: number) {
     b.writeInt16LE(Math.round(9000 * env * v), 44 + i * 2);
   }
   return b;
+}
+
+/** Total de control en USD del archivo (línea T). */
+const controlTotal = (bytes: Buffer) => /\nT,[^\n]*,USD,,,([\d.]+),/.exec(bytes.toString())![1]!;
+
+/** Períodos de historia del demo (2025-Q3 y 2025-Q4), publicados en orden. */
+const HISTORY = [
+  { code: '2025-Q3', payDate: '2025-11-15' },
+  { code: '2025-Q4', payDate: '2026-02-15' },
+] as const;
+
+async function publishDemoHistory(deps: Deps, ops: string, approver: string, fixturesDir: string) {
+  const existing = new Set((await deps.db.select({ code: t.statementPeriods.code }).from(t.statementPeriods)).map((p) => p.code));
+  let added = 0;
+  for (const h of HISTORY) {
+    if (existing.has(h.code)) continue;
+    const bytes = readFileSync(join(fixturesDir, `${h.code}.csv`));
+    const total = controlTotal(bytes);
+    const period = await S.statements.createPeriod(deps, ops, h, ctx);
+    await S.statements.uploadStatement(deps, ops, { periodId: period, fileName: `${h.code}.csv`, bytes }, ctx);
+    const run = await S.statements.calculateRun(deps, ops, period, total, ctx);
+    await S.statements.approveRun(deps, approver, run.runId, ctx);
+    await S.statements.publishRun(deps, ops, run.runId, ctx);
+    added++;
+  }
+  return added;
+}
+
+/**
+ * Demo ya cargado antes de la analítica Pro: agrega los períodos de historia si faltan.
+ * Usa las cuentas de operaciones y aprobaciones del demo; si no existen, no hace nada.
+ */
+export async function ensureDemoHistory(deps: Deps, fixturesDir: string) {
+  const staff = await deps.db.select({ id: t.users.id, email: t.users.email }).from(t.users).where(inArray(t.users.email, ['operaciones@pluma.test', 'aprobaciones@pluma.test']));
+  const ops = staff.find((u) => u.email === 'operaciones@pluma.test')?.id;
+  const approver = staff.find((u) => u.email === 'aprobaciones@pluma.test')?.id;
+  if (!ops || !approver) return 0;
+  const added = await publishDemoHistory(deps, ops, approver, fixturesDir);
+  if (added) await S.dispatchPending(deps, { limit: 500 });
+  return added;
 }

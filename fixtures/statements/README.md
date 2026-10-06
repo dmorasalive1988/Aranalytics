@@ -23,3 +23,7 @@ Archivos para probar el pipeline de statements con los datos de ejemplo (`pnpm d
 ## `2026-Q1.csv`
 
 Período anterior, pequeño (USD 650,65). El seed lo procesa y publica para que el dashboard tenga historia.
+
+## `2025-Q3.csv`, `2025-Q4.csv` y `demo/2026-Q1.csv`
+
+Historia para la analítica Pro del demo: varias plataformas (Spotify, Apple Music, Amazon Music, Deezer, YouTube, TikTok), sociedades y países. `demo/2026-Q1.csv` son las líneas de `2026-Q1.csv` más plataformas y países; las pruebas siguen usando el archivo original.

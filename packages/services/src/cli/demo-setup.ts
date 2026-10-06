@@ -9,7 +9,7 @@ import postgres from 'postgres';
 import { applyDemoSchema, devAccountsTable, directDatabaseUrl, isDemoMode, migrate, sql, vercelUrl } from '@pluma/db';
 import type { SupabaseStorage } from '@pluma/adapters';
 import * as S from '../index';
-import { SAMPLE_PASSWORD, seedSampleData } from '../sample-data';
+import { SAMPLE_PASSWORD, ensureDemoHistory, seedSampleData } from '../sample-data';
 
 const rootEnv = resolve(import.meta.dirname, '../../../../.env');
 if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
@@ -47,6 +47,10 @@ try {
   await lock`select pg_advisory_lock(728312)`;
   const seeded = await seedSampleData(deps, { accountsTable: devAccountsTable(), fixturesDir: resolve(import.meta.dirname, '../../../../fixtures/statements'), log: (m) => console.log(`[demo] ${m}`) });
   console.log(seeded ? `[demo] datos de ejemplo cargados (contraseña: ${SAMPLE_PASSWORD})` : '[demo] la base ya tenía datos: no se tocan');
+  if (!seeded) {
+    const added = await ensureDemoHistory(deps, resolve(import.meta.dirname, '../../../../fixtures/statements'));
+    if (added) console.log(`[demo] ${added} períodos de historia agregados para la analítica`);
+  }
 } finally {
   await lock`select pg_advisory_unlock(728312)`.catch(() => {});
   await lock.end();
