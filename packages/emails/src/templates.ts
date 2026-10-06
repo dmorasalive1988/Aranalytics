@@ -32,6 +32,12 @@ export interface TemplateData {
   statement_published_zero: { period: string; statementUrl: string };
   payout_sent: { amount: string; method: string; paymentsUrl: string };
   royalties_unclaimed: { count: number; works: string; paymentsUrl: string };
+  application_received: { applicantName: string; role: string; city: string; languages: string; credits: string; history: string; message: string; share: string; requestTitle: string; requestUrl: string; profileUrl: string };
+  application_sent: { requestTitle: string; ownerName: string; expiresOn: string; applicationsUrl: string };
+  application_reminder: { applicantName: string; requestTitle: string; expiresOn: string; requestUrl: string };
+  application_expired: { requestTitle: string; boardUrl: string };
+  application_declined: { requestTitle: string; filled: boolean; boardUrl: string };
+  application_accepted: { otherName: string; otherEmail: string; otherPhone: string; requestTitle: string; myShare: string; otherShare: string; sessionUrl: string; collaborationUrl: string };
 }
 export type TemplateName = keyof TemplateData;
 
@@ -237,6 +243,87 @@ const T: { [K in TemplateName]: L<Builder<K>> } = {
       { kind: 'p', text: 'Nossa equipe já está revisando. Se a obra não estiver registrada na Pluma ou faltar algum dado, complete para não perder o pagamento.' },
       { kind: 'button', text: 'Revisar minhas obras', href: d.paymentsUrl }] }),
   },
+  application_received: {
+    es: (d) => ({ subject: `${d.applicantName} se postuló a “${d.requestTitle}”`, title: 'Nueva postulación', blocks: [
+      { kind: 'facts', facts: [['Rol', ROLE.es[d.role] ?? (d.role || '—')], ['Ciudad', d.city || '—'], ['Idiomas', d.languages || '—'], ['Split que acepta', d.share], ['En Pluma', d.history]] },
+      ...(d.credits ? [{ kind: 'p' as const, text: `Créditos verificados: ${d.credits}` }] : []),
+      { kind: 'p', text: `“${d.message}”` },
+      { kind: 'button', text: 'Aceptar o declinar', href: d.requestUrl },
+      { kind: 'button', text: 'Ver perfil completo', href: d.profileUrl },
+      { kind: 'note', text: 'Escucha su demo dentro de Pluma. Sus datos de contacto se comparten solo si aceptas.' }] }),
+    en: (d) => ({ subject: `${d.applicantName} applied to “${d.requestTitle}”`, title: 'New application', blocks: [
+      { kind: 'facts', facts: [['Role', ROLE.en[d.role] ?? (d.role || '—')], ['City', d.city || '—'], ['Languages', d.languages || '—'], ['Split they accept', d.share], ['On Pluma', d.history]] },
+      ...(d.credits ? [{ kind: 'p' as const, text: `Verified credits: ${d.credits}` }] : []),
+      { kind: 'p', text: `“${d.message}”` },
+      { kind: 'button', text: 'Accept or decline', href: d.requestUrl },
+      { kind: 'button', text: 'View full profile', href: d.profileUrl },
+      { kind: 'note', text: 'Listen to their demo inside Pluma. Contact details are shared only if you accept.' }] }),
+    'pt-BR': (d) => ({ subject: `${d.applicantName} se candidatou a “${d.requestTitle}”`, title: 'Nova candidatura', blocks: [
+      { kind: 'facts', facts: [['Função', ROLE['pt-BR'][d.role] ?? (d.role || '—')], ['Cidade', d.city || '—'], ['Idiomas', d.languages || '—'], ['Split que aceita', d.share], ['Na Pluma', d.history]] },
+      ...(d.credits ? [{ kind: 'p' as const, text: `Créditos verificados: ${d.credits}` }] : []),
+      { kind: 'p', text: `“${d.message}”` },
+      { kind: 'button', text: 'Aceitar ou recusar', href: d.requestUrl },
+      { kind: 'button', text: 'Ver perfil completo', href: d.profileUrl },
+      { kind: 'note', text: 'Ouça a demo dentro da Pluma. Os contatos só são compartilhados se você aceitar.' }] }),
+  },
+  application_sent: {
+    es: (d) => ({ subject: `Te postulaste a “${d.requestTitle}”`, title: 'Postulación enviada', blocks: [
+      { kind: 'p', text: `${d.ownerName} ya puede ver tu postulación. Si no responde, vence el ${d.expiresOn}.` },
+      { kind: 'button', text: 'Ver mis postulaciones', href: d.applicationsUrl }] }),
+    en: (d) => ({ subject: `You applied to “${d.requestTitle}”`, title: 'Application sent', blocks: [
+      { kind: 'p', text: `${d.ownerName} can now see your application. If they don’t reply, it expires on ${d.expiresOn}.` },
+      { kind: 'button', text: 'View my applications', href: d.applicationsUrl }] }),
+    'pt-BR': (d) => ({ subject: `Você se candidatou a “${d.requestTitle}”`, title: 'Candidatura enviada', blocks: [
+      { kind: 'p', text: `${d.ownerName} já pode ver sua candidatura. Se não houver resposta, ela vence em ${d.expiresOn}.` },
+      { kind: 'button', text: 'Ver minhas candidaturas', href: d.applicationsUrl }] }),
+  },
+  application_reminder: {
+    es: (d) => ({ subject: `${d.applicantName} espera tu respuesta`, title: 'Una postulación sin responder', blocks: [
+      { kind: 'p', text: `${d.applicantName} se postuló a “${d.requestTitle}” hace 3 días. Si no respondes, la postulación vence el ${d.expiresOn}.` },
+      { kind: 'button', text: 'Responder', href: d.requestUrl }] }),
+    en: (d) => ({ subject: `${d.applicantName} is waiting for your reply`, title: 'An application needs a reply', blocks: [
+      { kind: 'p', text: `${d.applicantName} applied to “${d.requestTitle}” 3 days ago. If you don’t reply, it expires on ${d.expiresOn}.` },
+      { kind: 'button', text: 'Reply', href: d.requestUrl }] }),
+    'pt-BR': (d) => ({ subject: `${d.applicantName} aguarda sua resposta`, title: 'Uma candidatura sem resposta', blocks: [
+      { kind: 'p', text: `${d.applicantName} se candidatou a “${d.requestTitle}” há 3 dias. Se você não responder, ela vence em ${d.expiresOn}.` },
+      { kind: 'button', text: 'Responder', href: d.requestUrl }] }),
+  },
+  application_expired: {
+    es: (d) => ({ subject: `Tu postulación a “${d.requestTitle}” venció`, title: 'Postulación vencida', blocks: [
+      { kind: 'p', text: 'Pasaron 7 días sin respuesta. Tu cupo ya está libre: hay más solicitudes esperando.' },
+      { kind: 'button', text: 'Ver la red', href: d.boardUrl }] }),
+    en: (d) => ({ subject: `Your application to “${d.requestTitle}” expired`, title: 'Application expired', blocks: [
+      { kind: 'p', text: '7 days passed without a reply. There are more requests waiting for you.' },
+      { kind: 'button', text: 'Browse the network', href: d.boardUrl }] }),
+    'pt-BR': (d) => ({ subject: `Sua candidatura a “${d.requestTitle}” venceu`, title: 'Candidatura vencida', blocks: [
+      { kind: 'p', text: 'Passaram 7 dias sem resposta. Há mais pedidos esperando por você.' },
+      { kind: 'button', text: 'Ver a rede', href: d.boardUrl }] }),
+  },
+  application_declined: {
+    es: (d) => ({ subject: `Novedades de “${d.requestTitle}”`, title: d.filled ? 'La solicitud ya se cubrió' : 'Esta vez no fue', blocks: [
+      { kind: 'p', text: d.filled ? 'Quien publicó ya eligió con quién trabajar. Gracias por postularte.' : 'Quien publicó decidió seguir con otra propuesta. Gracias por postularte.' },
+      { kind: 'button', text: 'Ver más solicitudes', href: d.boardUrl }] }),
+    en: (d) => ({ subject: `Update on “${d.requestTitle}”`, title: d.filled ? 'This request has been filled' : 'Not this time', blocks: [
+      { kind: 'p', text: d.filled ? 'The poster already picked a collaborator. Thanks for applying.' : 'The poster decided to go another way. Thanks for applying.' },
+      { kind: 'button', text: 'See more requests', href: d.boardUrl }] }),
+    'pt-BR': (d) => ({ subject: `Novidades de “${d.requestTitle}”`, title: d.filled ? 'O pedido já foi preenchido' : 'Desta vez não deu', blocks: [
+      { kind: 'p', text: d.filled ? 'Quem publicou já escolheu com quem trabalhar. Obrigado por se candidatar.' : 'Quem publicou decidiu seguir com outra proposta. Obrigado por se candidatar.' },
+      { kind: 'button', text: 'Ver mais pedidos', href: d.boardUrl }] }),
+  },
+  application_accepted: {
+    es: (d) => ({ subject: `¡A escribir! Colaboración en “${d.requestTitle}”`, title: `Colaboras con ${d.otherName}`, blocks: [
+      { kind: 'facts', facts: [['Correo', d.otherEmail], ...(d.otherPhone ? [['Teléfono', d.otherPhone] as [string, string]] : []), ['Tu parte', d.myShare], [`Parte de ${d.otherName}`, d.otherShare], ...(d.sessionUrl ? [['Sesión', d.sessionUrl] as [string, string]] : [])] },
+      { kind: 'p', text: 'Cuando la canción esté lista, ciérrala en Pluma: creamos la obra con este split, los dos firman y pasa a registro.' },
+      { kind: 'button', text: 'Ir a la colaboración', href: d.collaborationUrl }] }),
+    en: (d) => ({ subject: `Let’s write! Collaboration on “${d.requestTitle}”`, title: `You’re collaborating with ${d.otherName}`, blocks: [
+      { kind: 'facts', facts: [['Email', d.otherEmail], ...(d.otherPhone ? [['Phone', d.otherPhone] as [string, string]] : []), ['Your share', d.myShare], [`${d.otherName}’s share`, d.otherShare], ...(d.sessionUrl ? [['Session', d.sessionUrl] as [string, string]] : [])] },
+      { kind: 'p', text: 'When the song is ready, close it on Pluma: we create the work with this split, you both sign, and it goes to registration.' },
+      { kind: 'button', text: 'Open the collaboration', href: d.collaborationUrl }] }),
+    'pt-BR': (d) => ({ subject: `Bora compor! Colaboração em “${d.requestTitle}”`, title: `Você colabora com ${d.otherName}`, blocks: [
+      { kind: 'facts', facts: [['E-mail', d.otherEmail], ...(d.otherPhone ? [['Telefone', d.otherPhone] as [string, string]] : []), ['Sua parte', d.myShare], [`Parte de ${d.otherName}`, d.otherShare], ...(d.sessionUrl ? [['Sessão', d.sessionUrl] as [string, string]] : [])] },
+      { kind: 'p', text: 'Quando a música estiver pronta, feche na Pluma: criamos a obra com este split, os dois assinam e ela vai para registro.' },
+      { kind: 'button', text: 'Abrir a colaboração', href: d.collaborationUrl }] }),
+  },
 };
 
 export function renderEmail<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]) {
@@ -257,12 +344,13 @@ export const TEMPLATE_CATEGORY: Record<TemplateName, NotificationCategory> = {
   work_status: 'works', work_conflict: 'works',
   membership_activated: 'membership', renewal_upcoming: 'membership', payment_failed: 'membership', membership_suspended: 'membership',
   statement_published: 'money', statement_published_zero: 'money', payout_sent: 'money', royalties_unclaimed: 'money',
+  application_received: 'network', application_sent: 'network', application_reminder: 'network', application_expired: 'network', application_declined: 'network', application_accepted: 'network',
 };
 
 /** Categorías cuyo correo no se puede apagar: dinero, firmas y membresía (son avisos contractuales). */
 export const MANDATORY_EMAIL: readonly NotificationCategory[] = ['money', 'splits', 'membership'];
 
-const URL_KEYS = ['signUrl', 'workUrl', 'statementUrl', 'paymentsUrl', 'manageUrl', 'appUrl'] as const;
+const URL_KEYS = ['signUrl', 'workUrl', 'statementUrl', 'paymentsUrl', 'manageUrl', 'requestUrl', 'collaborationUrl', 'applicationsUrl', 'boardUrl', 'appUrl'] as const;
 
 /** Push: título y cuerpo cortos, en el idioma de la persona, con el enlace de la notificación. */
 export function renderPush<K extends TemplateName>(name: K, locale: Locale, data: TemplateData[K]) {

@@ -16,3 +16,6 @@ export * as statements from './statements';
 export * as payouts from './payouts';
 export { encryptJson, decryptJson } from './crypto';
 export * as notifications from './notification-center';
+export * as network from './network';
+export * as profiles from './profiles';
+export { authorizePlay, storeNetworkDemo } from './audio';

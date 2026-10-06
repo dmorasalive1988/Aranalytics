@@ -12,7 +12,7 @@ import { PgBoss } from 'pg-boss';
 const rootEnv = resolve(import.meta.dirname, '../../../.env');
 if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
 
-const { closeRuntime, depsFromEnv, dispatchPending, retryFailedDeliveries, runDailyJobs, statements } = await import('@pluma/services');
+const { closeRuntime, depsFromEnv, dispatchPending, network, retryFailedDeliveries, runDailyJobs, statements } = await import('@pluma/services');
 
 const deps = depsFromEnv();
 const log = (msg: string, extra?: unknown) => console.log(JSON.stringify({ at: new Date().toISOString(), msg, ...(extra ? { extra } : {}) }));
@@ -25,6 +25,7 @@ const JOBS = {
   daily: 'daily-jobs',
   retry: 'retry-deliveries',
   scheduled: 'publish-scheduled-statements',
+  network: 'network-timers',
 } as const;
 
 for (const q of Object.values(JOBS)) await boss.createQueue(q);
@@ -32,6 +33,8 @@ for (const q of Object.values(JOBS)) await boss.createQueue(q);
 await boss.schedule(JOBS.daily, process.env.PLUMA_DAILY_CRON ?? '10 11 * * *');
 await boss.schedule(JOBS.retry, '7 * * * *');
 await boss.schedule(JOBS.scheduled, '* * * * *');
+// Red: recordatorio a las 72 h y vencimientos (cada 15 min).
+await boss.schedule(JOBS.network, '*/15 * * * *');
 
 await boss.work(JOBS.daily, async () => {
   const r = await runDailyJobs(deps);
@@ -39,6 +42,11 @@ await boss.work(JOBS.daily, async () => {
 });
 await boss.work(JOBS.retry, async () => {
   log('retry-deliveries', await retryFailedDeliveries(deps));
+});
+
+await boss.work(JOBS.network, async () => {
+  const r = await network.runNetworkTimers(deps);
+  if (r.reminded || r.expired || r.requestsExpired) log('network.timers', r);
 });
 
 await boss.work(JOBS.scheduled, async () => {

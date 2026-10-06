@@ -17,7 +17,12 @@ export type EventType =
   | 'statement.published'
   | 'payout.requested'
   | 'payout.sent'
-  | 'royalties.unclaimed_detected';
+  | 'royalties.unclaimed_detected'
+  | 'application.submitted'
+  | 'application.reminder'
+  | 'application.expired'
+  | 'application.declined'
+  | 'application.accepted';
 
 /** Outbox transaccional: el evento se guarda en la misma transacción que el cambio. */
 export async function emit(tx: Tx, type: EventType, aggregateType: string, aggregateId: string, payload: Record<string, unknown> = {}) {

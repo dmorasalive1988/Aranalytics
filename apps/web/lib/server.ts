@@ -91,6 +91,13 @@ export async function requireStep(...allowed: OnboardingStep[]): Promise<Session
 export async function kickDispatch() {
   if (!inlineDispatch()) return;
   const { after } = await import('next/server');
-  const { dispatchPending } = await import('@pluma/services');
-  after(() => dispatchPending(deps()).catch((e) => console.error('[eventos]', e)));
+  const { dispatchPending, network } = await import('@pluma/services');
+  // Sin worker (desarrollo y demo): los tiempos de la red se revisan al responder.
+  after(() =>
+    network
+      .runNetworkTimers(deps())
+      .catch((e) => console.error('[red]', e))
+      .then(() => dispatchPending(deps()))
+      .catch((e) => console.error('[eventos]', e)),
+  );
 }

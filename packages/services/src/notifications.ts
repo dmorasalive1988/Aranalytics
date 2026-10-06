@@ -23,7 +23,7 @@ const out = <K extends TemplateName>(o: Outgoing<K>): Outgoing => o as unknown a
 
 async function userInfo(deps: Deps, userId: string) {
   const [u] = await deps.db
-    .select({ email: t.users.email, locale: t.users.locale, country: t.writerProfiles.country, name: t.writerProfiles.legalName, artist: t.writerProfiles.artistName })
+    .select({ id: t.users.id, email: t.users.email, locale: t.users.locale, country: t.writerProfiles.country, name: t.writerProfiles.legalName, artist: t.writerProfiles.artistName })
     .from(t.users)
     .leftJoin(t.writerProfiles, eq(t.writerProfiles.userId, t.users.id))
     .where(eq(t.users.id, userId));
@@ -158,6 +158,57 @@ async function messagesFor(deps: Deps, ev: Event): Promise<Outgoing[]> {
       if (!u) return [];
       const titles = (payload.titles as string[]) ?? [];
       return [out({ userId: ev.aggregateId, email: u.email, locale: u.locale, template: 'royalties_unclaimed', data: { count: Number(payload.count), works: titles.slice(0, 3).map((x) => `“${x}”`).join(', '), paymentsUrl: `${deps.appUrl}/obras` }, key: `royalties.unclaimed:${ev.aggregateId}:${String(payload.periodId)}` })];
+    }
+    case 'application.submitted':
+    case 'application.reminder':
+    case 'application.expired':
+    case 'application.declined': {
+      const [a] = await deps.db.select().from(t.applications).where(eq(t.applications.id, ev.aggregateId));
+      if (!a) return [];
+      const [r] = await deps.db.select().from(t.networkRequests).where(eq(t.networkRequests.id, a.requestId));
+      const owner = await userInfo(deps, r!.authorUserId);
+      const applicant = await userInfo(deps, a.applicantUserId);
+      if (!owner || !applicant) return [];
+      const requestUrl = `${deps.appUrl}/red/${r!.id}`;
+      const boardUrl = `${deps.appUrl}/red`;
+      if (ev.type === 'application.submitted') {
+        const { publicCard } = await import('./profiles');
+        const card = await publicCard(deps, a.applicantUserId);
+        const lang = (l: AppLocale) => new Intl.DisplayNames([intlLocale(l)], { type: 'language' });
+        const since = (l: AppLocale) => (card.history.memberSince ? new Intl.DateTimeFormat(intlLocale(l), { month: 'short', year: 'numeric' }).format(new Date(card.history.memberSince)) : '');
+        const HIST = {
+          es: (l: AppLocale) => `Desde ${since(l)} · ${card.history.registeredWorks} ${card.history.registeredWorks === 1 ? 'obra registrada' : 'obras registradas'} · ${card.history.collaborations} ${card.history.collaborations === 1 ? 'colaboración' : 'colaboraciones'}`,
+          en: (l: AppLocale) => `Since ${since(l)} · ${card.history.registeredWorks} registered ${card.history.registeredWorks === 1 ? 'song' : 'songs'} · ${card.history.collaborations} ${card.history.collaborations === 1 ? 'collaboration' : 'collaborations'}`,
+          'pt-BR': (l: AppLocale) => `Desde ${since(l)} · ${card.history.registeredWorks} ${card.history.registeredWorks === 1 ? 'obra registrada' : 'obras registradas'} · ${card.history.collaborations} ${card.history.collaborations === 1 ? 'colaboração' : 'colaborações'}`,
+        };
+        const L = owner.locale;
+        const credits = card.credits.map((c) => `${c.title}${c.artist ? ` — ${c.artist}` : ''}${c.dspUrl ? ` (${c.dspUrl})` : ''}`).join(' · ');
+        return [
+          out({ userId: owner.id, email: owner.email, locale: L, template: 'application_received', data: { applicantName: card.name, role: card.mainRole ?? '', city: [card.city, card.country].filter(Boolean).join(', '), languages: card.languages.map((x) => lang(L).of(x) ?? x).join(', '), credits, history: HIST[L](L), message: a.message, share: formatBps(a.acceptedShareBps, intlLocale(L)), requestTitle: r!.title, requestUrl, profileUrl: `${deps.appUrl}/perfil/${a.applicantUserId}` }, key: `application.received:${a.id}` }),
+          out({ userId: applicant.id, email: applicant.email, locale: applicant.locale, template: 'application_sent', data: { requestTitle: r!.title, ownerName: owner.displayName, expiresOn: formatDate(a.expiresAt, applicant.locale, applicant.country), applicationsUrl: `${deps.appUrl}/red/postulaciones` }, key: `application.sent:${a.id}` }),
+        ];
+      }
+      if (ev.type === 'application.reminder')
+        return [out({ userId: owner.id, email: owner.email, locale: owner.locale, template: 'application_reminder', data: { applicantName: applicant.displayName, requestTitle: r!.title, expiresOn: formatDate(a.expiresAt, owner.locale, owner.country), requestUrl }, key: `application.reminder:${a.id}` })];
+      if (ev.type === 'application.expired')
+        return [out({ userId: applicant.id, email: applicant.email, locale: applicant.locale, template: 'application_expired', data: { requestTitle: r!.title, boardUrl }, key: `application.expired:${a.id}` })];
+      return [out({ userId: applicant.id, email: applicant.email, locale: applicant.locale, template: 'application_declined', data: { requestTitle: r!.title, filled: !!payload.filled, boardUrl }, key: `application.declined:${a.id}` })];
+    }
+    case 'application.accepted': {
+      const { getCollaboration } = await import('./network');
+      const [c] = await deps.db.select().from(t.collaborations).where(eq(t.collaborations.id, ev.aggregateId));
+      if (!c) return [];
+      const shares = c.preAgreedShares as { user_id: string }[];
+      const msgs: Outgoing[] = [];
+      for (const s of shares) {
+        const me = await userInfo(deps, s.user_id);
+        const view = await getCollaboration(deps, s.user_id, c.id);
+        const other = view?.parties.find((p) => !p.isMe);
+        const mine = view?.parties.find((p) => p.isMe);
+        if (!me || !view || !other || !mine) continue;
+        msgs.push(out({ userId: s.user_id, email: me.email, locale: me.locale, template: 'application_accepted', data: { otherName: other.name, otherEmail: other.email, otherPhone: other.phone ?? '', requestTitle: view.requestTitle, myShare: formatBps(mine.shareBps, intlLocale(me.locale)), otherShare: formatBps(other.shareBps, intlLocale(me.locale)), sessionUrl: view.sessionUrl ?? '', collaborationUrl: `${deps.appUrl}/red/colaboraciones/${c.id}` }, key: `application.accepted:${c.id}:${s.user_id}` }));
+      }
+      return msgs;
     }
     default:
       return [];

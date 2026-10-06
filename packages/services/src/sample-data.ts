@@ -144,6 +144,57 @@ export async function seedSampleData(deps: Deps, opts: { accountsTable: 'auth.us
   const q2 = await S.statements.createPeriod(deps, ops, { code: '2026-Q2', payDate: '2026-11-15' }, ctx);
   await S.statements.uploadStatement(deps, ops, { periodId: q2, fileName: '2026-Q2.csv', bytes: readFileSync(join(opts.fixturesDir, '2026-Q2.csv')) }, ctx);
 
+  log('Red Pluma…');
+  const P = S.profiles;
+  await P.updateNetworkProfile(deps, valentina, { bio: 'Compositora y topliner de Medellín. Reggaetón, pop urbano y baladas.', languages: ['es', 'en'], mainRole: 'composer_lyricist', dspLinks: { spotify: 'https://open.spotify.com/artist/pluma-demo-vale' } }, ctx);
+  await P.updateNetworkProfile(deps, diego, { bio: 'Productor de corridos tumbados y regional mexicano desde Guadalajara.', languages: ['es'], mainRole: 'composer', dspLinks: {} }, ctx);
+  await P.updateNetworkProfile(deps, sam, { bio: 'Miami-based writer. Latin pop, R&B and Spanglish hooks.', languages: ['en', 'es'], mainRole: 'composer_lyricist', dspLinks: { apple: 'https://music.apple.com/artist/pluma-demo-sam' } }, ctx);
+  await P.updateNetworkProfile(deps, camila, { bio: 'Compositora pernambucana. Forró, piseiro e MPB.', languages: ['pt', 'es'], mainRole: 'lyricist', dspLinks: {} }, ctx);
+  await P.addCredit(deps, valentina, { title: 'Noche en El Poblado', artist: 'Artista de ejemplo', role: 'Compositora', dspUrl: 'https://open.spotify.com/track/pluma-demo' }, ctx);
+  const [vc] = (await P.pendingCredits(deps, ops)).filter((c) => c.title === 'Noche en El Poblado');
+  if (vc) await P.reviewCredit(deps, ops, vc.id, true, '', ctx);
+  await P.addCredit(deps, sam, { title: 'Ocean Drive Lights', artist: 'Sample Artist', role: 'Co-writer', dspUrl: 'https://music.apple.com/song/pluma-demo' }, ctx);
+
+  const N = S.network;
+  const beat = { bytes: demoWav(8), mime: 'audio/wav' };
+  const rSam = await N.createRequest(deps, sam, { type: 'beat_seeks_topliner', title: 'Latin R&B beat needs a topliner', description: 'Smooth 92 BPM beat with Rhodes and 808s. Looking for a bilingual hook and verses.', genre: 'Latin R&B', languages: ['en', 'es'], bpm: 92, city: null, modality: 'remote', offeredShareBps: 4500 }, beat, ctx);
+  const rVale = await N.createRequest(deps, valentina, { type: 'session_or_camp', title: 'Writing camp de reggaetón en Medellín', description: 'Tres días de sesiones en estudio, del 20 al 22 de noviembre. Buscamos productores y topliners.', genre: 'Reggaetón', languages: ['es'], bpm: null, city: 'Medellín', modality: 'in_person', offeredShareBps: 2500 }, null, ctx);
+  const rCami = await N.createRequest(deps, camila, { type: 'seeks_producer', title: 'Procuro produtor para forró eletrônico', description: 'Tenho letra e melodia prontas. Preciso de produção com sanfona e batida eletrônica.', genre: 'Forró eletrônico', languages: ['pt'], bpm: 128, city: 'Recife', modality: 'hybrid', offeredShareBps: 3500 }, null, ctx);
+  const rDiego = await N.createRequest(deps, diego, { type: 'seeks_verse_or_hook', title: 'Busco coro para corrido tumbado', description: 'La instrumental ya está. Falta un coro que se quede en la cabeza, estilo calle pero melódico.', genre: 'Corrido tumbado', languages: ['es'], bpm: 140, city: null, modality: 'remote', offeredShareBps: 3000 }, null, ctx);
+  await N.apply(deps, diego, rSam, { message: 'Puedo meterle un coro en español con sabor regional, ¿te late?', acceptShare: true, sample: null }, ctx);
+  await N.apply(deps, camila, rVale, { message: 'Adoraria participar do camp! Escrevo em português e espanhol.', acceptShare: true, sample: null }, ctx);
+  const aVale = await N.apply(deps, valentina, rDiego, { message: 'Tengo un coro que encaja perfecto con ese corrido. Escúchalo en la sesión.', acceptShare: true, sample: null }, ctx);
+  await N.acceptApplication(deps, diego, aVale, ctx);
+  void rCami;
+
   await S.dispatchPending(deps, { limit: 500 });
   return true;
+}
+
+/** Demo de ejemplo: acordes simples en WAV (sin archivos binarios en el repositorio). */
+function demoWav(seconds: number) {
+  const sr = 22050;
+  const n = sr * seconds;
+  const b = Buffer.alloc(44 + n * 2);
+  b.write('RIFF', 0);
+  b.writeUInt32LE(36 + n * 2, 4);
+  b.write('WAVEfmt ', 8);
+  b.writeUInt32LE(16, 16);
+  b.writeUInt16LE(1, 20);
+  b.writeUInt16LE(1, 22);
+  b.writeUInt32LE(sr, 24);
+  b.writeUInt32LE(sr * 2, 28);
+  b.writeUInt16LE(2, 32);
+  b.writeUInt16LE(16, 34);
+  b.write('data', 36);
+  b.writeUInt32LE(n * 2, 40);
+  const chords = [[220, 277.18, 329.63], [196, 246.94, 293.66], [174.61, 220, 261.63], [196, 246.94, 293.66]];
+  for (let i = 0; i < n; i++) {
+    const tSec = i / sr;
+    const chord = chords[Math.floor(tSec / 2) % chords.length]!;
+    const env = Math.min(1, (tSec % 2) * 8) * Math.exp(-(tSec % 2) * 0.8);
+    const v = chord.reduce((a, f) => a + Math.sin(2 * Math.PI * f * tSec), 0) / chord.length;
+    b.writeInt16LE(Math.round(9000 * env * v), 44 + i * 2);
+  }
+  return b;
 }

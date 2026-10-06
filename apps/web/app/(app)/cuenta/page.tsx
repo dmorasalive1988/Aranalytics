@@ -39,6 +39,13 @@ export default async function Account() {
         </span>
         <ChevronRight size={20} strokeWidth={2} aria-hidden />
       </Link>
+      <Link href="/cuenta/perfil" className="flex min-h-16 items-center justify-between rounded-[20px] bg-surface px-5 text-fg no-underline">
+        <span className="flex flex-col">
+          <span className="text-[15px] font-bold">{t('network.editProfile')}</span>
+          <span className="text-sm text-fg-2">{t('network.title')}</span>
+        </span>
+        <ChevronRight size={20} strokeWidth={2} aria-hidden />
+      </Link>
       <Link href="/cuenta/notificaciones" className="flex min-h-16 items-center justify-between rounded-[20px] bg-surface px-5 text-fg no-underline">
         <span className="flex flex-col">
           <span className="text-[15px] font-bold">{t('common.notifications')}</span>

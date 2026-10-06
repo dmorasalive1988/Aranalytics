@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { HighlightCard, Notice, StatusPill, buttonClass } from '@pluma/ui';
-import { CircleAlert, PenLine } from 'lucide-react';
-import { listMyWorks, statements } from '@pluma/services';
+import { CircleAlert, PenLine, Users } from 'lucide-react';
+import { listMyWorks, network, statements } from '@pluma/services';
 import { WorkRow } from '@/components/work-row';
 import { date, money, planName } from '@/lib/format';
 import { deps, requireMember } from '@/lib/server';
@@ -17,7 +17,9 @@ export default async function Home() {
   const s = await requireMember();
   const t = await getTranslations('home');
   const locale = await getLocale();
-  const [works, pending, balanceCents, next] = await Promise.all([listMyWorks(deps(), s.userId), pendingForMe(s.userId), balanceFor(s.userId), statements.nextOfficialStatement(deps())]);
+  const [works, pending, balanceCents, next, myReqs] = await Promise.all([listMyWorks(deps(), s.userId), pendingForMe(s.userId), balanceFor(s.userId), statements.nextOfficialStatement(deps()), network.myRequests(deps(), s.userId)]);
+  const awaiting = myReqs.reduce((a, r) => a + r.pending, 0);
+  const tn = await getTranslations('network');
   const name = s.profile?.artistName || s.profile?.legalName.split(' ')[0] || '';
   const m = s.membership!;
   return (
@@ -45,6 +47,12 @@ export default async function Home() {
       {pending.length > 0 && (
         <Notice tone="alert" icon={<PenLine size={20} strokeWidth={2} />} title={pending.length === 1 ? t('pendingOne') : t('pendingMany', { count: pending.length })}>
           <Link href={`/obras/${pending[0]!.workId}`} className="font-bold">{t('review')}</Link>
+        </Notice>
+      )}
+
+      {awaiting > 0 && (
+        <Notice tone="info" icon={<Users size={20} strokeWidth={2} />} title={tn('activity')}>
+          <Link href="/red/mis-solicitudes" className="font-bold">{tn('activityBody', { count: awaiting })}</Link>
         </Notice>
       )}
 

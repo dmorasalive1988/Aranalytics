@@ -8,8 +8,8 @@ import type { AppLocale } from './format';
 import { defaultPreference, sendNotification } from './notifications';
 
 export type PrefChannel = 'email' | 'push' | 'whatsapp';
-/** Categorías que hoy generan avisos (red y sync se suman en las fases d y e). */
-export const PREF_CATEGORIES: readonly NotificationCategory[] = ['money', 'splits', 'membership', 'works'];
+/** Categorías que hoy generan avisos (sync se suma en la fase e). */
+export const PREF_CATEGORIES: readonly NotificationCategory[] = ['money', 'splits', 'membership', 'works', 'network'];
 const CHANNELS: readonly PrefChannel[] = ['email', 'push', 'whatsapp'];
 
 const writerCtx = (userId: string, command: string, ctx?: RequestCtx) => ({ actorId: userId, actorRole: 'writer' as const, command, ...ctx });
