@@ -7,7 +7,7 @@ s = s.replace(/\t\/\/ TODO: failed to parse database type '(\w+)'\n(\t\w+: )unkn
 // Defaults que drizzle-kit introspecta mal
 s = s.split(".default(')").join(".default('')");
 s = s.split('.default([""])').join('.default(sql`\'{}\'`)');
-s = s.replace(/^\s*pgPolicy\(.*\),?\n/gm, '');
+s = s.replace(/^\s*pgPolicy\([\s\S]*?\}\),?\n/gm, '');
 s = s.replace(/, pgPolicy/, '');
 s = s.replace(/,\s*\(table\) => \[\s*\]\)/g, ')');
 s = s.replace(

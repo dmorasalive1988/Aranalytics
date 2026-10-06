@@ -28,6 +28,9 @@ export interface TemplateData {
   renewal_upcoming: { plan: string; amount: string; renewsOn: string; manageUrl: string };
   payment_failed: { plan: string; graceEndsOn: string; manageUrl: string };
   membership_suspended: { manageUrl: string };
+  statement_published: { period: string; net: string; topWork: string; highlights: string; statementUrl: string };
+  statement_published_zero: { period: string; statementUrl: string };
+  payout_sent: { amount: string; method: string; paymentsUrl: string };
 }
 export type TemplateName = keyof TemplateData;
 
@@ -176,6 +179,48 @@ const T: { [K in TemplateName]: L<Builder<K>> } = {
       { kind: 'p', text: 'We keep administering your registered songs and paying your royalties under your agreement. Renew to get back on the Network and turn sync and A&R back on.' }, { kind: 'button', text: 'Renew', href: d.manageUrl }] }),
     'pt-BR': (d) => ({ subject: 'Sua assinatura está pausada', title: 'Pausamos a Rede e seus catálogos', blocks: [
       { kind: 'p', text: 'Continuamos administrando suas obras registradas e pagando seus royalties conforme o contrato. Renove para voltar à Rede e reativar sync e A&R.' }, { kind: 'button', text: 'Renovar', href: d.manageUrl }] }),
+  },
+  statement_published: {
+    es: (d) => ({ subject: `Tu statement ${d.period} ya está disponible: ${d.net}`, title: `Statement oficial ${d.period}`, blocks: [
+      { kind: 'big', text: d.net },
+      { kind: 'facts', facts: [['Neto del período', d.net], ['Obra con más ingresos', d.topWork]] },
+      { kind: 'p', text: d.highlights },
+      { kind: 'button', text: 'Ver mi statement', href: d.statementUrl },
+      { kind: 'note', text: 'Es tu statement oficial: los montos ya descuentan la comisión de administración y las retenciones que apliquen.' }] }),
+    en: (d) => ({ subject: `Your ${d.period} statement is ready: ${d.net}`, title: `Official statement ${d.period}`, blocks: [
+      { kind: 'big', text: d.net },
+      { kind: 'facts', facts: [['Net for the period', d.net], ['Top-earning song', d.topWork]] },
+      { kind: 'p', text: d.highlights },
+      { kind: 'button', text: 'View my statement', href: d.statementUrl },
+      { kind: 'note', text: 'This is your official statement: amounts are after the administration fee and any applicable withholding.' }] }),
+    'pt-BR': (d) => ({ subject: `Seu statement ${d.period} já está disponível: ${d.net}`, title: `Statement oficial ${d.period}`, blocks: [
+      { kind: 'big', text: d.net },
+      { kind: 'facts', facts: [['Líquido do período', d.net], ['Obra que mais rendeu', d.topWork]] },
+      { kind: 'p', text: d.highlights },
+      { kind: 'button', text: 'Ver meu statement', href: d.statementUrl },
+      { kind: 'note', text: 'Este é seu statement oficial: os valores já descontam a comissão de administração e as retenções que se aplicam.' }] }),
+  },
+  statement_published_zero: {
+    es: (d) => ({ subject: `Tu statement ${d.period} está listo`, title: `Statement oficial ${d.period}`, blocks: [
+      { kind: 'p', text: 'Este período tus obras no registraron regalías. Es normal: las sociedades y plataformas reportan con meses de diferencia.' },
+      { kind: 'p', text: 'Mientras tanto, revisa que tus obras estén completas y registradas: así no se pierde ningún pago.' },
+      { kind: 'button', text: 'Ver mi statement', href: d.statementUrl }] }),
+    en: (d) => ({ subject: `Your ${d.period} statement is ready`, title: `Official statement ${d.period}`, blocks: [
+      { kind: 'p', text: 'Your songs didn’t report royalties this period. That’s normal: societies and platforms report months apart.' },
+      { kind: 'p', text: 'In the meantime, make sure your songs are complete and registered so no payment slips through.' },
+      { kind: 'button', text: 'View my statement', href: d.statementUrl }] }),
+    'pt-BR': (d) => ({ subject: `Seu statement ${d.period} está pronto`, title: `Statement oficial ${d.period}`, blocks: [
+      { kind: 'p', text: 'Neste período suas obras não registraram royalties. É normal: associações e plataformas reportam com meses de diferença.' },
+      { kind: 'p', text: 'Enquanto isso, confira se suas obras estão completas e registradas para não perder nenhum pagamento.' },
+      { kind: 'button', text: 'Ver meu statement', href: d.statementUrl }] }),
+  },
+  payout_sent: {
+    es: (d) => ({ subject: `Enviamos tu pago de ${d.amount}`, title: 'Tu pago va en camino', blocks: [
+      { kind: 'facts', facts: [['Monto', d.amount], ['Método', d.method]] }, { kind: 'p', text: 'Según tu banco, puede tardar de 1 a 3 días hábiles en reflejarse.' }, { kind: 'button', text: 'Ver mis pagos', href: d.paymentsUrl }] }),
+    en: (d) => ({ subject: `We sent your ${d.amount} payment`, title: 'Your payment is on its way', blocks: [
+      { kind: 'facts', facts: [['Amount', d.amount], ['Method', d.method]] }, { kind: 'p', text: 'Depending on your bank, it can take 1 to 3 business days to show up.' }, { kind: 'button', text: 'View my payments', href: d.paymentsUrl }] }),
+    'pt-BR': (d) => ({ subject: `Enviamos seu pagamento de ${d.amount}`, title: 'Seu pagamento está a caminho', blocks: [
+      { kind: 'facts', facts: [['Valor', d.amount], ['Método', d.method]] }, { kind: 'p', text: 'Dependendo do seu banco, pode levar de 1 a 3 dias úteis para aparecer.' }, { kind: 'button', text: 'Ver meus pagamentos', href: d.paymentsUrl }] }),
   },
 };
 

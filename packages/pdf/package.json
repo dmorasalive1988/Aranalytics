@@ -1,0 +1,23 @@
+{
+  "name": "@pluma/pdf",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
+    "react": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

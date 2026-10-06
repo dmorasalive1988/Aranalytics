@@ -13,7 +13,10 @@ export type EventType =
   | 'membership.activated'
   | 'membership.renewal_upcoming'
   | 'membership.payment_failed'
-  | 'membership.suspended';
+  | 'membership.suspended'
+  | 'statement.published'
+  | 'payout.requested'
+  | 'payout.sent';
 
 /** Outbox transaccional: el evento se guarda en la misma transacción que el cambio. */
 export async function emit(tx: Tx, type: EventType, aggregateType: string, aggregateId: string, payload: Record<string, unknown> = {}) {

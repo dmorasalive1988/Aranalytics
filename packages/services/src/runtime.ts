@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import {
   DevMailbox,
@@ -28,6 +29,18 @@ const devSecret = (name: string) => (isProd() ? env(name) : (process.env[name] ?
 
 /** Raíz del monorepo (para carpetas de desarrollo compartidas entre apps). */
 const repoRoot = () => process.env.PLUMA_REPO_ROOT ?? resolve(/*turbopackIgnore: true*/ process.cwd(), process.cwd().includes('/apps/') ? '../..' : '.');
+
+/** PLUMA_DATA_KEY: 32 bytes en base64. En desarrollo se deriva del secreto de firma. */
+function dataKeyFromEnv(): Buffer {
+  const raw = process.env.PLUMA_DATA_KEY;
+  if (raw) {
+    const key = Buffer.from(raw, 'base64');
+    if (key.length !== 32) throw new Error('PLUMA_DATA_KEY debe ser de 32 bytes en base64');
+    return key;
+  }
+  if (isProd()) throw new Error('Falta PLUMA_DATA_KEY');
+  return createHash('sha256').update(`data-key:${devSecret('PLUMA_SIGNING_SECRET')}`).digest();
+}
 
 export function localStorageAdapter(): LocalStorage {
   return new LocalStorage(process.env.PLUMA_LOCAL_STORAGE_DIR ?? resolve(/*turbopackIgnore: true*/ repoRoot(), '.dev-storage'), `${env('PLUMA_APP_URL', 'http://localhost:3000')}/api/dev-storage`, devSecret('PLUMA_SIGNING_SECRET'));
@@ -71,6 +84,7 @@ export function depsFromEnv(): Deps {
     appUrl,
     signUrl: env('PLUMA_SIGN_URL', `${appUrl}/firmar`),
     signingSecret: devSecret('PLUMA_SIGNING_SECRET'),
+    dataKey: dataKeyFromEnv(),
     now: () => new Date(),
   };
   return g.__plumaDeps;

@@ -23,6 +23,7 @@ export function makeHarness() {
     appUrl: 'http://app.test',
     signUrl: 'http://firma.test',
     signingSecret: 'test-signing-secret',
+    dataKey: Buffer.alloc(32, 7),
     now: () => clock.now,
   };
   const ctx = { ip: '198.51.100.10', userAgent: 'vitest' };

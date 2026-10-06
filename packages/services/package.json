@@ -16,7 +16,9 @@
     "@pluma/db": "workspace:*",
     "@pluma/domain": "workspace:*",
     "@pluma/emails": "workspace:*",
-    "@pluma/i18n": "workspace:*"
+    "@pluma/i18n": "workspace:*",
+    "@pluma/connectors": "workspace:*",
+    "@pluma/pdf": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

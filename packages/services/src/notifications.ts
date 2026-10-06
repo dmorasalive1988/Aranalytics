@@ -6,6 +6,7 @@ import type { Deps } from './deps';
 import { formatDate, formatMoney, intlLocale, type AppLocale } from './format';
 import { loadPlans } from './membership';
 import { sealAuthorship, partiesFor } from './works';
+import { renderStatementFiles } from './statements';
 
 type Event = typeof t.domainEvents.$inferSelect;
 
@@ -126,6 +127,31 @@ async function messagesFor(deps: Deps, ev: Event): Promise<Outgoing[]> {
       if (ev.type === 'membership.payment_failed')
         return [out({ userId: ev.aggregateId, email: u.email, locale: u.locale, template: 'payment_failed', data: { plan: planName, graceEndsOn: formatDate(String(payload.graceEndsAt), u.locale, u.country), manageUrl }, key: `payment_failed:${ev.id}` })];
       return [out({ userId: ev.aggregateId, email: u.email, locale: u.locale, template: 'membership_suspended', data: { manageUrl }, key: `suspended:${ev.id}` })];
+    }
+    case 'statement.published': {
+      const v = await renderStatementFiles(deps, ev.aggregateId);
+      if (!v) return [];
+      const u = await userInfo(deps, v.writerUserId);
+      if (!u) return [];
+      const url = `${deps.appUrl}/pagos/${v.statementId}`;
+      const key = `statement.published:${v.writerUserId}:${v.periodId}`;
+      if (v.totals.netCents === 0 && v.totals.heldCents === 0 && v.byWork.length === 0) {
+        return [out({ userId: v.writerUserId, email: u.email, locale: u.locale, template: 'statement_published_zero', data: { period: v.periodCode, statementUrl: url }, key })];
+      }
+      const top = v.byWork[0]?.title ?? '—';
+      const H = {
+        es: (n: number, w: number) => `Tus obras generaron ingresos en ${n} ${n === 1 ? 'territorio' : 'territorios'} y ${w} ${w === 1 ? 'obra' : 'obras'} este período.`,
+        en: (n: number, w: number) => `Your songs earned in ${n} ${n === 1 ? 'territory' : 'territories'} across ${w} ${w === 1 ? 'song' : 'songs'} this period.`,
+        'pt-BR': (n: number, w: number) => `Suas obras geraram receita em ${n} ${n === 1 ? 'território' : 'territórios'} e ${w} ${w === 1 ? 'obra' : 'obras'} neste período.`,
+      };
+      return [out({ userId: v.writerUserId, email: u.email, locale: u.locale, template: 'statement_published', data: { period: v.periodCode, net: formatMoney(v.totals.netCents, 'USD', u.locale, u.country), topWork: top, highlights: H[u.locale](v.byTerritory.length, v.byWork.length), statementUrl: url }, key })];
+    }
+    case 'payout.sent': {
+      const [p] = await deps.db.select().from(t.payouts).where(eq(t.payouts.id, ev.aggregateId));
+      const u = p && (await userInfo(deps, p.writerUserId));
+      if (!p || !u) return [];
+      const [m] = await deps.db.select({ label: t.payoutMethods.label }).from(t.payoutMethods).where(eq(t.payoutMethods.id, p.payoutMethodId));
+      return [out({ userId: p.writerUserId, email: u.email, locale: u.locale, template: 'payout_sent', data: { amount: formatMoney(Number(p.amountCents), p.currency, u.locale, u.country), method: m?.label ?? '', paymentsUrl: `${deps.appUrl}/pagos` }, key: `payout.sent:${p.id}` })];
     }
     default:
       return [];

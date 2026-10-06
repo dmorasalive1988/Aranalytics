@@ -13,6 +13,8 @@ export interface Deps {
   signUrl: string;
   /** Secreto para derivar enlaces de firma (HMAC). */
   signingSecret: string;
+  /** Clave AES-256 (32 bytes) para datos sensibles: ID fiscal y datos bancarios. */
+  dataKey: Buffer;
   now: () => Date;
 }
 
